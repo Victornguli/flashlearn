@@ -11,7 +11,7 @@ from instance.config import app_config
 FLASK_ENV = os.getenv('FLASK_ENV')
 
 db = app_config.get(FLASK_ENV).DATABASE if app_config.get(FLASK_ENV) else\
-	'sqlite:///./instance/db.sqlite3'
+	os.getenv('DATABASE')
 
 engine = create_engine(f"{db}", convert_unicode = True)
 db_session = scoped_session(
