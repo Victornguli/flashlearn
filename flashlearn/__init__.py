@@ -16,5 +16,7 @@ def create_app(config = None):
     def hello():
         return 'Hello, World!'
 
-    return app
+    from flashlearn.db import init_app
+    init_app(app)
 
+    return app
