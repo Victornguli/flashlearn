@@ -4,20 +4,16 @@ from flask.cli import with_appcontext
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from instance.config import app_config
 
-engine = create_engine('sqlite:///./db.sqlite3', convert_unicode = True)
+# Try to access the db_settings outside the app context,
+# using FLASK_ENV environment setting
+FLASK_ENV = os.getenv('FLASK_ENV')
 
+db = app_config.get(FLASK_ENV).DATABASE if app_config.get(FLASK_ENV) else\
+	'sqlite:///./instance/db.sqlite3'
 
-def setup_engine_with_ctx(app):
-	global engine
-	with app.app_context():
-		try:
-			db = app.config['DATABASE']
-			engine = create_engine(f'{db}', convert_unicode = True)
-		except Exception:
-			pass
-
-
+engine = create_engine(f"{db}", convert_unicode = True)
 db_session = scoped_session(
 	sessionmaker(autocommit = False, autoflush = False, bind = engine))
 
