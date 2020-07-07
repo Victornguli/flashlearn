@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from flashlearn.db import Base
 from flask_bcrypt import Bcrypt
@@ -18,7 +19,7 @@ class TimestampedModel(Base):
 	def save(self):
 		"""Save a user to a database. This includes creating a new user and editing too"""
 		db_session.add(self)
-		db_session().commit()
+		db_session.commit()
 
 
 class User(TimestampedModel):
@@ -40,5 +41,27 @@ class User(TimestampedModel):
 		return Bcrypt().check_password_hash(self.password, password)
 
 	def __repr__(self):
-		return f'{self.username} - {self.state}'
+		return f'<User: {self.username} - {self.state}>'
 
+
+class Group(TimestampedModel):
+	"""Group model class"""
+	__tablename__ = 'groups'
+
+	name = Column(String(20), nullable = False)
+	description = Column(String(20), nullable = False)
+	user_id = Column(Integer, ForeignKey('users.id'), nullable = True)
+	user = relationship('User', backref = 'users')
+	parent_id = Column(Integer, ForeignKey('groups.id'), nullable = True)
+	children = relationship('Group')
+
+	def __init__(self, name, description, user_id = None, parent_id = None):
+		"""Setup Group entry"""
+		self.name = name
+		self.description = description
+		self.user_id = user_id
+		self.parent_id = parent_id
+
+	def __repr__(self):
+		children = [i.name for i in self.children] if self.children else []
+		return f'<Group: {self.name} - {children}>'
