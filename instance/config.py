@@ -22,7 +22,7 @@ class TestingConfig(BaseConfig):
 	"""Testing config class"""
 	DEBUG = True
 	TESTING = True
-	db_path = os.path.join(BASE_DIR, 'db.sqlite3')
+	db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)), 'tests/test_db.sqlite3')
 	DATABASE = f'sqlite:///{db_path}'
 
 
