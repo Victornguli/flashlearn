@@ -1,0 +1,2 @@
+FLASK_APP=flashlearn
+FLASK_ENV=development
