@@ -64,8 +64,8 @@ def clear_db_command():
 
 
 def prompt_password():
-	password = click.prompt('Enter your password', type=str)
-	password_2 = click.prompt('Confirm your password', type=str)
+	password = click.prompt('Password', type=str, hide_input = True)
+	password_2 = click.prompt('Confirm your password', type=str, hide_input = True)
 	if password == password_2:
 		return password
 	else:
@@ -77,10 +77,10 @@ def prompt_password():
 @with_appcontext
 def create_user_command():
 	from flashlearn.models import User
-	username = click.prompt('Enter the username', type=str)
+	username = click.prompt('Username', type=str)
 	if User.query.filter_by(username = username).first() is None:
 		password = prompt_password()
-		email = click.prompt('Enter user email', default = None)
+		email = click.prompt('Email', default = None)
 		u = User(username = username, password = password, email = email)
 		u.save()
 		assert u.state == 'Active'
