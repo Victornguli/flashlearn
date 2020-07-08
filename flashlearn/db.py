@@ -63,6 +63,32 @@ def clear_db_command():
 		click.echo('Canceled clear_db.')
 
 
+def prompt_password():
+	password = click.prompt('Enter your password', type=str)
+	password_2 = click.prompt('Confirm your password', type=str)
+	if password == password_2:
+		return password
+	else:
+		click.echo('Passwords do not match. Try again.')
+		prompt_password()
+
+
+@click.command('create-user')
+@with_appcontext
+def create_user_command():
+	from flashlearn.models import User
+	username = click.prompt('Enter the username', type=str)
+	if User.query.filter_by(username = username).first() is None:
+		password = prompt_password()
+		email = click.prompt('Enter user email', default = None)
+		u = User(username = username, password = password, email = email)
+		u.save()
+		assert u.state == 'Active'
+		click.echo('User created successfully.')
+	else:
+		click.echo('Username already in use. Try again with a different one.')
+
+
 def init_app(app):
 	"""
 	Creates engine and initializes session here because of the necessity
@@ -71,3 +97,4 @@ def init_app(app):
 	app.teardown_appcontext(close_db_session)
 	app.cli.add_command(init_db_command)
 	app.cli.add_command(clear_db_command)
+	app.cli.add_command(create_user_command)
