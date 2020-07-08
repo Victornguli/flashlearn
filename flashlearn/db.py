@@ -15,7 +15,7 @@ FLASK_ENV = os.getenv('FLASK_ENV')
 db = app_config.get(FLASK_ENV).DATABASE if app_config.get(FLASK_ENV) else\
 	app_config.get('development').DATABASE
 
-engine = create_engine(f"{db}", convert_unicode = True)
+engine = create_engine(f"{db}")
 db_session = scoped_session(
 	sessionmaker(autocommit = False, autoflush = False, bind = engine))
 

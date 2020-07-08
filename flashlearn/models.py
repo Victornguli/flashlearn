@@ -67,7 +67,10 @@ class Group(BaseModel):
 		"""Setup Group entry"""
 		self.name = name
 		self.description = description
-		self.user_id = user_id
+		if type(user_id) == int:
+			self.user_id = user_id
+		else:
+			self.user = user_id
 		self.parent_id = parent_id
 
 	def __repr__(self):
