@@ -38,15 +38,20 @@ class User(TimestampedModel):
 	password = Column(String(256), nullable = False)
 	email = Column(String(256))
 
-	def __init__(self, username, password, email = None):
+	def __init__(self, username, password = None, email = None):
 		"""Initialize new user model"""
 		self.username = username
-		self.password = Bcrypt().generate_password_hash(password).decode()
+		if password:
+			self.password = Bcrypt().generate_password_hash(password).decode()
 		self.email = email
 
 	def password_is_valid(self, password):
 		"""Checks a submitted password against its stored hash"""
 		return Bcrypt().check_password_hash(self.password, password)
+
+	def set_password(self, password):
+		"""Set password"""
+		self.password = Bcrypt().generate_password_hash(password).decode()
 
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'
@@ -63,19 +68,18 @@ class Group(BaseModel):
 	group_study_plans = relationship(
 		'StudyPlanGroup', backref = 'group_study_plans', cascade = 'all, delete-orphan')
 
-	def __init__(self, name, description, user_id = None, parent_id = None):
+	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
 		"""Setup Group entry"""
 		self.name = name
 		self.description = description
-		if type(user_id) == int:
+		if user_id:
 			self.user_id = user_id
-		else:
-			self.user = user_id
+		elif user:
+			self.user = user
 		self.parent_id = parent_id
 
 	def __repr__(self):
-		children = [i.name for i in self.children] if self.children else []
-		return f'<Group: {self.name} - {children}>'
+		return f'<Group: {self.name}>'
 
 
 class Card(BaseModel):
@@ -116,11 +120,14 @@ class StudyPlan(BaseModel):
 	study_plan_groups = relationship(
 		'StudyPlanGroup', backref = 'study_plan_groups', cascade = 'all, delete-orphan')
 
-	def __init__(self, name, ordering = False, user_id = None):
+	def __init__(self, name, ordering = False, user_id = None, user = None):
 		"""Initialize study plan instance"""
 		self.name = name
 		self.ordering = ordering
-		self.user_id = user_id
+		if user_id:
+			self.user_id = user_id
+		elif user:
+			self.user = user
 
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
