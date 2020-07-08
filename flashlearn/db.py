@@ -7,11 +7,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from instance.config import app_config
 
 # Try to access the db_settings outside the app context,
-# using FLASK_ENV environment setting
+# using FLASK_ENV environment setting. Lookup flask_env first then
+# check app_config using the flask_env variable. If flask_env is not
+# set then default to development config.
 FLASK_ENV = os.getenv('FLASK_ENV')
 
 db = app_config.get(FLASK_ENV).DATABASE if app_config.get(FLASK_ENV) else\
-	os.getenv('DATABASE')
+	app_config.get('development').DATABASE
 
 engine = create_engine(f"{db}", convert_unicode = True)
 db_session = scoped_session(
