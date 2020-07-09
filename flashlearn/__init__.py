@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, g
-
 from instance.config import app_config
 from flashlearn.decorators import login_required
 from flashlearn.database import SQLAlchemyDB
@@ -45,4 +44,6 @@ def create_app(config = None):
     from flashlearn.auth import bp
     app.register_blueprint(bp)
 
+    from flashlearn.core import bp, routes
+    app.register_blueprint(bp)
     return app
