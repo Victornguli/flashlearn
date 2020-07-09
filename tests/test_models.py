@@ -1,49 +1,6 @@
-import unittest
 from flask_bcrypt import Bcrypt
-from flashlearn import create_app
-from flashlearn.db import init_db, clear_db, db_session, close_db_session
-from flashlearn.models import User, Card, Group, StudyPlan, StudyPlanGroup
-
-
-class BaseTestCase(unittest.TestCase):
-	"""Base test case"""
-	def setUp(self) -> None:
-		self.app = create_app('testing')
-		assert self.app.testing  # Ensure that the set environment is testing
-		self.client = self.app.test_client()
-		init_db()
-
-		# Setup common model instances
-		self.alice = User(username = 'alice', email = 'alice@email.com')
-		self.alice.set_password('password')
-		self.alice.save()
-
-		self.algos = Group(
-			name = 'Algorithms', description = 'Common Algorithms in Computer Science', user = self.alice)
-		self.algos.save()
-		self.dp = Group(
-			name = 'DP', description = 'Dynamic Programming', user = self.alice, parent_id = self.algos.id)
-		self.dp.save()
-
-		back = """
-		Dynamic Programming (DP) is an algorithmic technique for solving an optimization problem by breaking it down 
-		into simpler subproblems and utilizing the fact that the optimal solution to the overall problem depends upon 
-		the optimal solution to its subproblems.
-		"""
-		self.card = Card(
-			name = 'Dynamic Programming', front = 'What is dynamic programming', back = back,user_id = self.alice.id,
-			group_id = self.dp.id, description = 'Basic definition of Dynamic Programming', is_snippet = False)
-		self.card.save()
-
-		self.plan = StudyPlan(name = 'Grokking Algorithms', user = self.alice)
-		self.plan.save()
-
-		self.plan_group = StudyPlanGroup(group_id = self.dp.id, study_plan_id = self.plan.id)
-		self.plan_group.save()
-
-	def tearDown(self) -> None:
-		close_db_session()
-		clear_db()
+from flashlearn.models import User, Card, Group, StudyPlan
+from tests.conftest import BaseTestCase
 
 
 class TestModels(BaseTestCase):

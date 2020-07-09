@@ -1,8 +1,12 @@
 import os
 from flask import Flask, jsonify, session, g
+from sqlalchemy import create_engine
+
 from instance.config import app_config
-from flashlearn.models import User
 from flashlearn.decorators import login_required
+from flashlearn.database import SQLAlchemyDB
+
+db = SQLAlchemyDB()
 
 
 def create_app(config = None):
@@ -13,6 +17,7 @@ def create_app(config = None):
         flask_env = os.getenv('FLASK_ENV')
     if not flask_env:
         flask_env = 'development'
+    os.environ['FLASK_ENV'] = flask_env
     conf_mapping = app_config.get(flask_env, '')
     if not conf_mapping:
         raise ValueError('Invalid environment settings')
@@ -32,8 +37,10 @@ def create_app(config = None):
             'username': user.username
         })
 
-    from flashlearn.db import init_app
+    from flashlearn.database import init_app
     init_app(app)  # Setup database with app_context
+
+    db.init(app)
 
     from flashlearn.auth import bp
     app.register_blueprint(bp)

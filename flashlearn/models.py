@@ -1,13 +1,11 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from flashlearn.db import Base
+from flashlearn import db
 from flask_bcrypt import Bcrypt
 
-from flashlearn.db import db_session
 
-
-class TimestampedModel(Base):
+class TimestampedModel(db.Base):
 	"""Base class for all timestamped models"""
 	__abstract__ = True
 
@@ -18,8 +16,8 @@ class TimestampedModel(Base):
 
 	def save(self):
 		"""Save a user to a database. This includes creating a new user and editing too"""
-		db_session.add(self)
-		db_session.commit()
+		db.session.add(self)
+		db.session.commit()
 
 
 class BaseModel(TimestampedModel):
