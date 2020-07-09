@@ -14,7 +14,7 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
 	"""Development config class"""
 	DEBUG = True
-	db_path = os.path.join(BASE_DIR, 'db.sqlite3')
+	db_path = os.path.join(BASE_DIR, 'dev_db.sqlite3')
 	DATABASE = f'sqlite:///{db_path}'
 
 
@@ -30,6 +30,8 @@ class ProductionConfig(BaseConfig):
 	"""Production config class"""
 	DEBUG = False
 	TESTING = False
+	db_path = os.path.join(BASE_DIR, 'prod_db.sqlite3')
+	DATABASE = f'sqlite:///{db_path}'  # Replace with production database..
 
 
 app_config = {

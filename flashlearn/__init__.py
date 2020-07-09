@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, g
-from sqlalchemy import create_engine
 
 from instance.config import app_config
 from flashlearn.decorators import login_required
@@ -37,10 +36,11 @@ def create_app(config = None):
             'username': user.username
         })
 
-    from flashlearn.database import init_app
-    init_app(app)  # Setup database with app_context
+    from flashlearn.commands import register_commands
+    register_commands(app)  # Setup database with app_context
 
-    db.init(app)
+    db.init(app)  # Initialize Db with the app
+    app.teardown_appcontext(db.close_session)
 
     from flashlearn.auth import bp
     app.register_blueprint(bp)
