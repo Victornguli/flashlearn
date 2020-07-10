@@ -38,7 +38,7 @@ def create_app(config = None):
     from flashlearn.commands import register_commands
     register_commands(app)  # Setup database with app_context
 
-    db.init(app)  # Initialize Db with the app
+    db.init_with_ctx(app)  # Initialize Db with the app context
     app.teardown_appcontext(db.close_session)
 
     from flashlearn.auth import bp

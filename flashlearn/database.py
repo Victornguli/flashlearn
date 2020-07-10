@@ -30,7 +30,7 @@ class SQLAlchemyDB:
 		self.Base = declarative_base()
 		self.Base.query = self.session.query_property()
 
-	def init(self, app):
+	def init_with_ctx(self, app):
 		self.app = app
 		self.engine = create_engine(f"{self.app.config.get('DATABASE')}")
 		self.session = scoped_session(
