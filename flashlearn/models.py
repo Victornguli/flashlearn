@@ -19,13 +19,22 @@ class TimestampedModel(db.Base):
 		db.session.add(self)
 		db.session.commit()
 
+	def update(self, **kwargs):
+		for k, v in kwargs.items():
+			setattr(self, k, v)
+		db.session.commit()
+
+	def delete(self):
+		db.session.delete(User.query.filter_by(id = self.id).first())
+		db.session.commit()
+
 
 class BaseModel(TimestampedModel):
 	"""A base model class implementing name and description fields"""
 	__abstract__ = True
 
-	name = Column(String(20), nullable = True)
-	description = Column(String(50))
+	name = Column(String(20), nullable = False, unique = True)
+	description = Column(String(100))
 
 
 class User(TimestampedModel):
@@ -79,6 +88,15 @@ class Group(BaseModel):
 	def __repr__(self):
 		return f'<Group: {self.name}>'
 
+	def serialized(self):
+		return {
+			'id': self.id,
+			'name': self.name,
+			'description': self.description,
+			'user_id': self.user_id,
+			'parent_id': self.parent_id
+		}
+
 
 class Card(BaseModel):
 	"""Class for Card model"""
@@ -106,6 +124,18 @@ class Card(BaseModel):
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
 
+	def serialized(self):
+		return {
+			'id': self.id,
+			'name': self.name,
+			# 'description': self.description,
+			'front': self.front,
+			'back': self.back,
+			'is_snippet': self.is_snippet,
+			'user_id': self.user_id,
+			'group_id': self.group_id
+		}
+
 
 class StudyPlan(BaseModel):
 	"""Study plan model class"""
@@ -131,7 +161,7 @@ class StudyPlan(BaseModel):
 		return f'<StudyPlan: {self.name} - {self.state}>'
 
 
-class StudyPlanGroup(BaseModel):
+class StudyPlanGroup(TimestampedModel):
 	"""Many to Many through table for groups and study plans"""
 	__tablename__ = 'study_plan_groups'
 
