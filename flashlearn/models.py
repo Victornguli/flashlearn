@@ -28,6 +28,10 @@ class TimestampedModel(db.Base):
 		db.session.delete(self.query.filter_by(id = self.id).first())
 		db.session.commit()
 
+	@property
+	def serialized(self):
+		return dict((col.name, getattr(self, col.name)) for col in self.__table__.columns)
+
 
 class BaseModel(TimestampedModel):
 	"""A base model class implementing name and description fields"""
@@ -88,16 +92,6 @@ class Group(BaseModel):
 	def __repr__(self):
 		return f'<Group: {self.name}>'
 
-	@property
-	def serialized(self):
-		return {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'user_id': self.user_id,
-			'parent_id': self.parent_id
-		}
-
 
 class Card(BaseModel):
 	"""Class for Card model"""
@@ -124,19 +118,6 @@ class Card(BaseModel):
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
-
-	@property
-	def serialized(self):
-		return {
-			'id': self.id,
-			'name': self.name,
-			# 'description': self.description,
-			'front': self.front,
-			'back': self.back,
-			'is_snippet': self.is_snippet,
-			'user_id': self.user_id,
-			'group_id': self.group_id
-		}
 
 
 class StudyPlan(BaseModel):
@@ -177,3 +158,8 @@ class StudyPlanGroup(TimestampedModel):
 
 	def __repr__(self):
 		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
+
+
+if __name__ == '__main__':
+	t = Group(name = 'sfh', description = 'dsjnfjks')
+	print(t.fields())
