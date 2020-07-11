@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, session, g
+from flask import Flask, jsonify, g
 from instance.config import app_config
 from flashlearn.decorators import login_required
 from flashlearn.database import SQLAlchemyDB
@@ -8,6 +8,16 @@ db = SQLAlchemyDB()
 
 
 def create_app(config = None):
+    """
+    Create app factory function to initialize the Flask App
+    :param config: The configuration name, if required:
+        - can be development, testing or production.
+        - You can add more environments by  following the similar
+          structure defined in instance/config.py
+    :type config: str | None
+    :return: Flask app
+    :rtype: Flask
+    """
     app = Flask(__name__, instance_relative_config=True)
     if config:
         flask_env = config  # Preferably for use in the testing environment

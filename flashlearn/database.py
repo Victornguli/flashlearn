@@ -23,6 +23,10 @@ class SQLAlchemyDB:
 		else app_config['development'].DATABASE
 
 	def __init__(self):
+		"""
+		Initialize the db instance(with scoped session) using default database uri.
+		Cli commands without app context will only access the db with this configuration.
+		"""
 		self.app = None
 		self.engine = create_engine(f"{self.database}")
 		self.session = scoped_session(
@@ -31,6 +35,9 @@ class SQLAlchemyDB:
 		self.Base.query = self.session.query_property()
 
 	def init_with_ctx(self, app):
+		"""
+		Initialize the db instance with app's context, overriding the default database URI
+		"""
 		self.app = app
 		self.engine = create_engine(f"{self.app.config.get('DATABASE')}")
 		self.session = scoped_session(
