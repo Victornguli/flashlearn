@@ -88,6 +88,7 @@ class Group(BaseModel):
 	def __repr__(self):
 		return f'<Group: {self.name}>'
 
+	@property
 	def serialized(self):
 		return {
 			'id': self.id,
@@ -124,6 +125,7 @@ class Card(BaseModel):
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
 
+	@property
 	def serialized(self):
 		return {
 			'id': self.id,
