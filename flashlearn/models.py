@@ -25,7 +25,7 @@ class TimestampedModel(db.Base):
 		db.session.commit()
 
 	def delete(self):
-		db.session.delete(User.query.filter_by(id = self.id).first())
+		db.session.delete(self.query.filter_by(id = self.id).first())
 		db.session.commit()
 
 
