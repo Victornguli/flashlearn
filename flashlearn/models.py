@@ -160,6 +160,6 @@ class StudyPlanGroup(TimestampedModel):
 		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
 
 
-if __name__ == '__main__':
-	t = Group(name = 'sfh', description = 'dsjnfjks')
-	print(t.fields())
+# if __name__ == '__main__':
+# 	t = Group(name = 'sfh', description = 'dsjnfjks')
+# 	print(t.fields())
