@@ -1,6 +1,6 @@
 from flask import request, url_for, jsonify, flash, g, redirect
 from flashlearn.core import bp
-from flashlearn.models import User, Card, Group, StudyPlan, StudyPlanGroup
+from flashlearn.models import User, Card, Group, StudyPlan
 from flashlearn.decorators import login_required
 from flashlearn.utils import to_bool
 
@@ -50,9 +50,12 @@ def edit_card(card_id):
 			error = 'Card does not exist '
 		if not error:
 			card.update(
-				name = request.form['name'], description = request.form['description'],
-				front = request.form['front'], back = request.form['back'],
-				is_snippet = to_bool(request.form['is_snippet']), group_id = request.form['group_id']
+				name = request.form.get('name', card.name),
+				front = request.form.get('front', card.front),
+				back = request.form.get('back', card.back),
+				description = request.form.get('description', card.description),
+				group_id = request.form.get('group_id', card.group_id),
+				is_snippet = to_bool(request.form.get('is_snippet', card.is_snippet))
 			)
 			return jsonify('OK')
 		flash(error)
@@ -67,7 +70,6 @@ def delete_card(card_id):
 		if not card.first():
 			error = 'Card not found'
 		if not error:
-			print(card.first())
 			card.first().delete()
 			return jsonify('OK')
 		return jsonify(error)
@@ -99,6 +101,21 @@ def get_or_create_group(group_id):
 		group.save()
 		return jsonify(group.serialized)
 	return 'Group not found'
+
+
+@bp.route('/group/<int:group_id>/edit', methods = ('POST',))
+def edit_group(group_id):
+	group = Group.query.filter_by(id = group_id, state = 'Active').first()
+	error = ''
+	if not group:
+		error = 'Group not found'
+	if not error:
+		group.update(
+			name = request.form.get('name', group.name), description = request.form.get('description', group.description),
+			parent_id = request.form.get('parent_id', group.parent_id))
+		group.save()
+		return jsonify(group.serialized)
+	return jsonify(error)
 
 
 @bp.route('/group/<int:group_id>/delete', methods = ('POST',))
