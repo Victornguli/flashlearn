@@ -24,8 +24,8 @@ class BaseTestCase(unittest.TestCase):
 		self.dp.save()
 
 		back = """
-		Dynamic Programming (DP) is an algorithmic technique for solving an optimization problem by breaking it down 
-		into simpler subproblems and utilizing the fact that the optimal solution to the overall problem depends upon 
+		Dynamic Programming (DP) is an algorithmic technique for solving an optimization problem by breaking it down
+		into simpler subproblems and utilizing the fact that the optimal solution to the overall problem depends upon
 		the optimal solution to its subproblems.
 		"""
 		self.card = Card(
@@ -47,6 +47,13 @@ class BaseTestCase(unittest.TestCase):
 	def logout(self):
 		return self.client.post('/auth/logout')
 
+	@staticmethod
+	def refresh(*args):
+		"""Refresh objects as needed in derived test cases"""
+		for obj in args:
+			db.session.refresh(obj)
+
 	def tearDown(self) -> None:
+		# db.session.refresh_()
 		db.close_session()
 		db.clear_db()

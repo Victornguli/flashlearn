@@ -22,17 +22,22 @@ class TestModels(BaseTestCase):
 		child.save()
 		assert child in self.alice.user_groups, "Child group should be available in the user's groups"
 		assert child in self.algos.children, "Child group should be available in parent's children"
+		Group.query.filter_by(name = 'Recursion').delete()
+		assert Group.query.filter_by(name = 'Recursion').first() is None, 'Should delete the group'
 
 	def test_card_model(self):
-		card = Card(
+		test_card = Card(
 			name = 'Bridge of Death', front = 'What is the air velocity of unladen swallow',
 			back = 'African or European?', user_id = self.alice.id, group_id = self.dp.id,
 			description = 'Basic quiz from Monty Python', is_snippet = False)
-		card.save()
-		assert card.state == 'Active', 'Should be saved with an active state'
-		card.description = 'I don\'t know that!'
-		card.save()
-		assert card.description == 'I don\'t know that!'
+		test_card.save()
+		assert test_card.state == 'Active', 'Should be saved with an active state'
+		test_card.description = 'I don\'t know that!'
+		test_card.save()
+		assert test_card.description == 'I don\'t know that!'
+		Card.query.filter_by(name = 'Bridge of Death').delete()
+		assert Card.query.filter_by(name = 'Bridge of Death').first() is None, 'Should delete the card'
+		# self.db.session.expire(card)
 
 	def test_study_plan_model(self):
 		plan = StudyPlan(name = 'Grokking CS Algorithms', user = self.alice)
