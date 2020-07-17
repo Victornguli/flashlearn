@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from flashlearn.models import User, Card, Group, StudyPlan, StudyPlanGroup
 from flashlearn import create_app, db
 
@@ -57,3 +58,16 @@ class BaseTestCase(unittest.TestCase):
 		# db.session.refresh_()
 		db.close_session()
 		db.clear_db()
+
+
+@pytest.fixture
+def test_app():
+	"""Fixture that serves the app within test env"""
+	return create_app('testing')
+
+
+@pytest.fixture
+def test_client(test_app):
+	"""Pytest Fixture that serves the test_client"""
+	return test_app.test_client()
+

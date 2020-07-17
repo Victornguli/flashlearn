@@ -26,7 +26,7 @@ def clear_db_command():
 		db.clear_db()
 		click.echo('All database tables successfully deleted.')
 	else:
-		click.echo('Canceled clear_db.')
+		click.echo('Cancelled clear_db.')
 
 
 def prompt_password():
