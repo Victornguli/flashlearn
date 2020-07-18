@@ -49,7 +49,6 @@ def create_user_command():
 		email = click.prompt('Email', default = None)
 		u = User(username = username, password = password, email = email)
 		u.save()
-		assert u.state == 'Active'
 		click.echo('User created successfully.')
 	else:
 		click.echo('Username already in use. Try again with a different one.')
