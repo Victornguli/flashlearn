@@ -21,8 +21,26 @@ def login():
 			if request.args.get('next'):
 				return redirect(request.args.get('next', ''))
 			return redirect(url_for('index'))
-		return jsonify(error)
-	return jsonify('Beep Boop, Method Not allowed'), 405
+		return jsonify(error)  # TODO: Replace with flash(message)
+	return jsonify('Login Route')
+
+
+@bp.route('/register', methods = ('POST', 'GET'))
+def register():
+	if request.method == 'POST':
+		username = request.form.get('username')
+		password = request.form.get('password')
+		email = request.form.get('password', None)
+		error = ''
+		user = User.query.filter_by(username = username).first()
+		if user is not None:
+			error = 'User already exists'
+		if not error:
+			user = User(username = username, password = password, email = email)
+			user.save()
+			return redirect(url_for('auth.login'))
+		return jsonify(error)  # TODO: Replace with flash(message)
+	return jsonify('Register Route')
 
 
 @bp.before_app_request
