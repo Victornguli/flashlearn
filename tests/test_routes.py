@@ -15,6 +15,12 @@ class TestRoutes(BaseTestCase):
 		)
 		self.assertEqual(200, res.status_code)
 
+	def test_get_card(self):
+		super().refresh(self.alice, self.card)
+		self.login(self.alice.username, 'password')
+		res = self.client.get(f'/card/{self.card.id}')
+		self.assertEqual(200, res.status_code)
+
 	def test_edit_card(self):
 		super().refresh(self.alice, self.card)
 
@@ -52,6 +58,12 @@ class TestRoutes(BaseTestCase):
 		self.assertEqual(200, group_response.status_code)
 		self.assertIn(b'BFS', group_response.data)
 
+	def test_get_group(self):
+		self.refresh(self.alice, self.algos)
+		self.login(self.alice.username, 'password')
+		res = self.client.get(f'group/{self.algos.id}')
+		self.assertEqual(200, res.status_code)
+
 	def test_edit_group(self):
 		super().refresh(self.algos)
 		login = self.login(self.alice.username, 'password')
@@ -71,3 +83,9 @@ class TestRoutes(BaseTestCase):
 		)
 		self.assertEqual(200, res.status_code)
 		self.assertEqual(None, Group.query.filter_by(id = self.algos.id).first())
+
+	def test_get_groups(self):
+		self.refresh(self.alice, self.algos)
+		self.login(self.alice.username, 'password')
+		res = self.client.get('/groups')
+		self.assertEqual(200, res.status_code)
