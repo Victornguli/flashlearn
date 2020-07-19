@@ -38,15 +38,13 @@ def create_app(config = None):
         pass
 
     @app.route('/')
-    @login_required
     def index():
-        user = g.user
-        return jsonify({
-            'username': user.username
-        })
+        # user = g.user
+        # TODO: Add index code
+        return "Index"
 
     from flashlearn.commands import register_commands
-    register_commands(app)  # Setup database with app_context
+    register_commands(app)  # Register app cli commands
 
     db.init_with_ctx(app)  # Initialize Db with the app context
     app.teardown_appcontext(db.close_session)

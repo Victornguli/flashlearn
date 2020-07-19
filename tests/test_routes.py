@@ -3,6 +3,12 @@ from flashlearn.models import Card, Group
 
 
 class TestRoutes(BaseTestCase):
+	"""Flashlearn routes test class"""
+
+	def test_index_route(self):
+		res = self.client.get('/')
+		self.assertEqual(200, res.status_code)
+		self.assertIn(b'Index', res.data)
 
 	def test_create_card(self):
 		super().refresh(self.alice, self.algos, self.dp)
