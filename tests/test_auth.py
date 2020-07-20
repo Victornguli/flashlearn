@@ -18,7 +18,7 @@ class TestAuth(BaseTestCase):
 	def test_valid_login(self):
 		response = self.login(self.alice.username, 'password')
 		assert response.status_code == 200, 'Should login user'
-		self.assertIn(b'username', response.data)
+		self.assertIn(b'Index', response.data)
 
 	def test_invalid_login(self):
 		response = self.login('username', 'password')
