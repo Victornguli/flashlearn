@@ -28,15 +28,17 @@ class TimestampedModel(db.Base):
 		db.session.delete(self.query.filter_by(id = self.id).first())
 		db.session.commit()
 
-	@property
-	def serialized(self):
-		return dict((col.name, getattr(self, col.name)) for col in self.__table__.columns)
+	@classmethod
+	def all(cls):
+		return cls.query.filter(cls.state == 'Active')
+
+	@classmethod
+	def get_by_id(cls, _id):
+		return cls.query.filter(cls.id == _id).first()
 
 
-class BaseModel(TimestampedModel):
+class BaseModel:
 	"""A base model class implementing name and description fields"""
-	__abstract__ = True
-
 	name = Column(String(20), nullable = False, unique = True)
 	description = Column(String(100))
 
@@ -64,11 +66,33 @@ class User(TimestampedModel):
 		"""Set password"""
 		self.password = Bcrypt().generate_password_hash(password).decode()
 
+	@property
+	def to_dict(self):
+		d = {
+			'id': self.id,
+			'username': self.username,
+			'email': self.email if self.email else None,
+			'date_created': self.date_created,
+			'date_modified': self.date_updated,
+			'is_active': True if self.state == 'Active' else False,
+			'groups': [group.to_dict for group in self.groups],
+			'plans': [plan.to_dict for plan in self.plans],
+		}
+		return d
+
+	@property
+	def groups(self):
+		return Group.query.filter(Group.user_id == self.id)
+
+	@property
+	def plans(self):
+		return StudyPlan.query.filter(StudyPlan.user_id == self.id)
+
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'
 
 
-class Group(BaseModel):
+class Group(BaseModel, TimestampedModel):
 	"""Group model class"""
 	__tablename__ = 'groups'
 
@@ -89,11 +113,23 @@ class Group(BaseModel):
 			self.user = user
 		self.parent_id = parent_id
 
+	@property
+	def to_dict(self):
+		d = {
+			'id': self.id,
+			'name': self.name,
+			'description': self.description,
+			'user_id': self.user_id,
+			'parent_id': self.parent_id,
+			'is_child': True if self.parent_id else False
+		}
+		return d
+
 	def __repr__(self):
 		return f'<Group: {self.name}>'
 
 
-class Card(BaseModel):
+class Card(BaseModel, TimestampedModel):
 	"""Class for Card model"""
 	__tablename__ = 'cards'
 
@@ -119,8 +155,21 @@ class Card(BaseModel):
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
 
+	@property
+	def to_dict(self):
+		d = {
+			'id': self.id,
+			'name': self.name,
+			'description': self.description,
+			'user_id': self.user_id,
+			'front': self.front,
+			'back': self.back,
+			'is_snippet': self.is_snippet
+		}
+		return d
 
-class StudyPlan(BaseModel):
+
+class StudyPlan(BaseModel, TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
@@ -142,6 +191,21 @@ class StudyPlan(BaseModel):
 
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
+
+	@property
+	def to_dict(self):
+		d = {
+			'id': self.id,
+			'name': self.name,
+			'description': self.description,
+			'see_solved': self.see_solved,
+			'user_id': self.user_id
+		}
+		return d
+
+	@property
+	def groups(self):
+		return StudyPlanGroup.query.filter(StudyPlanGroup.study_plan_id == self.id)
 
 
 class StudyPlanGroup(TimestampedModel):
