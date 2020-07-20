@@ -5,7 +5,6 @@ from flashlearn.decorators import login_required
 from flashlearn.utils import to_bool
 
 
-# Card Routes
 @bp.route('/card', methods = ('POST',), defaults = {'card_id': None})
 @bp.route('/card/<int:card_id>', methods = ('GET', 'POST'))
 @login_required
@@ -14,7 +13,7 @@ def get_or_create_card(card_id):
 		if card_id is not None:
 			target_card = Card.query.filter_by(id = card_id).first()
 			if target_card:
-				return jsonify(target_card.serialized)
+				return jsonify(target_card.to_dict)
 		flash('Failed to retrieve card')
 	elif request.method == 'POST':
 		name = request.form.get('name')
@@ -27,7 +26,7 @@ def get_or_create_card(card_id):
 		error = ''
 
 		if not name or not front or not back:
-			error += f'name, front and back fields are required. '
+			error += f'name, front and back fields are required.'
 		if not Group.query.filter_by(id = group_id, state = 'Active').first():
 			error += 'Selected group does not exist'
 		if not error:
@@ -36,7 +35,7 @@ def get_or_create_card(card_id):
 				is_snippet = is_snippet,  group_id = group_id, user_id = user.id
 			)
 			new_card.save()
-			return jsonify(new_card.serialized)
+			return jsonify(new_card.to_dict)
 		return jsonify(error)
 	return jsonify('OK')
 
@@ -82,7 +81,7 @@ def get_cards():
 	cards = Card.query.all()
 	res = []
 	for card in cards:
-		res.append(card.serialized)
+		res.append(card.to_dict)
 	return jsonify(res)
 
 
@@ -93,13 +92,13 @@ def get_or_create_group(group_id):
 	if request.method == 'GET':
 		group = Group.query.filter_by(id = group_id, state = 'Active').first()
 		if group is not None:
-			return jsonify(group.serialized)
+			return jsonify(group.to_dict)
 	elif request.method == 'POST':
 		group = Group(
 			name = request.form.get('name'), description = request.form.get('description'),
 			user_id = g.user.id, parent_id = request.form.get('parent_id', None))
 		group.save()
-		return jsonify(group.serialized)
+		return jsonify(group.to_dict)
 	return 'Group not found'
 
 
@@ -111,10 +110,10 @@ def edit_group(group_id):
 		error = 'Group not found'
 	if not error:
 		group.update(
-			name = request.form.get('name', group.name), description = request.form.get('description', group.description),
-			parent_id = request.form.get('parent_id', group.parent_id))
+			name = request.form.get('name', group.name), description = request.form.get(
+				'description', group.description), parent_id = request.form.get('parent_id', group.parent_id))
 		group.save()
-		return jsonify(group.serialized)
+		return jsonify(group.to_dict)
 	return jsonify(error)
 
 
@@ -132,10 +131,38 @@ def delete_group(group_id):
 	return jsonify('Could not delete group')
 
 
-@bp.route('/groups')
+@bp.route('/groups', methods = ('GET', 'POST'))
 def get_groups():
 	groups = Group.query.all()
 	res = []
 	for group in groups:
-		res.append(group.serialized)
+		res.append(group.to_dict)
 	return jsonify(res)
+
+
+@bp.route('/users')
+def get_users():
+	users = [user.to_dict for user in User.all()]
+	return jsonify(users)
+
+
+@bp.route('/user/<int:user_id>')
+def get_user(user_id):
+	if request.method == 'GET':
+		user = User.get_by_id(user_id)
+		if user is None:
+			return 'User not found', 404
+		return jsonify(User.get_by_id(user_id).to_dict)
+	return jsonify('Invalid request ')
+
+
+@bp.route('/plans')
+def get_plans():
+	plans = [plan.to_dict for plan in StudyPlan.all()]
+	return jsonify(plans)
+
+
+@bp.route('/plan', methods = ('POST',), defaults = {'plan_id': None})
+@bp.route('/plan/<int:plan_id>')
+def get_or_create_plan(plan_id):
+	pass
