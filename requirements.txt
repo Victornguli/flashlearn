@@ -8,6 +8,7 @@ MarkupSafe==1.1.1
 SQLAlchemy==1.3.18
 Werkzeug==1.0.1
 python-dotenv==0.14.0
-pytest==5.4.3
+pytest==6.0.1
 pytest-cov==2.10.0
-coverage==5.2
+coverage==5.2.1
+flask-sqlalchemy==2.4.4
