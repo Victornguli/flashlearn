@@ -10,6 +10,7 @@ class BaseTestCase(unittest.TestCase):
 		self.app = create_app('testing')
 		self.assertEqual(self.app.testing, True)  # Ensure that the set environment is testing
 		self.client = self.app.test_client()
+		db.clear_db()
 		db.init_db()
 
 		# Setup common model instances

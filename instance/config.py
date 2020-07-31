@@ -23,7 +23,7 @@ class TestingConfig(BaseConfig):
 	DEBUG = True
 	TESTING = True
 	db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)), 'tests/test_db.sqlite3')
-	DATABASE = f'sqlite:////memory'
+	DATABASE = 'sqlite:///memory'
 
 
 class ProductionConfig(BaseConfig):
