@@ -4,3 +4,4 @@ venv/
 .idea
 htmlcov
 .coverage
+*.log
