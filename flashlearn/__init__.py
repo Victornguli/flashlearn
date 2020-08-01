@@ -1,4 +1,6 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, jsonify, g
 from instance.config import app_config
 from flashlearn.decorators import login_required
@@ -19,8 +21,10 @@ def create_app(config = None):
     :rtype: Flask
     """
     app = Flask(__name__, instance_relative_config=True)
+
+    # Setup configs
     if config:
-        flask_env = config  # Preferably for use in the testing environment
+        flask_env = config
     else:
         flask_env = os.getenv('FLASK_ENV')
     if not flask_env:
@@ -30,6 +34,16 @@ def create_app(config = None):
     if not conf_mapping:
         raise ValueError('Invalid environment settings')
     app.config.from_object(conf_mapping)
+
+    # Setup logging
+    if not app.testing:
+        formatter = logging.Formatter(
+            '[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+        handler = RotatingFileHandler(
+            app.config.get('LOG_FILE'), maxBytes = 10000000, backupCount = 1)
+        handler.setLevel(logging.getLevelName(app.config.get('LOG_LEVEL', 20)))
+        handler.setFormatter(formatter)
+        app.logger.addHandler(handler)
 
     try:
         # Creates instance_path if the directory DNE

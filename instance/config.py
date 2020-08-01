@@ -1,5 +1,6 @@
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+ROOT_DIR = os.path.abspath(os.path.dirname(BASE_DIR))
 
 
 class BaseConfig:
@@ -9,6 +10,8 @@ class BaseConfig:
 	CSRF_ENABLED = True
 	FLASK_APP = 'flashlearn'
 	DATABASE = os.getenv('DATABASE')
+	LOG_FILE = os.getenv('LOG_FILE') or os.path.join(ROOT_DIR, 'flashlearn.log')
+	LOG_LEVEL = 20
 
 
 class DevelopmentConfig(BaseConfig):
