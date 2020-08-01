@@ -36,13 +36,14 @@ def create_app(config = None):
     app.config.from_object(conf_mapping)
 
     # Setup logging
-    formatter = logging.Formatter(
-        '[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
-    handler = RotatingFileHandler(
-        app.config.get('LOG_FILE'), maxBytes = 10000000, backupCount = 1)
-    handler.setLevel(logging.getLevelName(app.config.get('LOG_LEVEL', 20)))
-    handler.setFormatter(formatter)
-    app.logger.addHandler(handler)
+    if not app.testing:
+        formatter = logging.Formatter(
+            '[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+        handler = RotatingFileHandler(
+            app.config.get('LOG_FILE'), maxBytes = 10000000, backupCount = 1)
+        handler.setLevel(logging.getLevelName(app.config.get('LOG_LEVEL', 20)))
+        handler.setFormatter(formatter)
+        app.logger.addHandler(handler)
 
     try:
         # Creates instance_path if the directory DNE
