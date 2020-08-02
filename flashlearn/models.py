@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from flashlearn import db
 from flask_bcrypt import Bcrypt
+import logging
+
+logger = logging.getLogger('flashlearn')
 
 
 class TimestampedModel(db.Base):
@@ -135,22 +138,14 @@ class Card(BaseModel, TimestampedModel):
 
 	front = Column(Text(), nullable = False)
 	back = Column(Text(), nullable = False)
-	is_snippet = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
 	user = relationship('User', backref = 'user_cards')  # usable via user.user_cards
 	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
 	group = relationship('Group', backref = 'group_cards')  # usable via group.group_cards
 
-	def __init__(
-			self, name, front, back, user_id, group_id, description = None, is_snippet = False):
+	def __init__(self, **kwargs):
 		"""Setup card instance"""
-		self.name = name
-		self.front = front
-		self.back = back
-		self.description = description
-		self.is_snippet = is_snippet
-		self.user_id = user_id
-		self.group_id = group_id
+		super(Card, self).__init__(**kwargs)
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
@@ -224,6 +219,7 @@ class StudyPlanGroup(TimestampedModel):
 		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
 
 
-# if __name__ == '__main__':
-# 	t = Group(name = 'sfh', description = 'dsjnfjks')
-# 	print(t.fields())
+if __name__ == '__main__':
+	t = Card
+	print(getattr(t, 'name', 0))
+	print(t.__table__.columns)
