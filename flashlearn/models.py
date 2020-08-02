@@ -158,8 +158,7 @@ class Card(BaseModel, TimestampedModel):
 			'description': self.description,
 			'user_id': self.user_id,
 			'front': self.front,
-			'back': self.back,
-			'is_snippet': self.is_snippet
+			'back': self.back
 		}
 		return d
 
