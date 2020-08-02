@@ -106,16 +106,6 @@ class Group(BaseModel, TimestampedModel):
 	group_study_plans = relationship(
 		'StudyPlanGroup', backref = 'group_study_plans', cascade = 'all, delete-orphan')
 
-	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
-		"""Setup Group entry"""
-		self.name = name
-		self.description = description
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
-		self.parent_id = parent_id
-
 	@property
 	def to_dict(self):
 		d = {
@@ -142,10 +132,6 @@ class Card(BaseModel, TimestampedModel):
 	user = relationship('User', backref = 'user_cards')  # usable via user.user_cards
 	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
 	group = relationship('Group', backref = 'group_cards')  # usable via group.group_cards
-
-	def __init__(self, **kwargs):
-		"""Setup card instance"""
-		super(Card, self).__init__(**kwargs)
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
@@ -174,15 +160,6 @@ class StudyPlan(BaseModel, TimestampedModel):
 	study_plan_groups = relationship(
 		'StudyPlanGroup', backref = 'study_plan_groups', cascade = 'all, delete-orphan')
 
-	def __init__(self, name, ordering = False, user_id = None, user = None):
-		"""Initialize study plan instance"""
-		self.name = name
-		self.ordering = ordering
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
-
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
 
@@ -209,16 +186,5 @@ class StudyPlanGroup(TimestampedModel):
 	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
 	study_plan_id = Column(Integer, ForeignKey('study_plans.id'), nullable = False)
 
-	def __init__(self, group_id, study_plan_id):
-		"""Initialize StudyPlanGroup association"""
-		self.group_id = group_id
-		self.study_plan_id = study_plan_id
-
 	def __repr__(self):
 		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
-
-
-if __name__ == '__main__':
-	t = Card
-	print(getattr(t, 'name', 0))
-	print(t.__table__.columns)
