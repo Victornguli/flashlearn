@@ -29,7 +29,7 @@ class TestModels(BaseTestCase):
 		test_card = Card(
 			name = 'Bridge of Death', front = 'What is the air velocity of unladen swallow',
 			back = 'African or European?', user_id = self.alice.id, group_id = self.dp.id,
-			description = 'Basic quiz from Monty Python', is_snippet = False)
+			description = 'Basic quiz from Monty Python')
 		test_card.save()
 		assert test_card.state == 'Active', 'Should be saved with an active state'
 		test_card.description = 'I don\'t know that!'

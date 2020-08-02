@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from flashlearn import db
 from flask_bcrypt import Bcrypt
+import logging
+
+logger = logging.getLogger('flashlearn')
 
 
 class TimestampedModel(db.Base):
@@ -103,16 +106,6 @@ class Group(BaseModel, TimestampedModel):
 	group_study_plans = relationship(
 		'StudyPlanGroup', backref = 'group_study_plans', cascade = 'all, delete-orphan')
 
-	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
-		"""Setup Group entry"""
-		self.name = name
-		self.description = description
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
-		self.parent_id = parent_id
-
 	@property
 	def to_dict(self):
 		d = {
@@ -135,22 +128,10 @@ class Card(BaseModel, TimestampedModel):
 
 	front = Column(Text(), nullable = False)
 	back = Column(Text(), nullable = False)
-	is_snippet = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
 	user = relationship('User', backref = 'user_cards')  # usable via user.user_cards
 	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
 	group = relationship('Group', backref = 'group_cards')  # usable via group.group_cards
-
-	def __init__(
-			self, name, front, back, user_id, group_id, description = None, is_snippet = False):
-		"""Setup card instance"""
-		self.name = name
-		self.front = front
-		self.back = back
-		self.description = description
-		self.is_snippet = is_snippet
-		self.user_id = user_id
-		self.group_id = group_id
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
@@ -163,8 +144,7 @@ class Card(BaseModel, TimestampedModel):
 			'description': self.description,
 			'user_id': self.user_id,
 			'front': self.front,
-			'back': self.back,
-			'is_snippet': self.is_snippet
+			'back': self.back
 		}
 		return d
 
@@ -179,15 +159,6 @@ class StudyPlan(BaseModel, TimestampedModel):
 	user = relationship('User', backref = 'user_study_plans')  # backref to user -> study_plans
 	study_plan_groups = relationship(
 		'StudyPlanGroup', backref = 'study_plan_groups', cascade = 'all, delete-orphan')
-
-	def __init__(self, name, ordering = False, user_id = None, user = None):
-		"""Initialize study plan instance"""
-		self.name = name
-		self.ordering = ordering
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
 
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
@@ -215,15 +186,5 @@ class StudyPlanGroup(TimestampedModel):
 	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
 	study_plan_id = Column(Integer, ForeignKey('study_plans.id'), nullable = False)
 
-	def __init__(self, group_id, study_plan_id):
-		"""Initialize StudyPlanGroup association"""
-		self.group_id = group_id
-		self.study_plan_id = study_plan_id
-
 	def __repr__(self):
 		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
-
-
-# if __name__ == '__main__':
-# 	t = Group(name = 'sfh', description = 'dsjnfjks')
-# 	print(t.fields())

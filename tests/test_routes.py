@@ -16,7 +16,7 @@ class TestRoutes(BaseTestCase):
 		res = self.client.post(
 			'/card', data = {
 				'name': 'Test new card', 'front': 'front', 'back': 'back',
-				'is_snippet': 'true', 'group_id': self.algos.id, 'user_id': self.alice.id
+				'group_id': self.algos.id, 'user_id': self.alice.id
 			}
 		)
 		self.assertEqual(200, res.status_code)

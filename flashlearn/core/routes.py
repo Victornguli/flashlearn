@@ -2,7 +2,6 @@ from flask import request, url_for, jsonify, flash, g, redirect
 from flashlearn.core import bp
 from flashlearn.models import User, Card, Group, StudyPlan
 from flashlearn.decorators import login_required
-from flashlearn.utils import to_bool
 
 
 @bp.route('/card', methods = ('POST',), defaults = {'card_id': None})
@@ -20,7 +19,6 @@ def get_or_create_card(card_id):
 		description = request.form.get('description')
 		front = request.form.get('front')
 		back = request.form.get('back')
-		is_snippet = to_bool(request.form.get('is_snippet'))
 		group_id = request.form.get('group_id')
 		user = g.user
 		error = ''
@@ -32,7 +30,7 @@ def get_or_create_card(card_id):
 		if not error:
 			new_card = Card(
 				name = name, description = description, front = front, back = back,
-				is_snippet = is_snippet,  group_id = group_id, user_id = user.id
+				group_id = group_id, user_id = user.id
 			)
 			new_card.save()
 			return jsonify(new_card.to_dict)
@@ -54,7 +52,6 @@ def edit_card(card_id):
 				back = request.form.get('back', card.back),
 				description = request.form.get('description', card.description),
 				group_id = request.form.get('group_id', card.group_id),
-				is_snippet = to_bool(request.form.get('is_snippet', card.is_snippet))
 			)
 			return jsonify('OK')
 		flash(error)
