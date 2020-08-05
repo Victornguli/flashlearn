@@ -1,6 +1,6 @@
 from flask import request, url_for, jsonify, flash, g, redirect
 from flashlearn.core import bp
-from flashlearn.models import User, Card, Group, StudyPlan
+from flashlearn.models import User, Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
 
 
@@ -12,28 +12,28 @@ def get_or_create_card(card_id):
 		if card_id is not None:
 			target_card = Card.query.filter_by(id = card_id).first()
 			if target_card:
-				return jsonify(target_card.to_dict)
+				return jsonify(target_card.to_json)
 		flash('Failed to retrieve card')
 	elif request.method == 'POST':
 		name = request.form.get('name')
 		description = request.form.get('description')
 		front = request.form.get('front')
 		back = request.form.get('back')
-		group_id = request.form.get('group_id')
+		deck_id = request.form.get('deck_id')
 		user = g.user
 		error = ''
 
 		if not name or not front or not back:
 			error += f'name, front and back fields are required.'
-		if not Group.query.filter_by(id = group_id, state = 'Active').first():
-			error += 'Selected group does not exist'
+		if not Deck.query.filter_by(id = deck_id, state = 'Active').first():
+			error += 'Selected deck does not exist'
 		if not error:
 			new_card = Card(
 				name = name, description = description, front = front, back = back,
-				group_id = group_id, user_id = user.id
+				deck_id = deck_id, user_id = user.id
 			)
 			new_card.save()
-			return jsonify(new_card.to_dict)
+			return jsonify(new_card.to_json)
 		return jsonify(error)
 	return jsonify('OK')
 
@@ -51,7 +51,7 @@ def edit_card(card_id):
 				front = request.form.get('front', card.front),
 				back = request.form.get('back', card.back),
 				description = request.form.get('description', card.description),
-				group_id = request.form.get('group_id', card.group_id),
+				deck_id = request.form.get('deck_id', card.deck_id),
 			)
 			return jsonify('OK')
 		flash(error)
@@ -78,68 +78,68 @@ def get_cards():
 	cards = Card.query.all()
 	res = []
 	for card in cards:
-		res.append(card.to_dict)
+		res.append(card.to_json)
 	return jsonify(res)
 
 
-@bp.route('/group', defaults = {'group_id': None}, methods = ('POST',))
-@bp.route('/group/<int:group_id>')
+@bp.route('/deck', defaults = {'deck_id': None}, methods = ('POST',))
+@bp.route('/deck/<int:deck_id>')
 @login_required
-def get_or_create_group(group_id):
+def get_or_create_deck(deck_id):
 	if request.method == 'GET':
-		group = Group.query.filter_by(id = group_id, state = 'Active').first()
-		if group is not None:
-			return jsonify(group.to_dict)
+		deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
+		if deck is not None:
+			return jsonify(deck.to_json)
 	elif request.method == 'POST':
-		group = Group(
+		deck = Deck(
 			name = request.form.get('name'), description = request.form.get('description'),
 			user_id = g.user.id, parent_id = request.form.get('parent_id', None))
-		group.save()
-		return jsonify(group.to_dict)
-	return 'Group not found'
+		deck.save()
+		return jsonify(deck.to_json)
+	return 'Deck not found'
 
 
-@bp.route('/group/<int:group_id>/edit', methods = ('POST',))
-def edit_group(group_id):
-	group = Group.query.filter_by(id = group_id, state = 'Active').first()
+@bp.route('/deck/<int:deck_id>/edit', methods = ('POST',))
+def edit_group(deck_id):
+	deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
 	error = ''
-	if not group:
-		error = 'Group not found'
+	if not deck:
+		error = 'Deck not found'
 	if not error:
-		group.update(
-			name = request.form.get('name', group.name), description = request.form.get(
-				'description', group.description), parent_id = request.form.get('parent_id', group.parent_id))
-		group.save()
-		return jsonify(group.to_dict)
+		deck.update(
+			name = request.form.get('name', deck.name), description = request.form.get(
+				'description', deck.description), parent_id = request.form.get('parent_id', deck.parent_id))
+		deck.save()
+		return jsonify(deck.to_json)
 	return jsonify(error)
 
 
-@bp.route('/group/<int:group_id>/delete', methods = ('POST',))
-def delete_group(group_id):
+@bp.route('/deck/<int:deck_id>/delete', methods = ('POST',))
+def delete_group(deck_id):
 	if request.method == 'POST':
-		group = Group.query.filter_by(id = group_id, state = 'Active').first()
+		deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
 		error = ''
-		if not group:
-			error = 'Group not found'
+		if not deck:
+			error = 'Deck not found'
 		if not error:
-			group.delete()
+			deck.delete()
 			return jsonify('OK')
 		return jsonify(error)
-	return jsonify('Could not delete group')
+	return jsonify('Could not delete deck')
 
 
-@bp.route('/groups', methods = ('GET', 'POST'))
+@bp.route('/decks', methods = ('GET', 'POST'))
 def get_groups():
-	groups = Group.query.all()
+	decks = Deck.query.all()
 	res = []
-	for group in groups:
-		res.append(group.to_dict)
+	for deck in decks:
+		res.append(deck.to_json)
 	return jsonify(res)
 
 
 @bp.route('/users')
 def get_users():
-	users = [user.to_dict for user in User.all()]
+	users = [user.to_json for user in User.all()]
 	return jsonify(users)
 
 
@@ -149,13 +149,13 @@ def get_user(user_id):
 		user = User.get_by_id(user_id)
 		if user is None:
 			return 'User not found', 404
-		return jsonify(User.get_by_id(user_id).to_dict)
+		return jsonify(User.get_by_id(user_id).to_json)
 	return jsonify('Invalid request ')
 
 
 @bp.route('/plans')
 def get_plans():
-	plans = [plan.to_dict for plan in StudyPlan.all()]
+	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
 
 
