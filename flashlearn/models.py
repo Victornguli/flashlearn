@@ -87,8 +87,8 @@ class Deck(TimestampedModel):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	parent_id = Column(Integer, ForeignKey('decks.id'))
 
-	user = relationship('User', backref = backref('decks', cascade='all,delete'))
-	children = relationship('Deck')
+	user = relationship(User, backref = backref('decks', cascade = 'all,delete'))
+	children = relationship('Deck', cascade = 'all,delete')
 
 	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
 		"""Initialize a Deck"""
@@ -100,11 +100,26 @@ class Deck(TimestampedModel):
 			self.user = user
 		self.parent_id = parent_id
 
+	def save(self):
+		if self.parent_id and Deck.query.filter_by(id = self.parent_id).first() is None:
+			raise ValueError('Parent does not exist')
+		db.session.add(self)
+		db.session.commit()
+
 	@property
 	def to_json(self):
 		return dict(
 			id = self.id, name = self.name, description = self.description,
-			user = self.user_id, parent = self.parent_id)
+			user = self.user_id, parent = self.parent_id,
+			children_count = self.children_count)
+
+	@property
+	def children_to_json(self):
+		return dict([child.to_json for child in self.children])
+
+	@property
+	def children_count(self):
+		return len(self.children)
 
 	def __repr__(self):
 		return f'<Deck: {self.name}>'
@@ -119,8 +134,8 @@ class Card(TimestampedModel):
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
 	deck_id = Column(Integer, ForeignKey('decks.id'), nullable = False)
 
-	user = relationship('User', backref = 'cards')
-	deck = relationship('Deck', backref = 'cards')
+	user = relationship(User, backref = backref('cards', cascade = 'all,delete'))
+	deck = relationship(Deck, backref = backref('cards', cascade = 'all,delete'))
 
 	def __init__(self, **kwargs):
 		"""Initialize a card"""
@@ -156,7 +171,7 @@ class StudyPlan(TimestampedModel):
 	see_solved = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'))
 
-	user = relationship('User', backref = 'study_plans')
+	user = relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
 
 	def __init__(self, name, order = OrderTypeEnum.oldest, user_id = None, user = None):
 		"""Initialize a study plan"""
@@ -180,15 +195,38 @@ class StudyPlan(TimestampedModel):
 @event.listens_for(User, 'after_insert')
 def add_defaults(mapper, connection, target):
 	assert target.id is not None
-	# assert target.decks is None
 	if not target.decks:
 		deck = Deck.__table__
 		connection.execute(
 			deck.insert().values(
-				name = 'Default', description = None, user_id = target.id
+				name = 'Default', description = 'Default Deck', user_id = target.id
 			))
 
-# if __name__ == '__main__':
-# 	t = Card
-# 	print(getattr(t, 'name', 0))
-# 	print(t.__table__.columns)
+	if not target.study_plans:
+		study_plan = StudyPlan.__table__
+		connection.execute(
+			study_plan.insert().values(
+				name = 'Default', description = 'Default Study Plan', user_id = target.id
+			))
+
+
+@event.listens_for(Deck, 'after_delete')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	if len(target.user.decks) == 0:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = 'Default Deck', user_id = target.id
+			))
+
+
+@event.listens_for(StudyPlan, 'after_delete')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	if len(target.user.study_plans) == 0:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = 'Default Deck', user_id = target.id
+			))

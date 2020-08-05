@@ -156,3 +156,10 @@ def get_plans():
 @bp.route('/plan/<int:plan_id>')
 def get_or_create_plan(plan_id):
 	pass
+
+
+@bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))
+def delete_user(user_id):
+	user = User.query.filter_by(id = user_id, state = 'Active').first()
+	user.delete()
+	return 'deleted'
