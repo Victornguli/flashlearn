@@ -15,7 +15,7 @@ class TestRoutes(BaseTestCase):
 		self.login(self.alice.username, 'password')
 		res = self.client.post(
 			'/card', data = {
-				'name': 'Test new card', 'front': 'front', 'back': 'back',
+				'front': 'front', 'back': 'back',
 				'deck_id': self.algos.id, 'user_id': self.alice.id
 			}
 		)
@@ -33,11 +33,11 @@ class TestRoutes(BaseTestCase):
 		self.login(self.alice.username, 'password')
 		res = self.client.post(
 			f'/card/{self.card.id}/edit', data = {
-				'name': 'Not Algos card', 'is_snippet': False
+				'front': 'New Front', 'is_snippet': False
 			}
 		)
 		self.assertEqual(200, res.status_code)
-		self.assertEqual('Not Algos card', Card.query.filter_by(id = self.card.id).first().name)
+		self.assertEqual('New Front', Card.query.filter_by(id = self.card.id).first().front)
 
 	def test_delete_card(self):
 		super().refresh(self.alice, self.card)

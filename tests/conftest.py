@@ -31,8 +31,7 @@ class BaseTestCase(unittest.TestCase):
 		the optimal solution to its subproblems.
 		"""
 		self.card = Card(
-			name = 'Dynamic Programming', front = 'What is dynamic programming', back = back, user_id = self.alice.id,
-			deck_id = self.dp.id, description = 'Basic definition of Dynamic Programming')
+			front = 'What is dynamic programming', back = back, user_id = self.alice.id, deck_id = self.dp.id)
 		self.card.save()
 
 		self.plan = StudyPlan(name = 'Grokking Algorithms', user = self.alice)
