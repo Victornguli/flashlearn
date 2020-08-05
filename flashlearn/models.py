@@ -1,7 +1,7 @@
 import logging
 import enum
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum, event
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
 from werkzeug.http import http_date
@@ -82,12 +82,12 @@ class Deck(TimestampedModel):
 	"""Deck model class"""
 	__tablename__ = 'decks'
 
-	name = Column(String(100), nullable = False, unique = True)
+	name = Column(String(100), nullable = False)
 	description = Column(String)
 	user_id = Column(Integer, ForeignKey('users.id'))
 	parent_id = Column(Integer, ForeignKey('decks.id'))
 
-	user = relationship('User', backref = 'decks')
+	user = relationship('User', backref = backref('decks', cascade='all,delete'))
 	children = relationship('Deck')
 
 	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
@@ -114,8 +114,6 @@ class Card(TimestampedModel):
 	"""Card model class"""
 	__tablename__ = 'cards'
 
-	name = Column(String(100), nullable = False, unique = True)
-	description = Column(String)
 	front = Column(Text(), nullable = False)
 	back = Column(Text(), nullable = False)
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
@@ -134,8 +132,7 @@ class Card(TimestampedModel):
 	@property
 	def to_json(self):
 		return dict(
-			id = self.id, name = self.name, description = self.description,
-			front = self.front, back = self.back, user = self.user.to_json)
+			id = self.id, front = self.front, back = self.back, user = self.user.to_json)
 
 
 class OrderTypeEnum(enum.Enum):
@@ -153,7 +150,7 @@ class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
-	name = Column(String(100), nullable = False, unique = True)
+	name = Column(String(100), nullable = False)
 	description = Column(String)
 	order = Column(Enum(OrderTypeEnum), default = OrderTypeEnum.oldest, nullable = False)
 	see_solved = Column(Boolean(), default = False)
@@ -178,6 +175,18 @@ class StudyPlan(TimestampedModel):
 		return dict(
 			id = self.id, name = self.name, description = self.description,
 			user = self.user_id, order = self.order.value)
+
+
+@event.listens_for(User, 'after_insert')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	# assert target.decks is None
+	if not target.decks:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = None, user_id = target.id
+			))
 
 # if __name__ == '__main__':
 # 	t = Card

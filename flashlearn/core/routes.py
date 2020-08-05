@@ -15,23 +15,19 @@ def get_or_create_card(card_id):
 				return jsonify(target_card.to_json)
 		flash('Failed to retrieve card')
 	elif request.method == 'POST':
-		name = request.form.get('name')
-		description = request.form.get('description')
 		front = request.form.get('front')
 		back = request.form.get('back')
 		deck_id = request.form.get('deck_id')
 		user = g.user
 		error = ''
 
-		if not name or not front or not back:
-			error += f'name, front and back fields are required.'
+		if not front or not back:
+			error += f'front and back fields are required.'
 		if not Deck.query.filter_by(id = deck_id, state = 'Active').first():
 			error += 'Selected deck does not exist'
 		if not error:
 			new_card = Card(
-				name = name, description = description, front = front, back = back,
-				deck_id = deck_id, user_id = user.id
-			)
+				front = front, back = back, deck_id = deck_id, user_id = user.id)
 			new_card.save()
 			return jsonify(new_card.to_json)
 		return jsonify(error)
@@ -47,12 +43,9 @@ def edit_card(card_id):
 			error = 'Card does not exist '
 		if not error:
 			card.update(
-				name = request.form.get('name', card.name),
 				front = request.form.get('front', card.front),
 				back = request.form.get('back', card.back),
-				description = request.form.get('description', card.description),
-				deck_id = request.form.get('deck_id', card.deck_id),
-			)
+				deck_id = request.form.get('deck_id', card.deck_id))
 			return jsonify('OK')
 		flash(error)
 	return 'Failed to update card'  # Render edit_card template instead...
