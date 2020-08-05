@@ -1,5 +1,6 @@
 import logging
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
+import enum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -73,14 +74,6 @@ class User(TimestampedModel):
 			study_plans = [p.to_json for p in self.study_plans],
 			is_active = True if self.state == 'Active' else False)
 
-	# @property
-	# def decks(self):
-	# 	return Deck.query.filter(Deck.user_id == self.id)
-	#
-	# @property
-	# def plans(self):
-	# 	return StudyPlan.query.filter(StudyPlan.user_id == self.id)
-
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'
 
@@ -145,22 +138,33 @@ class Card(TimestampedModel):
 			front = self.front, back = self.back, user = self.user.to_json)
 
 
+class OrderTypeEnum(enum.Enum):
+	oldest = 'oldest'
+	latest = 'latest'
+	random = 'random'
+
+
+class StudyTypeEnum(enum.Enum):
+	one_off = 'one_off'
+	recurrent = 'recurrent'
+
+
 class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
 	name = Column(String(100), nullable = False, unique = True)
 	description = Column(String)
-	ordering = Column(String(10))
+	order = Column(Enum(OrderTypeEnum), default = OrderTypeEnum.oldest, nullable = False)
 	see_solved = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'))
 
 	user = relationship('User', backref = 'study_plans')
 
-	def __init__(self, name, ordering = False, user_id = None, user = None):
+	def __init__(self, name, order = OrderTypeEnum.oldest, user_id = None, user = None):
 		"""Initialize a study plan"""
 		self.name = name
-		self.ordering = ordering
+		self.ordering = order
 		if user_id:
 			self.user_id = user_id
 		elif user:
@@ -171,14 +175,9 @@ class StudyPlan(TimestampedModel):
 
 	@property
 	def to_json(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'see_solved': self.see_solved,
-			'user_id': self.user_id
-		}
-		return d
+		return dict(
+			id = self.id, name = self.name, description = self.description,
+			user = self.user_id, order = self.order.value)
 
 # if __name__ == '__main__':
 # 	t = Card
