@@ -1,5 +1,5 @@
 from tests.conftest import BaseTestCase
-from flashlearn.models import Card, Group
+from flashlearn.models import Card, Deck
 
 
 class TestRoutes(BaseTestCase):
@@ -16,7 +16,7 @@ class TestRoutes(BaseTestCase):
 		res = self.client.post(
 			'/card', data = {
 				'name': 'Test new card', 'front': 'front', 'back': 'back',
-				'group_id': self.algos.id, 'user_id': self.alice.id
+				'deck_id': self.algos.id, 'user_id': self.alice.id
 			}
 		)
 		self.assertEqual(200, res.status_code)
@@ -53,45 +53,45 @@ class TestRoutes(BaseTestCase):
 		self.assertEqual(200, res.status_code)
 		self.assertIn(b'Dynamic Programming', res.data)
 
-	def test_create_group(self):
+	def test_create_deck(self):
 		login = self.login(self.alice.username, 'password')
 		assert login.status_code == 200, 'Should login user'
 		group_response = self.client.post(
-			'/group', data = {
+			'/deck', data = {
 				'name': 'BFS', 'description': 'Breadth First Search',
 				'user_id': self.alice.id}
 		)
 		self.assertEqual(200, group_response.status_code)
 		self.assertIn(b'BFS', group_response.data)
 
-	def test_get_group(self):
+	def test_get_deck(self):
 		self.refresh(self.alice, self.algos)
 		self.login(self.alice.username, 'password')
-		res = self.client.get(f'group/{self.algos.id}')
+		res = self.client.get(f'deck/{self.algos.id}')
 		self.assertEqual(200, res.status_code)
 
-	def test_edit_group(self):
+	def test_edit_deck(self):
 		super().refresh(self.algos)
 		login = self.login(self.alice.username, 'password')
 		assert login.status_code == 200, 'Should login user'
 		res = self.client.post(
-			f'/group/{self.algos.id}/edit', data = {'name': 'Algorythms'}
+			f'/deck/{self.algos.id}/edit', data = {'name': 'Algorythms'}
 		)
 		self.assertEqual(200, res.status_code)
 		self.assertIn(b'Algorythms', res.data)
 
-	def test_delete_group(self):
+	def test_delete_deck(self):
 		self.refresh(self.algos)
 		login = self.login(self.alice.username, 'password')
 		assert login.status_code == 200, 'Should login user'
 		res = self.client.post(
-			f'/group/{self.algos.id}/delete', data = {'name': 'Algorythms'}
+			f'/deck/{self.algos.id}/delete', data = {'name': 'Algorythms'}
 		)
 		self.assertEqual(200, res.status_code)
-		self.assertEqual(None, Group.query.filter_by(id = self.algos.id).first())
+		self.assertEqual(None, Deck.query.filter_by(id = self.algos.id).first())
 
 	def test_get_groups(self):
 		self.refresh(self.alice, self.algos)
 		self.login(self.alice.username, 'password')
-		res = self.client.get('/groups')
+		res = self.client.get('/decks')
 		self.assertEqual(200, res.status_code)

@@ -26,7 +26,7 @@ class TestingConfig(BaseConfig):
 	DEBUG = True
 	TESTING = True
 	# db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)), 'tests/test_db.sqlite3')
-	DATABASE = 'sqlite://'
+	DATABASE = 'sqlite:///:memory:'
 	# Fix to use in-memory db for tests. Replace with above db path to save test data in-file.
 
 

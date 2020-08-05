@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from flashlearn.models import User, Card, Group, StudyPlan, StudyPlanGroup
+from flashlearn.models import User, Card, Deck, StudyPlan
 from flashlearn import create_app, db
 
 
@@ -18,10 +18,10 @@ class BaseTestCase(unittest.TestCase):
 		self.alice.set_password('password')
 		self.alice.save()
 
-		self.algos = Group(
+		self.algos = Deck(
 			name = 'Algorithms', description = 'Common Algorithms in Computer Science', user = self.alice)
 		self.algos.save()
-		self.dp = Group(
+		self.dp = Deck(
 			name = 'DP', description = 'Dynamic Programming', user = self.alice, parent_id = self.algos.id)
 		self.dp.save()
 
@@ -32,14 +32,11 @@ class BaseTestCase(unittest.TestCase):
 		"""
 		self.card = Card(
 			name = 'Dynamic Programming', front = 'What is dynamic programming', back = back, user_id = self.alice.id,
-			group_id = self.dp.id, description = 'Basic definition of Dynamic Programming')
+			deck_id = self.dp.id, description = 'Basic definition of Dynamic Programming')
 		self.card.save()
 
 		self.plan = StudyPlan(name = 'Grokking Algorithms', user = self.alice)
 		self.plan.save()
-
-		self.plan_group = StudyPlanGroup(group_id = self.dp.id, study_plan_id = self.plan.id)
-		self.plan_group.save()
 
 	def login(self, username, password):
 		return self.client.post(

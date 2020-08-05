@@ -19,8 +19,8 @@ class SQLAlchemyDB:
 	initializing a database in a different environment(testing).
 	"""
 
-	database = app_config[os.getenv('FLASK_ENV')].DATABASE if os.getenv('FLASK_ENV')\
-		else app_config['development'].DATABASE
+	database = app_config[os.getenv('FLASK_ENV')].DATABASE_URI if os.getenv('FLASK_ENV')\
+		else app_config['development'].DATABASE_URI
 
 	def __init__(self):
 		"""
@@ -39,7 +39,7 @@ class SQLAlchemyDB:
 		Initialize the db instance with app's context, overriding the default database URI
 		"""
 		self.app = app
-		self.engine = create_engine(f"{self.app.config.get('DATABASE')}")
+		self.engine = create_engine(f"{self.app.config.get('DATABASE_URI')}")
 		self.session = scoped_session(
 			sessionmaker(autocommit = False, autoflush = False, bind = self.engine))
 		self.Base.query = self.session.query_property()
