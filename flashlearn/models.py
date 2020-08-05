@@ -1,15 +1,17 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from flashlearn import db
-from flask_bcrypt import Bcrypt
 import logging
+import enum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum, event
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql import func
+from flask_bcrypt import Bcrypt
+from werkzeug.http import http_date
+from flashlearn import db
 
 logger = logging.getLogger('flashlearn')
 
 
 class TimestampedModel(db.Base):
-	"""Base class for all timestamped models"""
+	"""Base model class for all timestamped models"""
 	__abstract__ = True
 
 	id = Column(Integer, primary_key = True)
@@ -40,12 +42,6 @@ class TimestampedModel(db.Base):
 		return cls.query.filter(cls.id == _id).first()
 
 
-class BaseModel:
-	"""A base model class implementing name and description fields"""
-	name = Column(String(20), nullable = False, unique = True)
-	description = Column(String(100))
-
-
 class User(TimestampedModel):
 	"""User model class"""
 	__tablename__ = 'users'
@@ -70,121 +66,167 @@ class User(TimestampedModel):
 		self.password = Bcrypt().generate_password_hash(password).decode()
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'username': self.username,
-			'email': self.email if self.email else None,
-			'date_created': self.date_created,
-			'date_modified': self.date_updated,
-			'is_active': True if self.state == 'Active' else False,
-			'groups': [group.to_dict for group in self.groups],
-			'plans': [plan.to_dict for plan in self.plans],
-		}
-		return d
-
-	@property
-	def groups(self):
-		return Group.query.filter(Group.user_id == self.id)
-
-	@property
-	def plans(self):
-		return StudyPlan.query.filter(StudyPlan.user_id == self.id)
+	def to_json(self):
+		return dict(
+			id = self.id, username = self.username, email = self.email,
+			date_created = http_date(self.date_created), date_modified = http_date(self.date_updated),
+			decks = [d.to_json for d in self.decks],
+			study_plans = [p.to_json for p in self.study_plans],
+			is_active = True if self.state == 'Active' else False)
 
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'
 
 
-class Group(BaseModel, TimestampedModel):
-	"""Group model class"""
-	__tablename__ = 'groups'
+class Deck(TimestampedModel):
+	"""Deck model class"""
+	__tablename__ = 'decks'
 
+	name = Column(String(100), nullable = False)
+	description = Column(String)
 	user_id = Column(Integer, ForeignKey('users.id'))
-	user = relationship('User', backref = 'user_groups')
-	parent_id = Column(Integer, ForeignKey('groups.id'))
-	children = relationship('Group')
-	group_study_plans = relationship(
-		'StudyPlanGroup', backref = 'group_study_plans', cascade = 'all, delete-orphan')
+	parent_id = Column(Integer, ForeignKey('decks.id'))
+
+	user = relationship(User, backref = backref('decks', cascade = 'all,delete'))
+	children = relationship('Deck', cascade = 'all,delete')
+
+	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
+		"""Initialize a Deck"""
+		self.name = name
+		self.description = description
+		if user_id:
+			self.user_id = user_id
+		elif user:
+			self.user = user
+		self.parent_id = parent_id
+
+	def save(self):
+		if self.parent_id and Deck.query.filter_by(id = self.parent_id).first() is None:
+			raise ValueError('Parent does not exist')
+		db.session.add(self)
+		db.session.commit()
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'user_id': self.user_id,
-			'parent_id': self.parent_id,
-			'is_child': True if self.parent_id else False
-		}
-		return d
+	def to_json(self):
+		return dict(
+			id = self.id, name = self.name, description = self.description,
+			user = self.user_id, parent = self.parent_id,
+			children_count = self.children_count)
+
+	@property
+	def children_to_json(self):
+		return dict([child.to_json for child in self.children])
+
+	@property
+	def children_count(self):
+		return len(self.children)
 
 	def __repr__(self):
-		return f'<Group: {self.name}>'
+		return f'<Deck: {self.name}>'
 
 
-class Card(BaseModel, TimestampedModel):
-	"""Class for Card model"""
+class Card(TimestampedModel):
+	"""Card model class"""
 	__tablename__ = 'cards'
 
 	front = Column(Text(), nullable = False)
 	back = Column(Text(), nullable = False)
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-	user = relationship('User', backref = 'user_cards')  # usable via user.user_cards
-	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
-	group = relationship('Group', backref = 'group_cards')  # usable via group.group_cards
+	deck_id = Column(Integer, ForeignKey('decks.id'), nullable = False)
+
+	user = relationship(User, backref = backref('cards', cascade = 'all,delete'))
+	deck = relationship(Deck, backref = backref('cards', cascade = 'all,delete'))
+
+	def __init__(self, **kwargs):
+		"""Initialize a card"""
+		super(Card, self).__init__(**kwargs)
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'user_id': self.user_id,
-			'front': self.front,
-			'back': self.back
-		}
-		return d
+	def to_json(self):
+		return dict(
+			id = self.id, front = self.front, back = self.back, user = self.user.to_json)
 
 
-class StudyPlan(BaseModel, TimestampedModel):
+class OrderTypeEnum(enum.Enum):
+	oldest = 'oldest'
+	latest = 'latest'
+	random = 'random'
+
+
+class StudyTypeEnum(enum.Enum):
+	one_off = 'one_off'
+	recurrent = 'recurrent'
+
+
+class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
-	ordering = Column(String(10))
+	name = Column(String(100), nullable = False)
+	description = Column(String)
+	order = Column(Enum(OrderTypeEnum), default = OrderTypeEnum.oldest, nullable = False)
 	see_solved = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'))
-	user = relationship('User', backref = 'user_study_plans')  # backref to user -> study_plans
-	study_plan_groups = relationship(
-		'StudyPlanGroup', backref = 'study_plan_groups', cascade = 'all, delete-orphan')
+
+	user = relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
+
+	def __init__(self, name, order = OrderTypeEnum.oldest, user_id = None, user = None):
+		"""Initialize a study plan"""
+		self.name = name
+		self.ordering = order
+		if user_id:
+			self.user_id = user_id
+		elif user:
+			self.user = user
 
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'see_solved': self.see_solved,
-			'user_id': self.user_id
-		}
-		return d
-
-	@property
-	def groups(self):
-		return StudyPlanGroup.query.filter(StudyPlanGroup.study_plan_id == self.id)
+	def to_json(self):
+		return dict(
+			id = self.id, name = self.name, description = self.description,
+			user = self.user_id, order = self.order.value)
 
 
-class StudyPlanGroup(TimestampedModel):
-	"""Many to Many through table for groups and study plans"""
-	__tablename__ = 'study_plan_groups'
+@event.listens_for(User, 'after_insert')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	if not target.decks:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = 'Default Deck', user_id = target.id
+			))
 
-	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
-	study_plan_id = Column(Integer, ForeignKey('study_plans.id'), nullable = False)
+	if not target.study_plans:
+		study_plan = StudyPlan.__table__
+		connection.execute(
+			study_plan.insert().values(
+				name = 'Default', description = 'Default Study Plan', user_id = target.id
+			))
 
-	def __repr__(self):
-		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
+
+@event.listens_for(Deck, 'after_delete')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	if len(target.user.decks) == 0:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = 'Default Deck', user_id = target.id
+			))
+
+
+@event.listens_for(StudyPlan, 'after_delete')
+def add_defaults(mapper, connection, target):
+	assert target.id is not None
+	if len(target.user.study_plans) == 0:
+		deck = Deck.__table__
+		connection.execute(
+			deck.insert().values(
+				name = 'Default', description = 'Default Deck', user_id = target.id
+			))

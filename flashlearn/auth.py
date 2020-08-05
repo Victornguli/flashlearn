@@ -30,7 +30,7 @@ def register():
 	if request.method == 'POST':
 		username = request.form.get('username')
 		password = request.form.get('password')
-		email = request.form.get('password', None)
+		email = request.form.get('email', None)
 		error = ''
 		user = User.query.filter_by(username = username).first()
 		if user is not None:
