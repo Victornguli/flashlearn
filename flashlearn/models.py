@@ -1,15 +1,16 @@
+import logging
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from flashlearn import db
 from flask_bcrypt import Bcrypt
-import logging
+from werkzeug.http import http_date
+from flashlearn import db
 
 logger = logging.getLogger('flashlearn')
 
 
 class TimestampedModel(db.Base):
-	"""Base class for all timestamped models"""
+	"""Base model class for all timestamped models"""
 	__abstract__ = True
 
 	id = Column(Integer, primary_key = True)
@@ -40,12 +41,6 @@ class TimestampedModel(db.Base):
 		return cls.query.filter(cls.id == _id).first()
 
 
-class BaseModel:
-	"""A base model class implementing name and description fields"""
-	name = Column(String(20), nullable = False, unique = True)
-	description = Column(String(100))
-
-
 class User(TimestampedModel):
 	"""User model class"""
 	__tablename__ = 'users'
@@ -70,44 +65,40 @@ class User(TimestampedModel):
 		self.password = Bcrypt().generate_password_hash(password).decode()
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'username': self.username,
-			'email': self.email if self.email else None,
-			'date_created': self.date_created,
-			'date_modified': self.date_updated,
-			'is_active': True if self.state == 'Active' else False,
-			'groups': [group.to_dict for group in self.groups],
-			'plans': [plan.to_dict for plan in self.plans],
-		}
-		return d
+	def to_json(self):
+		return dict(
+			id = self.id, username = self.username, email = self.email,
+			date_created = http_date(self.date_created), date_modified = http_date(self.date_updated),
+			decks = [d.to_json for d in self.decks],
+			study_plans = [p.to_json for p in self.study_plans],
+			is_active = True if self.state == 'Active' else False)
 
-	@property
-	def groups(self):
-		return Group.query.filter(Group.user_id == self.id)
-
-	@property
-	def plans(self):
-		return StudyPlan.query.filter(StudyPlan.user_id == self.id)
+	# @property
+	# def decks(self):
+	# 	return Deck.query.filter(Deck.user_id == self.id)
+	#
+	# @property
+	# def plans(self):
+	# 	return StudyPlan.query.filter(StudyPlan.user_id == self.id)
 
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'
 
 
-class Group(BaseModel, TimestampedModel):
-	"""Group model class"""
-	__tablename__ = 'groups'
+class Deck(TimestampedModel):
+	"""Deck model class"""
+	__tablename__ = 'decks'
 
+	name = Column(String(100), nullable = False, unique = True)
+	description = Column(String)
 	user_id = Column(Integer, ForeignKey('users.id'))
-	user = relationship('User', backref = 'user_groups')
-	parent_id = Column(Integer, ForeignKey('groups.id'))
-	children = relationship('Group')
-	group_study_plans = relationship(
-		'StudyPlanGroup', backref = 'group_study_plans', cascade = 'all, delete-orphan')
+	parent_id = Column(Integer, ForeignKey('decks.id'))
+
+	user = relationship('User', backref = 'decks')
+	children = relationship('Deck')
 
 	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
-		"""Setup Group entry"""
+		"""Initialize a Deck"""
 		self.name = name
 		self.description = description
 		if user_id:
@@ -117,65 +108,57 @@ class Group(BaseModel, TimestampedModel):
 		self.parent_id = parent_id
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'user_id': self.user_id,
-			'parent_id': self.parent_id,
-			'is_child': True if self.parent_id else False
-		}
-		return d
+	def to_json(self):
+		return dict(
+			id = self.id, name = self.name, description = self.description,
+			user = self.user_id, parent = self.parent_id)
 
 	def __repr__(self):
-		return f'<Group: {self.name}>'
+		return f'<Deck: {self.name}>'
 
 
-class Card(BaseModel, TimestampedModel):
-	"""Class for Card model"""
+class Card(TimestampedModel):
+	"""Card model class"""
 	__tablename__ = 'cards'
 
+	name = Column(String(100), nullable = False, unique = True)
+	description = Column(String)
 	front = Column(Text(), nullable = False)
 	back = Column(Text(), nullable = False)
 	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-	user = relationship('User', backref = 'user_cards')  # usable via user.user_cards
-	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
-	group = relationship('Group', backref = 'group_cards')  # usable via group.group_cards
+	deck_id = Column(Integer, ForeignKey('decks.id'), nullable = False)
+
+	user = relationship('User', backref = 'cards')
+	deck = relationship('Deck', backref = 'cards')
 
 	def __init__(self, **kwargs):
-		"""Setup card instance"""
+		"""Initialize a card"""
 		super(Card, self).__init__(**kwargs)
 
 	def __repr__(self):
 		return f'<Card: {self.name} - {self.user.username} - {self.group.name}>'
 
 	@property
-	def to_dict(self):
-		d = {
-			'id': self.id,
-			'name': self.name,
-			'description': self.description,
-			'user_id': self.user_id,
-			'front': self.front,
-			'back': self.back
-		}
-		return d
+	def to_json(self):
+		return dict(
+			id = self.id, name = self.name, description = self.description,
+			front = self.front, back = self.back, user = self.user.to_json)
 
 
-class StudyPlan(BaseModel, TimestampedModel):
+class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
+	name = Column(String(100), nullable = False, unique = True)
+	description = Column(String)
 	ordering = Column(String(10))
 	see_solved = Column(Boolean(), default = False)
 	user_id = Column(Integer, ForeignKey('users.id'))
-	user = relationship('User', backref = 'user_study_plans')  # backref to user -> study_plans
-	study_plan_groups = relationship(
-		'StudyPlanGroup', backref = 'study_plan_groups', cascade = 'all, delete-orphan')
+
+	user = relationship('User', backref = 'study_plans')
 
 	def __init__(self, name, ordering = False, user_id = None, user = None):
-		"""Initialize study plan instance"""
+		"""Initialize a study plan"""
 		self.name = name
 		self.ordering = ordering
 		if user_id:
@@ -187,7 +170,7 @@ class StudyPlan(BaseModel, TimestampedModel):
 		return f'<StudyPlan: {self.name} - {self.state}>'
 
 	@property
-	def to_dict(self):
+	def to_json(self):
 		d = {
 			'id': self.id,
 			'name': self.name,
@@ -197,28 +180,7 @@ class StudyPlan(BaseModel, TimestampedModel):
 		}
 		return d
 
-	@property
-	def groups(self):
-		return StudyPlanGroup.query.filter(StudyPlanGroup.study_plan_id == self.id)
-
-
-class StudyPlanGroup(TimestampedModel):
-	"""Many to Many through table for groups and study plans"""
-	__tablename__ = 'study_plan_groups'
-
-	group_id = Column(Integer, ForeignKey('groups.id'), nullable = False)
-	study_plan_id = Column(Integer, ForeignKey('study_plans.id'), nullable = False)
-
-	def __init__(self, group_id, study_plan_id):
-		"""Initialize StudyPlanGroup association"""
-		self.group_id = group_id
-		self.study_plan_id = study_plan_id
-
-	def __repr__(self):
-		return f'<StudyPlanGroup: {self.study_plan.name} - {self.group.name}>'
-
-
-if __name__ == '__main__':
-	t = Card
-	print(getattr(t, 'name', 0))
-	print(t.__table__.columns)
+# if __name__ == '__main__':
+# 	t = Card
+# 	print(getattr(t, 'name', 0))
+# 	print(t.__table__.columns)
