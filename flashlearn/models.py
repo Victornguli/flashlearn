@@ -193,7 +193,7 @@ class StudyPlan(TimestampedModel):
 
 
 @event.listens_for(User, 'after_insert')
-def add_defaults(mapper, connection, target):
+def add_defaults_on_user_create(mapper, connection, target):
 	assert target.id is not None
 	if not target.decks:
 		deck = Deck.__table__
@@ -211,7 +211,7 @@ def add_defaults(mapper, connection, target):
 
 
 @event.listens_for(Deck, 'after_delete')
-def add_defaults(mapper, connection, target):
+def set_default_deck_on_delete(mapper, connection, target):
 	assert target.id is not None
 	if len(target.user.decks) == 0:
 		deck = Deck.__table__
@@ -222,7 +222,7 @@ def add_defaults(mapper, connection, target):
 
 
 @event.listens_for(StudyPlan, 'after_delete')
-def add_defaults(mapper, connection, target):
+def set_default_plan_on_delete(mapper, connection, target):
 	assert target.id is not None
 	if len(target.user.study_plans) == 0:
 		deck = Deck.__table__

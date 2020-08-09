@@ -67,7 +67,7 @@ def delete_card(card_id):
 
 @bp.route('/cards')
 @login_required
-def get_cards():
+def list_cards():
 	cards = Card.query.all()
 	res = []
 	for card in cards:
@@ -122,7 +122,7 @@ def delete_group(deck_id):
 
 
 @bp.route('/decks', methods = ('GET', 'POST'))
-def get_groups():
+def list_groups():
 	decks = Deck.query.all()
 	res = []
 	for deck in decks:
@@ -131,7 +131,7 @@ def get_groups():
 
 
 @bp.route('/users')
-def get_users():
+def list_users():
 	users = [user.to_json for user in User.all()]
 	return jsonify(users)
 
@@ -147,15 +147,19 @@ def get_user(user_id):
 
 
 @bp.route('/plans')
-def get_plans():
+def list_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
 
 
 @bp.route('/plan', methods = ('POST',), defaults = {'plan_id': None})
 @bp.route('/plan/<int:plan_id>')
-def get_or_create_plan(plan_id):
-	pass
+def get_or_create_study_plan(plan_id):
+	if request.method == 'POST':
+		pass
+	elif request.method == 'GET':
+		pass
+	return jsonify('study plan')
 
 
 @bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))

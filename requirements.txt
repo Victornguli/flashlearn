@@ -12,3 +12,5 @@ pytest==6.0.1
 pytest-cov==2.10.0
 coverage==5.2.1
 flask-sqlalchemy==2.4.4
+WTForms==2.3.3
+flask-wtf==0.14.3
