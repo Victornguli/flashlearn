@@ -1,7 +1,8 @@
-from flask import request, url_for, jsonify, flash, g, redirect
+from flask import request, url_for, jsonify, flash, g, redirect, abort
 from flashlearn.core import bp
 from flashlearn.models import User, Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
+from flashlearn.enums import OrderTypeEnum
 
 
 @bp.route('/card', methods = ('POST',), defaults = {'card_id': None})
@@ -146,8 +147,8 @@ def get_user(user_id):
 	return jsonify('Invalid request ')
 
 
-@bp.route('/plans')
-def list_plans():
+@bp.route('/plans', methods = ('GET', 'POST'))
+def list__study_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
 
@@ -156,9 +157,21 @@ def list_plans():
 @bp.route('/plan/<int:plan_id>')
 def get_or_create_study_plan(plan_id):
 	if request.method == 'POST':
-		pass
+		order = request.form.get('order', None)
+		if not hasattr(OrderTypeEnum, order):
+			abort(400)
+
+		study_plan = StudyPlan(
+			name = request.form.get('name'), description = request.form.get('description', None),
+			user_id = g.user.id, order = order
+		)
+		study_plan.save()
+		return jsonify('Study Plan created successfully')
 	elif request.method == 'GET':
-		pass
+		study_plan = StudyPlan.query.filter_by(id = plan_id).first()
+		if not study_plan:
+			abort(404)
+		return jsonify(study_plan.to_json)
 	return jsonify('study plan')
 
 
