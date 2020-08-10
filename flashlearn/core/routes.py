@@ -148,7 +148,7 @@ def get_user(user_id):
 
 
 @bp.route('/plans', methods = ('GET', 'POST'))
-def list__study_plans():
+def list_study_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
 
