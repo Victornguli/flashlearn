@@ -1,11 +1,11 @@
 import logging
-import enum
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum, event
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
 from werkzeug.http import http_date
 from flashlearn import db
+from flashlearn.enums import OrderTypeEnum
 
 logger = logging.getLogger('flashlearn')
 
@@ -17,7 +17,7 @@ class TimestampedModel(db.Base):
 	id = Column(Integer, primary_key = True)
 	date_created = Column(DateTime(timezone = True), server_default = func.now())
 	date_updated = Column(DateTime(timezone = True), server_default = func.now(), onupdate = func.now())
-	state = Column(String, default = 'Active')
+	state = Column(String, default = 'active')
 
 	def save(self):
 		"""Save a user to a database. This includes creating a new user and editing too"""
@@ -111,14 +111,14 @@ class Deck(TimestampedModel):
 		return dict(
 			id = self.id, name = self.name, description = self.description,
 			user = self.user_id, parent = self.parent_id,
-			children_count = self.children_count)
+			child_count = self.child_count)
 
 	@property
 	def children_to_json(self):
 		return dict([child.to_json for child in self.children])
 
 	@property
-	def children_count(self):
+	def child_count(self):
 		return len(self.children)
 
 	def __repr__(self):
@@ -150,17 +150,6 @@ class Card(TimestampedModel):
 			id = self.id, front = self.front, back = self.back, user = self.user.to_json)
 
 
-class OrderTypeEnum(enum.Enum):
-	oldest = 'oldest'
-	latest = 'latest'
-	random = 'random'
-
-
-class StudyTypeEnum(enum.Enum):
-	one_off = 'one_off'
-	recurrent = 'recurrent'
-
-
 class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
@@ -173,10 +162,17 @@ class StudyPlan(TimestampedModel):
 
 	user = relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
 
-	def __init__(self, name, order = OrderTypeEnum.oldest, user_id = None, user = None):
+	def __init__(
+			self, name,
+			description = None,
+			order = OrderTypeEnum.oldest,
+			user_id = None,
+			user = None
+	):
 		"""Initialize a study plan"""
 		self.name = name
-		self.ordering = order
+		self.order = order
+		self.description = description
 		if user_id:
 			self.user_id = user_id
 		elif user:

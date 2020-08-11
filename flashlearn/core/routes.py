@@ -1,7 +1,9 @@
-from flask import request, url_for, jsonify, flash, g, redirect
+from flask import request, url_for, jsonify, flash, g, redirect, abort
+from sqlalchemy.sql.expression import func
 from flashlearn.core import bp
 from flashlearn.models import User, Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
+from flashlearn.enums import OrderTypeEnum
 
 
 @bp.route('/card', methods = ('POST',), defaults = {'card_id': None})
@@ -23,7 +25,7 @@ def get_or_create_card(card_id):
 
 		if not front or not back:
 			error += f'front and back fields are required.'
-		if not Deck.query.filter_by(id = deck_id, state = 'Active').first():
+		if not Deck.query.filter_by(id = deck_id, state = 'active').first():
 			error += 'Selected deck does not exist'
 		if not error:
 			new_card = Card(
@@ -37,17 +39,18 @@ def get_or_create_card(card_id):
 @bp.route('/card/<int:card_id>/edit', methods = ('POST',))
 def edit_card(card_id):
 	if request.method == 'POST':
-		error = None
+		state = request.form.get('state')
+		if state.lower() not in ('active', 'solved'):
+			abort(400)
 		card = Card.query.filter_by(id = card_id).first()
 		if not card:
-			error = 'Card does not exist '
-		if not error:
-			card.update(
-				front = request.form.get('front', card.front),
-				back = request.form.get('back', card.back),
-				deck_id = request.form.get('deck_id', card.deck_id))
-			return jsonify('OK')
-		flash(error)
+			abort(404)
+		card.update(
+			front = request.form.get('front', card.front),
+			back = request.form.get('back', card.back),
+			deck_id = request.form.get('deck_id', card.deck_id),
+			state = state.lower())
+		return jsonify('OK')
 	return 'Failed to update card'  # Render edit_card template instead...
 
 
@@ -80,7 +83,7 @@ def list_cards():
 @login_required
 def get_or_create_deck(deck_id):
 	if request.method == 'GET':
-		deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
+		deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
 		if deck is not None:
 			return jsonify(deck.to_json)
 	elif request.method == 'POST':
@@ -93,8 +96,8 @@ def get_or_create_deck(deck_id):
 
 
 @bp.route('/deck/<int:deck_id>/edit', methods = ('POST',))
-def edit_group(deck_id):
-	deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
+def edit_deck(deck_id):
+	deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
 	error = ''
 	if not deck:
 		error = 'Deck not found'
@@ -108,9 +111,9 @@ def edit_group(deck_id):
 
 
 @bp.route('/deck/<int:deck_id>/delete', methods = ('POST',))
-def delete_group(deck_id):
+def delete_deck(deck_id):
 	if request.method == 'POST':
-		deck = Deck.query.filter_by(id = deck_id, state = 'Active').first()
+		deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
 		error = ''
 		if not deck:
 			error = 'Deck not found'
@@ -122,12 +125,26 @@ def delete_group(deck_id):
 
 
 @bp.route('/decks', methods = ('GET', 'POST'))
-def list_groups():
+def list_decks():
 	decks = Deck.query.all()
 	res = []
 	for deck in decks:
 		res.append(deck.to_json)
 	return jsonify(res)
+
+
+@bp.route('/deck/<int:deck_id>/reset', methods = ('GET', 'POST'))
+def reset_deck(deck_id):
+	state = request.form.get('state')
+	if state not in ('active', 'solved'):
+		abort(400)
+	deck = Deck.get_by_id(deck_id)
+	if not deck:
+		abort(400)
+	cards = Card.query.filter_by(deck_id = deck.id)
+	for card in cards:
+		card.update(state = state)
+	return jsonify('OK')
 
 
 @bp.route('/users')
@@ -146,8 +163,8 @@ def get_user(user_id):
 	return jsonify('Invalid request ')
 
 
-@bp.route('/plans')
-def list_plans():
+@bp.route('/plans', methods = ('GET', 'POST'))
+def list_study_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
 
@@ -156,14 +173,51 @@ def list_plans():
 @bp.route('/plan/<int:plan_id>')
 def get_or_create_study_plan(plan_id):
 	if request.method == 'POST':
-		pass
+		order = request.form.get('order', None)
+		if not hasattr(OrderTypeEnum, order):
+			abort(400)
+
+		study_plan = StudyPlan(
+			name = request.form.get('name'), description = request.form.get('description', None),
+			user_id = g.user.id, order = order
+		)
+		study_plan.save()
+		return jsonify('Study Plan created successfully')
 	elif request.method == 'GET':
-		pass
+		study_plan = StudyPlan.query.filter_by(id = plan_id).first()
+		if not study_plan:
+			abort(404)
+		return jsonify(study_plan.to_json)
 	return jsonify('study plan')
+
+
+@bp.route('study_plan/next', methods = ('GET', 'POST'))
+def get_next_card():
+	study_plan_id = request.form.get('study_plan_id')
+	deck_id = request.form.get('deck_id')
+	deck = Deck.get_by_id(deck_id)
+	study_plan = StudyPlan.get_by_id(study_plan_id)
+
+	if not (study_plan and deck):
+		abort(404)
+	order = study_plan.order.value
+	cards = Card.query.filter_by(deck_id = deck_id)
+	if order == 'latest':
+		order_by = Card.id.desc()
+	elif order == 'oldest':
+		order_by = Card.date_created.asc()
+	else:
+		order_by = func.random()
+
+	card = cards.order_by(order_by).first()
+	if card is not None:
+		return jsonify(card.to_json)
+	flash('You have studied all cards in this deck')
+	return 'OK'
 
 
 @bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))
 def delete_user(user_id):
-	user = User.query.filter_by(id = user_id, state = 'Active').first()
+	user = User.query.filter_by(id = user_id, state = 'active').first()
 	user.delete()
 	return 'deleted'

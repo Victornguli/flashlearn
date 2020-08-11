@@ -37,7 +37,10 @@ class BaseTestCase(unittest.TestCase):
 		self.plan = StudyPlan(name = 'Grokking Algorithms', user = self.alice)
 		self.plan.save()
 
-	def login(self, username, password):
+	def login(self, username = None, password = None):
+		if not (username and password):
+			username = self.alice.username
+			password = 'password'
 		return self.client.post(
 			'/auth/login', data = dict(username = username, password = password),
 			follow_redirects = True)
