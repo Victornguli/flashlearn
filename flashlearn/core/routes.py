@@ -1,4 +1,5 @@
 from flask import request, url_for, jsonify, flash, g, redirect, abort
+from sqlalchemy.sql.expression import func
 from flashlearn.core import bp
 from flashlearn.models import User, Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
@@ -188,6 +189,28 @@ def get_or_create_study_plan(plan_id):
 			abort(404)
 		return jsonify(study_plan.to_json)
 	return jsonify('study plan')
+
+
+@bp.route('study_plan/next', methods = ('GET', 'POST'))
+def get_next_card():
+	study_plan_id = request.form.get('study_plan_id')
+	deck_id = request.form.get('deck_id')
+	deck = Deck.get_by_id(deck_id)
+	study_plan = StudyPlan.get_by_id(study_plan_id)
+
+	if not (study_plan and deck):
+		abort(404)
+	order = study_plan.order.value
+	cards = Card.query.filter_by(deck_id = deck_id)
+	if order == 'latest':
+		order_by = Card.id.desc()
+	elif order == 'oldest':
+		order_by = Card.date_created.asc()
+	else:
+		order_by = func.random()
+
+	card = cards.order_by(order_by).first()
+	return jsonify(card.to_json)
 
 
 @bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))

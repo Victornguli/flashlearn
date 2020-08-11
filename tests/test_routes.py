@@ -1,5 +1,5 @@
 from tests.conftest import BaseTestCase
-from flashlearn.models import Card, Deck
+from flashlearn.models import Card, Deck, StudyPlan
 
 
 class TestRoutes(BaseTestCase):
@@ -114,3 +114,14 @@ class TestRoutes(BaseTestCase):
 		self.assertEqual(200, res.status_code)
 		card = Card.query.filter_by(deck_id = self.dp.id).first()
 		self.assertEqual('solved', card.state)
+
+	def test_get_next_card(self):
+		self.refresh(self.dp, self.card, self.plan)
+		self.login()
+		self.plan = StudyPlan.get_by_id(self.plan.id)
+		card2 = Card(front = 'test', back = 'test', deck = self.dp, user = self.alice)
+		card2.save()
+		res = self.client.post('/study_plan/next', data = {
+			'study_plan_id': self.plan.id, 'deck_id': self.dp.id})
+		self.assertEqual(200, res.status_code)
+		self.assertIn(b'Dynamic Programming', res.data)
