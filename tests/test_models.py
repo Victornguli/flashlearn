@@ -9,7 +9,7 @@ class TestModels(BaseTestCase):
 		u = User(username = 'admin', password = '12345', email = 'admin@mail.com')
 		u.save()
 		assert u.password != '12345'
-		assert u.state == 'Active'
+		assert u.state == 'active'
 		u.password = Bcrypt().generate_password_hash('TheShrubbery@007').decode()
 		u.save()
 		assert u.password_is_valid('TheShrubbery@007'), 'Should confirm password change'
@@ -30,8 +30,9 @@ class TestModels(BaseTestCase):
 			front = 'What is the air velocity of unladen swallow', back = 'African or European?',
 			user_id = self.alice.id, deck_id = self.dp.id)
 		test_card.save()
-		assert test_card.state == 'Active', 'Should be saved with an active state'
-		test_card.save()
+		assert test_card.state == 'active', 'Should be saved with an active state'
+		test_card.update(state = 'Solved')
+		assert test_card.state == 'Solved', 'State should be Solved'
 		Card.query.filter_by(back = 'African or European?').first().delete()
 		assert Card.query.filter_by(back = 'African or European?').first() is None, 'Should delete the card'
 		# self.db.session.expire(card)
@@ -39,7 +40,7 @@ class TestModels(BaseTestCase):
 	def test_study_plan_model(self):
 		plan = StudyPlan(name = 'Grokking CS Algorithms', user = self.alice)
 		plan.save()
-		assert plan.state == 'Active', 'Should create a plan with state active'
+		assert plan.state == 'active', 'Should create a plan with state active'
 		assert plan in self.alice.study_plans, 'Should be accessible from Alice\'s study plans'
 		StudyPlan.query.filter_by(id = plan.id).delete()
 		assert StudyPlan.query.filter_by(id = plan.id).first() is None, 'Should be deleted'

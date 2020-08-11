@@ -17,7 +17,7 @@ class TimestampedModel(db.Base):
 	id = Column(Integer, primary_key = True)
 	date_created = Column(DateTime(timezone = True), server_default = func.now())
 	date_updated = Column(DateTime(timezone = True), server_default = func.now(), onupdate = func.now())
-	state = Column(String, default = 'Active')
+	state = Column(String, default = 'active')
 
 	def save(self):
 		"""Save a user to a database. This includes creating a new user and editing too"""
