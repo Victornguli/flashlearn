@@ -95,7 +95,7 @@ def get_or_create_deck(deck_id):
 
 
 @bp.route('/deck/<int:deck_id>/edit', methods = ('POST',))
-def edit_group(deck_id):
+def edit_deck(deck_id):
 	deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
 	error = ''
 	if not deck:
@@ -130,6 +130,20 @@ def list_decks():
 	for deck in decks:
 		res.append(deck.to_json)
 	return jsonify(res)
+
+
+@bp.route('/deck/<int:deck_id>/reset', methods = ('GET', 'POST'))
+def reset_deck(deck_id):
+	state = request.form.get('state')
+	if state not in ('active', 'solved'):
+		abort(400)
+	deck = Deck.get_by_id(deck_id)
+	if not deck:
+		abort(400)
+	cards = Card.query.filter_by(deck_id = deck.id)
+	for card in cards:
+		card.update(state = state)
+	return jsonify('OK')
 
 
 @bp.route('/users')

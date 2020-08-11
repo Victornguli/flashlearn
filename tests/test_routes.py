@@ -105,3 +105,12 @@ class TestRoutes(BaseTestCase):
 		self.login()
 		res = self.client.get('/plans')
 		self.assertEqual(200, res.status_code)
+
+	def test_reset_deck(self):
+		self.refresh(self.dp, self.card)
+		self.login()
+		res = self.client.post(f'/deck/{self.dp.id}/reset', data = {
+			'state': 'solved'})
+		self.assertEqual(200, res.status_code)
+		card = Card.query.filter_by(deck_id = self.dp.id).first()
+		self.assertEqual('solved', card.state)
