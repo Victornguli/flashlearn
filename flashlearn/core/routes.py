@@ -210,7 +210,10 @@ def get_next_card():
 		order_by = func.random()
 
 	card = cards.order_by(order_by).first()
-	return jsonify(card.to_json)
+	if card is not None:
+		return jsonify(card.to_json)
+	flash('You have studied all cards in this deck')
+	return 'OK'
 
 
 @bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))
