@@ -28,13 +28,14 @@ class TestRoutes(BaseTestCase):
 
 	def test_edit_card(self):
 		self.refresh(self.alice, self.card)
-
 		self.login()
 		res = self.client.post(
 			f'/card/{self.card.id}/edit', data = {
-				'front': 'New Front'})
+				'front': 'New Front', 'state': 'solved'})
 		self.assertEqual(200, res.status_code)
-		self.assertEqual('New Front', Card.query.filter_by(id = self.card.id).first().front)
+		self.card = Card.query.filter_by(id = self.card.id).first()
+		self.assertEqual('solved', self.card.state)
+		self.assertEqual('New Front', self.card.front)
 
 	def test_delete_card(self):
 		self.refresh(self.alice, self.card)
@@ -77,8 +78,7 @@ class TestRoutes(BaseTestCase):
 		self.refresh(self.algos)
 		self.login()
 		res = self.client.post(
-			f'/deck/{self.algos.id}/delete', data = {'name': 'Algorythms'}
-		)
+			f'/deck/{self.algos.id}/delete')
 		self.assertEqual(200, res.status_code)
 		self.assertEqual(None, Deck.query.filter_by(id = self.algos.id).first())
 
