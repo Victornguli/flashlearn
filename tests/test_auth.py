@@ -6,12 +6,12 @@ class TestAuth(BaseTestCase):
 	"""Auth blueprint test class"""
 
 	def test_get_login(self):
-		res = self.client.get('auth/login')
+		res = self.client.get('user/login')
 		self.assertEqual(200, res.status_code)
 		self.assertIn(b'Login Route', res.data)
 
 	def test_get_register(self):
-		res = self.client.get('auth/register')
+		res = self.client.get('user/register')
 		self.assertEqual(200, res.status_code)
 		self.assertIn(b'Register Route', res.data)
 
@@ -26,7 +26,7 @@ class TestAuth(BaseTestCase):
 
 	def test_register_pass(self):
 		res = self.client.post(
-			'auth/register', data = {
+			'user/register', data = {
 				'username': 'testuser', 'password': 'pass@134#', 'email': 'mail@example.com'
 			}, follow_redirects = True)
 		self.assertEqual(200, res.status_code)
@@ -36,7 +36,7 @@ class TestAuth(BaseTestCase):
 
 	def test_register_fail(self):
 		res = self.client.post(
-			'auth/register', data = {
+			'user/register', data = {
 				'username': 'alice', 'email': ''
 			}, follow_redirects = True)
 		self.assertEqual(200, res.status_code)

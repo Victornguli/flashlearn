@@ -35,7 +35,7 @@ class TimestampedModel(db.Base):
 
 	@classmethod
 	def all(cls):
-		return cls.query.filter(cls.state == 'Active')
+		return cls.query.filter(cls.state == 'active')
 
 	@classmethod
 	def get_by_id(cls, _id):
@@ -72,7 +72,7 @@ class User(TimestampedModel):
 			date_created = http_date(self.date_created), date_modified = http_date(self.date_updated),
 			decks = [d.to_json for d in self.decks],
 			study_plans = [p.to_json for p in self.study_plans],
-			is_active = True if self.state == 'Active' else False)
+			is_active = True if self.state == 'active' else False)
 
 	def __repr__(self):
 		return f'<User: {self.username} - {self.state}>'

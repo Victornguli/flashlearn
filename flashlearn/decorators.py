@@ -12,6 +12,6 @@ def login_required(view):
 			if len(view.__module__.split(".")) > 2:
 				bp = (view.__module__.split(".")[1])  # Get the blueprint name, for accurate urls.
 				view_name = f'{bp}.{view_name}'
-			return redirect(url_for('auth.login', next = url_for(view_name)))
+			return redirect(url_for('user.login', next = url_for(view_name)))
 		return view(**kwargs)
 	return wrapped_view

@@ -42,11 +42,11 @@ class BaseTestCase(unittest.TestCase):
 			username = self.alice.username
 			password = 'password'
 		return self.client.post(
-			'/auth/login', data = dict(username = username, password = password),
+			'/user/login', data = dict(username = username, password = password),
 			follow_redirects = True)
 
 	def logout(self):
-		return self.client.post('/auth/logout')
+		return self.client.post('/user/logout')
 
 	@staticmethod
 	def refresh(*args):

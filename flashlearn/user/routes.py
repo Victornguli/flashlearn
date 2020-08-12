@@ -1,8 +1,7 @@
-"""Auth blueprint"""
-from flask import Blueprint, jsonify, g, request, session, url_for, redirect
+from flask import jsonify, g, request, session, url_for, redirect
+from flashlearn.user import bp
 from flashlearn.models import User
-
-bp = Blueprint('auth', __name__, url_prefix = '/auth')
+from flashlearn.decorators import login_required
 
 
 @bp.route('/login', methods = ('GET', 'POST'))
@@ -38,7 +37,7 @@ def register():
 		if not error:
 			user = User(username = username, password = password, email = email)
 			user.save()
-			return redirect(url_for('auth.login'))
+			return redirect(url_for('user.login'))
 		return jsonify(error)  # TODO: Replace with flash(message)
 	return jsonify('Register Route')
 
@@ -56,4 +55,30 @@ def load_user():
 @bp.route('/logout', methods = ('GET', 'POST'))
 def logout():
 	session.clear()
-	return redirect(url_for('auth.login'))
+	return redirect(url_for('user.login'))
+
+
+@bp.route('/list')
+@login_required
+def list_users():
+	users = [user.to_json for user in User.all()]
+	return jsonify(users)
+
+
+@bp.route('/<int:user_id>')
+@login_required
+def get_user(user_id):
+	if request.method == 'GET':
+		user = User.get_by_id(user_id)
+		if user is None:
+			return 'User not found', 404
+		return jsonify(User.get_by_id(user_id).to_json)
+	return jsonify('Invalid request ')
+
+
+@bp.route('<int:user_id>/delete', methods = ('GET', 'POST'))
+@login_required
+def delete_user(user_id):
+	user = User.query.filter_by(id = user_id, state = 'active').first()
+	user.delete()
+	return 'deleted'

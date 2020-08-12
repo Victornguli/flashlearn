@@ -63,7 +63,7 @@ def create_app(config = None):
     db.init_with_ctx(app)  # Initialize Db with the app context
     app.teardown_appcontext(db.close_session)
 
-    from flashlearn.auth import bp
+    from flashlearn.user import bp, routes
     app.register_blueprint(bp)
 
     from flashlearn.core import bp, routes

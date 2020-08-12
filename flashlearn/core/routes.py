@@ -1,7 +1,7 @@
 from flask import request, url_for, jsonify, flash, g, redirect, abort
 from sqlalchemy.sql.expression import func
 from flashlearn.core import bp
-from flashlearn.models import User, Card, Deck, StudyPlan
+from flashlearn.models import Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 
@@ -147,22 +147,6 @@ def reset_deck(deck_id):
 	return jsonify('OK')
 
 
-@bp.route('/users')
-def list_users():
-	users = [user.to_json for user in User.all()]
-	return jsonify(users)
-
-
-@bp.route('/user/<int:user_id>')
-def get_user(user_id):
-	if request.method == 'GET':
-		user = User.get_by_id(user_id)
-		if user is None:
-			return 'User not found', 404
-		return jsonify(User.get_by_id(user_id).to_json)
-	return jsonify('Invalid request ')
-
-
 @bp.route('/plans', methods = ('GET', 'POST'))
 def list_study_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
@@ -214,10 +198,3 @@ def get_next_card():
 		return jsonify(card.to_json)
 	flash('You have studied all cards in this deck')
 	return 'OK'
-
-
-@bp.route('user/<int:user_id>/delete', methods = ('GET', 'POST'))
-def delete_user(user_id):
-	user = User.query.filter_by(id = user_id, state = 'active').first()
-	user.delete()
-	return 'deleted'
