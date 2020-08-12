@@ -1,5 +1,5 @@
 from tests.conftest import BaseTestCase
-from flashlearn.models import Card, Deck, StudyPlan
+from flashlearn.models import Card, Deck, StudyPlan, User
 
 
 class TestRoutes(BaseTestCase):
@@ -9,6 +9,37 @@ class TestRoutes(BaseTestCase):
 		res = self.client.get('/')
 		self.assertEqual(200, res.status_code)
 		self.assertIn(b'Index', res.data)
+
+	def test_get_users(self):
+		self.refresh(self.alice)
+		self.login()
+		res = self.client.get('/user/list')
+		self.assertEqual(200, res.status_code)
+		self.assertIn(b'alice', res.data)
+
+	def test_get_user(self):
+		self.refresh(self.alice)
+		self.login()
+		res = self.client.get(f'/user/{self.alice.id}')
+		self.assertEqual(200, res.status_code)
+		self.assertIn('alice', res.get_data(as_text = True))
+
+	def test_get_user_fail(self):
+		self.login()
+		res = self.client.get(f'/user/{10}')
+		self.assertEqual(404, res.status_code),\
+			'Should return 404 if user is not found'
+
+	def test_delete_user(self):
+		self.refresh(self.alice)
+		self.login()
+		user = User(username = 'test', email = 'test', password = 'test')
+		user.save()
+		self.assertEqual('test', user.username), 'Should save user'
+		res = self.client.get(f'/user/{user.id}/delete')
+		self.assertEqual(200, res.status_code), 'Should return 200 status'
+		self.assertEqual(None, User.query.filter_by(
+			username = 'test').first()), 'Query should return None'
 
 	def test_create_card(self):
 		self.refresh(self.alice, self.algos, self.dp)
