@@ -1,4 +1,4 @@
-from flask import jsonify, g, request, session, url_for, redirect
+from flask import jsonify, g, request, session, url_for, redirect, abort
 from flashlearn.user import bp
 from flashlearn.models import User
 from flashlearn.decorators import login_required
@@ -76,9 +76,24 @@ def get_user(user_id):
 	return jsonify('Invalid request ')
 
 
-@bp.route('<int:user_id>/delete', methods = ('GET', 'POST'))
+@bp.route('/<int:user_id>/delete', methods = ('GET', 'POST'))
 @login_required
 def delete_user(user_id):
 	user = User.query.filter_by(id = user_id, state = 'active').first()
 	user.delete()
 	return 'deleted'
+
+
+@bp.route('/<int:user_id>/edit', methods = ('POST',))
+@login_required
+def edit_user(user_id):
+	user = User.get_by_id(user_id)
+	if user is None:
+		abort(404)
+	password = request.form.get('password', None)
+	email = request.form.get('email', user.email)
+
+	if password is not None:  # pragma:no-cover
+		user.set_password(password)
+	user.update(email = email)
+	return jsonify(user.to_json)

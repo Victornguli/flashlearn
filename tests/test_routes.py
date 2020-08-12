@@ -30,6 +30,17 @@ class TestRoutes(BaseTestCase):
 		self.assertEqual(404, res.status_code),\
 			'Should return 404 if user is not found'
 
+	def test_edit_user(self):
+		self.login()
+		user = User(
+			username = 'test', email = 'test@mail.com', password = 'test')
+		user.save()
+		res = self.client.post(f'/user/{user.id}/edit', data = {
+			'password': 'test', 'email': 'new_mail@test.com'})
+		self.assertEqual(200, res.status_code)
+		user = User.query.filter_by(id = user.id).first()
+		self.assertEqual('new_mail@test.com', user.email)
+
 	def test_delete_user(self):
 		self.refresh(self.alice)
 		self.login()
