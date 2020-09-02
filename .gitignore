@@ -5,3 +5,4 @@ venv/
 htmlcov
 .coverage
 *.log
+*.sqlite3
