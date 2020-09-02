@@ -1,52 +1,55 @@
-from tests.conftest import BaseTestCase
 from flashlearn.models import User
 
 
-class TestAuth(BaseTestCase):
+class TestAuth:
 	"""Auth blueprint test class"""
 
-	def test_get_login(self):
-		res = self.client.get('user/login')
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Login Route', res.data)
+	def test_get_login(self, client):
+		res = client.get('user/login')
+		assert res.status_code == 200
+		assert 'Login Route' in res.get_data(as_text = True)
 
-	def test_get_register(self):
-		res = self.client.get('user/register')
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Register Route', res.data)
+	def test_get_register(self, client):
+		res = client.get('user/register')
+		assert res.status_code == 200, 'Should return 200 status code'
+		assert 'Register Route' in res.get_data(as_text = True), 'Should get register page'
 
-	def test_valid_login(self):
-		response = self.login(self.alice.username, 'password')
+	def test_valid_login(self, login):
+		response = login()
 		assert response.status_code == 200, 'Should login user'
-		self.assertIn(b'Index', response.data)
+		assert 'Index' in response.get_data(as_text = True)
 
-	def test_invalid_login(self):
-		response = self.login('username', 'password')
-		self.assertIn(b'Invalid login credentials', response.data)
+	def test_invalid_login(self, login):
+		response = login('username', 'password')
+		assert 'Invalid login credentials' in response.get_data(as_text = True)
 
-	def test_register_pass(self):
-		res = self.client.post(
+	def test_register_pass(self, client):
+		res = client.post(
 			'user/register', data = {
 				'username': 'testuser', 'password': 'pass@134#', 'email': 'mail@example.com'
 			}, follow_redirects = True)
-		self.assertEqual(200, res.status_code)
+		assert res.status_code == 200
 		assert User.query.filter_by(username = 'testuser').first() is not None,\
 			'Should create user successfully'
-		self.assertIn(b'Login Route', res.data)
+		assert 'Login Route' in res.get_data(as_text = True)
 
-	def test_register_fail(self):
-		res = self.client.post(
+	def test_register_fail(self, user, client):
+		"""
+		Keep user as an unused fixture that will ensure a user is created
+		beforehand to test duplicate user creation fail.
+		"""
+		res = client.post(
 			'user/register', data = {
-				'username': 'alice', 'email': ''
+				'username': 'alice', 'email': '', 'password': 'password'
 			}, follow_redirects = True)
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'User already exists', res.data)
+		assert res.status_code == 200
+		assert 'User already exists' in res.get_data(as_text = True)
 
-	def test_logout(self):
-		response = self.logout()
-		self.assertEqual(302, response.status_code), 'Should logout and redirect to login'
+	def test_logout(self, logout):
+		response = logout()
+		assert response.status_code == 302, 'Should logout and redirect to login'
 
-	def test_login_required(self):
-		res = self.client.get('/cards')
-		self.assertEqual(302, res.status_code), 'Should redirect to login page'
+	def test_login_required(self, client):
+		res = client.get('/cards')
+		assert res.status_code == 302, 'Should redirect to login page'
 		# self.assertIn(b'fmdk', res.data)

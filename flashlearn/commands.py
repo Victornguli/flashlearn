@@ -9,8 +9,8 @@ def init_db_command():
 	confirm = click.prompt(
 		'The database will be re-defined.\
 		\nReply with Y/N to confirm or cancel', type=str)
-	if confirm == 'Y' or confirm == 'y':
-		db.init_db()
+	if confirm.lower() == 'y':
+		db.create_all()
 		click.echo("Initialized the database.")
 	else:
 		click.echo("Cancelled db init.")
@@ -22,11 +22,11 @@ def clear_db_command():
 	confirm = click.prompt(
 		'All database tables will be dropped and all data will be lost.\
 		\nReply with Y/N to confirm or cancel.', type=str)
-	if confirm == 'Y' or confirm == 'y':
-		db.clear_db()
+	if confirm.lower() == 'y':
+		db.drop_all()
 		click.echo('All database tables successfully deleted.')
 	else:
-		click.echo('Cancelled clear_db.')
+		click.echo('Cancelled clear-db.')
 
 
 def prompt_password():

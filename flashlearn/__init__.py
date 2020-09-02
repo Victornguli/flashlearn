@@ -2,11 +2,12 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, jsonify, g
+from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
 from flashlearn.decorators import login_required
-from flashlearn.database import SQLAlchemyDB
+# from flashlearn.database import SQLAlchemyDB
 
-db = SQLAlchemyDB()
+db = SQLAlchemy()
 
 
 def create_app(config = None):
@@ -60,8 +61,9 @@ def create_app(config = None):
     from flashlearn.commands import register_commands
     register_commands(app)  # Register app cli commands
 
-    db.init_with_ctx(app)  # Initialize Db with the app context
-    app.teardown_appcontext(db.close_session)
+    db.init_app(app)
+    # Old raw sqlalchemy implementation..
+    # app.teardown_appcontext(db.close_session)
 
     from flashlearn.user import bp, routes
     app.register_blueprint(bp)

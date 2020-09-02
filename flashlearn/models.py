@@ -1,6 +1,6 @@
 import logging
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum, event
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import event
+from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
 from werkzeug.http import http_date
@@ -10,14 +10,14 @@ from flashlearn.enums import OrderTypeEnum
 logger = logging.getLogger('flashlearn')
 
 
-class TimestampedModel(db.Base):
+class TimestampedModel(db.Model):
 	"""Base model class for all timestamped models"""
 	__abstract__ = True
 
-	id = Column(Integer, primary_key = True)
-	date_created = Column(DateTime(timezone = True), server_default = func.now())
-	date_updated = Column(DateTime(timezone = True), server_default = func.now(), onupdate = func.now())
-	state = Column(String, default = 'active')
+	id = db.Column(db.Integer, primary_key = True)
+	date_created = db.Column(db.DateTime(timezone = True), server_default = func.now())
+	date_updated = db.Column(db.DateTime(timezone = True), server_default = func.now(), onupdate = func.now())
+	state = db.Column(db.String, default = 'active')
 
 	def save(self):
 		"""Save a user to a database. This includes creating a new user and editing too"""
@@ -46,9 +46,9 @@ class User(TimestampedModel):
 	"""User model class"""
 	__tablename__ = 'users'
 
-	username = Column(String(50), nullable = False)
-	password = Column(String(256), nullable = False)
-	email = Column(String(256))
+	username = db.Column(db.String(50), nullable = False)
+	password = db.Column(db.String(256), nullable = False)
+	email = db.Column(db.String(256))
 
 	def __init__(self, username, password = None, email = None):
 		"""Initialize new user model"""
@@ -82,13 +82,13 @@ class Deck(TimestampedModel):
 	"""Deck model class"""
 	__tablename__ = 'decks'
 
-	name = Column(String(100), nullable = False)
-	description = Column(String)
-	user_id = Column(Integer, ForeignKey('users.id'))
-	parent_id = Column(Integer, ForeignKey('decks.id'))
+	name = db.Column(db.String(100), nullable = False)
+	description = db.Column(db.String)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+	parent_id = db.Column(db.Integer, db.ForeignKey('decks.id'))
 
-	user = relationship(User, backref = backref('decks', cascade = 'all,delete'))
-	children = relationship('Deck', cascade = 'all,delete')
+	user = db.relationship(User, backref = backref('decks', cascade = 'all,delete'))
+	children = db.relationship('Deck', cascade = 'all,delete')
 
 	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
 		"""Initialize a Deck"""
@@ -129,13 +129,13 @@ class Card(TimestampedModel):
 	"""Card model class"""
 	__tablename__ = 'cards'
 
-	front = Column(Text(), nullable = False)
-	back = Column(Text(), nullable = False)
-	user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-	deck_id = Column(Integer, ForeignKey('decks.id'), nullable = False)
+	front = db.Column(db.Text(), nullable = False)
+	back = db.Column(db.Text(), nullable = False)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+	deck_id = db.Column(db.Integer, db.ForeignKey('decks.id'), nullable = False)
 
-	user = relationship(User, backref = backref('cards', cascade = 'all,delete'))
-	deck = relationship(Deck, backref = backref('cards', cascade = 'all,delete'))
+	user = db.relationship(User, backref = backref('cards', cascade = 'all,delete'))
+	deck = db.relationship(Deck, backref = backref('cards', cascade = 'all,delete'))
 
 	def __init__(self, **kwargs):
 		"""Initialize a card"""
@@ -154,13 +154,13 @@ class StudyPlan(TimestampedModel):
 	"""Study plan model class"""
 	__tablename__ = 'study_plans'
 
-	name = Column(String(100), nullable = False)
-	description = Column(String)
-	order = Column(Enum(OrderTypeEnum), default = OrderTypeEnum.oldest, nullable = False)
-	see_solved = Column(Boolean(), default = False)
-	user_id = Column(Integer, ForeignKey('users.id'))
+	name = db.Column(db.String(100), nullable = False)
+	description = db.Column(db.String)
+	order = db.Column(db.Enum(OrderTypeEnum), default = OrderTypeEnum.oldest, nullable = False)
+	see_solved = db.Column(db.Boolean(), default = False)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-	user = relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
+	user = db.relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
 
 	def __init__(
 			self, name,

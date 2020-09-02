@@ -17,7 +17,8 @@ class BaseConfig:
 	DEBUG = False
 	CSRF_ENABLED = True
 	FLASK_APP = 'flashlearn'
-	DATABASE_URI = os.getenv('DATABASE_URI')
+	SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+	SQLALCHEMY_TRACK_MODIFICATIONS = True
 	LOG_FILE = os.getenv('LOG_FILE') or os.path.join(ROOT_DIR, 'flashlearn.log')
 	LOG_LEVEL = 20
 
@@ -26,7 +27,7 @@ class DevelopmentConfig(BaseConfig):
 	"""Development config class"""
 	DEBUG = True
 	db_path = os.path.join(BASE_DIR, 'dev_db.sqlite3')
-	DATABASE_URI = f'{prefix}{db_path}'
+	SQLALCHEMY_DATABASE_URI = f'{prefix}{db_path}'
 
 
 class TestingConfig(BaseConfig):
@@ -34,7 +35,7 @@ class TestingConfig(BaseConfig):
 	DEBUG = True
 	TESTING = True
 	# db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)), 'tests/test_db.sqlite3')
-	DATABASE_URI = 'sqlite:///:memory:'
+	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 	# Fix to use in-memory db for tests. Replace with above db path to save test data in-file.
 
 
@@ -43,7 +44,7 @@ class ProductionConfig(BaseConfig):
 	DEBUG = False
 	TESTING = False
 	db_path = os.path.join(BASE_DIR, 'dev_db.sqlite3')
-	DATABASE_URI = f'{[prefix]}{db_path}'  # Replace with production database..
+	SQLALCHEMY_DATABASE_URI = f'{[prefix]}{db_path}'  # Replace with production database..
 
 
 app_config = {
