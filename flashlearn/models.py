@@ -50,7 +50,7 @@ class User(TimestampedModel):
 	password = db.Column(db.String(256), nullable = False)
 	email = db.Column(db.String(256))
 
-	def __init__(self, username, password = None, email = None):
+	def __init__(self, username = username, password = None, email = None):
 		"""Initialize new user model"""
 		self.username = username
 		if password:
@@ -90,15 +90,15 @@ class Deck(TimestampedModel):
 	user = db.relationship(User, backref = backref('decks', cascade = 'all,delete'))
 	children = db.relationship('Deck', cascade = 'all,delete')
 
-	def __init__(self, name, description, user_id = None, user = None, parent_id = None):
+	def __init__(self, **kwargs):
 		"""Initialize a Deck"""
-		self.name = name
-		self.description = description
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
-		self.parent_id = parent_id
+		user = False
+		for k, v in kwargs.items():
+			if k == 'user':
+				user = True
+		if user and 'user_id' in kwargs:
+			kwargs.pop('user_id')
+		super(Deck, self).__init__(**kwargs)
 
 	def save(self):
 		if self.parent_id and Deck.query.filter_by(id = self.parent_id).first() is None:
@@ -162,21 +162,17 @@ class StudyPlan(TimestampedModel):
 
 	user = db.relationship(User, backref = backref('study_plans', cascade = 'all,delete'))
 
-	def __init__(
-			self, name,
-			description = None,
-			order = OrderTypeEnum.oldest,
-			user_id = None,
-			user = None
-	):
+	def __init__(self, **kwargs):
 		"""Initialize a study plan"""
-		self.name = name
-		self.order = order
-		self.description = description
-		if user_id:
-			self.user_id = user_id
-		elif user:
-			self.user = user
+		user = False
+		for k, v in kwargs.items():
+			if k == 'user':
+				user = True
+		if user and 'user_id' in kwargs:
+			kwargs.pop('user_id')
+		if 'order' not in kwargs:
+			kwargs['order'] = OrderTypeEnum.oldest
+		super(StudyPlan, self).__init__(**kwargs)
 
 	def __repr__(self):
 		return f'<StudyPlan: {self.name} - {self.state}>'
