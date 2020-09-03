@@ -1,9 +1,8 @@
 import pytest
-from .conftest import BaseTestCase
 from flashlearn.utils import to_bool
 
 
-class TestUtils(BaseTestCase):
+class TestUtils:
 
 	def test_to_boolean(self):
 		assert to_bool("0") is False, "Should return False"

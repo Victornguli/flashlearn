@@ -45,7 +45,7 @@ def card(client, decks, user):
 	the optimal solution to its subproblems.
 	"""
 	card = Card(
-		front = 'What is dynamic programming', back = back, user_id = user, deck_id = decks[1].id)
+		front = 'What is dynamic programming', back = back, user_id = user.id, deck_id = decks[1].id)
 	card.save()
 	return card
 

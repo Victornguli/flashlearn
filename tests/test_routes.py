@@ -1,169 +1,152 @@
-from tests.conftest import BaseTestCase
 from flashlearn.models import Card, Deck, StudyPlan, User
 
 
-class TestRoutes(BaseTestCase):
+class TestRoutes:
 	"""Flashlearn routes test class"""
 
-	def test_index_route(self):
-		res = self.client.get('/')
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Index', res.data)
+	def test_index_route(self, client):
+		res = client.get('/')
+		assert 200 == res.status_code
+		assert 'Index' in res.get_data(as_text = True)
 
-	def test_get_users(self):
-		self.refresh(self.alice)
-		self.login()
-		res = self.client.get('/user/list')
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'alice', res.data)
+	def test_get_users(self, login, client):
+		login()
+		res = client.get('/user/list')
+		assert 200 == res.status_code
+		assert 'alice' in res.get_data(as_text = True)
 
-	def test_get_user(self):
-		self.refresh(self.alice)
-		self.login()
-		res = self.client.get(f'/user/{self.alice.id}')
-		self.assertEqual(200, res.status_code)
-		self.assertIn('alice', res.get_data(as_text = True))
+	def test_get_user(self, login, client, user):
+		login()
+		res = client.get(f'/user/{user.id}')
+		assert 200 == res.status_code
+		assert 'alice' in res.get_data(as_text = True)
 
-	def test_get_user_fail(self):
-		self.login()
-		res = self.client.get(f'/user/{10}')
-		self.assertEqual(404, res.status_code),\
+	def test_get_user_fail(self, login, client):
+		login()
+		res = client.get(f'/user/{10}')
+		assert 404 == res.status_code,\
 			'Should return 404 if user is not found'
 
-	def test_edit_user(self):
-		self.login()
+	def test_edit_user(self, login, client):
+		login()
 		user = User(
 			username = 'test', email = 'test@mail.com', password = 'test')
 		user.save()
-		res = self.client.post(f'/user/{user.id}/edit', data = {
+		res = client.post(f'/user/{user.id}/edit', data = {
 			'password': 'test', 'email': 'new_mail@test.com'})
-		self.assertEqual(200, res.status_code)
+		assert 200 == res.status_code
 		user = User.query.filter_by(id = user.id).first()
-		self.assertEqual('new_mail@test.com', user.email)
+		assert 'new_mail@test.com' == user.email
 
-	def test_delete_user(self):
-		self.refresh(self.alice)
-		self.login()
+	def test_delete_user(self, user, login, client):
+		login()
 		user = User(username = 'test', email = 'test', password = 'test')
 		user.save()
-		self.assertEqual('test', user.username), 'Should save user'
-		res = self.client.get(f'/user/{user.id}/delete')
-		self.assertEqual(200, res.status_code), 'Should return 200 status'
-		self.assertEqual(None, User.query.filter_by(
-			username = 'test').first()), 'Query should return None'
+		assert 'test' == user.username, 'Should save user'
+		res = client.get(f'/user/{user.id}/delete')
+		assert 200 == res.status_code, 'Should return 200 status'
+		assert None == User.query.filter_by(
+			username = 'test').first(), 'Query should return None'
 
-	def test_create_card(self):
-		self.refresh(self.alice, self.algos, self.dp)
-		self.login()
-		res = self.client.post(
+	def test_create_card(self, user, decks, login, client):
+		login()
+		res = client.post(
 			'/card', data = {
 				'front': 'front', 'back': 'back',
-				'deck_id': self.algos.id, 'user_id': self.alice.id
+				'deck_id': decks[0].id, 'user_id': user.id
 			})
-		self.assertEqual(200, res.status_code)
+		assert 200 == res.status_code
 
-	def test_get_card(self):
-		self.refresh(self.alice, self.card)
-		self.login()
-		res = self.client.get(f'/card/{self.card.id}')
-		self.assertEqual(200, res.status_code)
+	def test_get_card(self, client, card, login):
+		login()
+		res = client.get(f'/card/{card.id}')
+		assert 200 == res.status_code
 
-	def test_edit_card(self):
-		self.refresh(self.alice, self.card)
-		self.login()
-		res = self.client.post(
-			f'/card/{self.card.id}/edit', data = {
+	def test_edit_card(self, user, card, login, client):
+		login()
+		res = client.post(
+			f'/card/{card.id}/edit', data = {
 				'front': 'New Front', 'state': 'solved'})
-		self.assertEqual(200, res.status_code)
-		self.card = Card.query.filter_by(id = self.card.id).first()
-		self.assertEqual('solved', self.card.state)
-		self.assertEqual('New Front', self.card.front)
+		assert 200 == res.status_code
+		solved_card = Card.query.filter_by(id = card.id).first()
+		assert 'solved' == solved_card.state
+		assert 'New Front' == solved_card.front
 
-	def test_delete_card(self):
-		self.refresh(self.alice, self.card)
+	def test_delete_card(self, card, login, client):
+		login()
+		res = client.post(f'/card/{card.id}/delete')
+		assert 200 == res.status_code
+		assert Card.query.filter_by(id = card.id).first() is None
 
-		self.login()
-		res = self.client.post(f'/card/{self.card.id}/delete')
-		self.assertEqual(200, res.status_code)
-		self.assertEqual(None, Card.query.filter_by(id = self.card.id).first())
+	def test_get_cards(self, card, login, client):
+		login()
+		res = client.get('/cards')
+		assert 200 == res.status_code
+		assert 'Dynamic Programming' in res.get_data(as_text = True)
 
-	def test_get_cards(self):
-		self.login()
-		res = self.client.get('/cards')
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Dynamic Programming', res.data)
-
-	def test_create_deck(self):
-		self.login()
-		group_response = self.client.post(
+	def test_create_deck(self, user, login, client):
+		login()
+		group_response = client.post(
 			'/deck', data = {
 				'name': 'BFS', 'description': 'Breadth First Search',
-				'user_id': self.alice.id})
-		self.assertEqual(200, group_response.status_code)
-		self.assertIn(b'BFS', group_response.data)
+				'user_id': user.id})
+		assert 200 == group_response.status_code
+		assert 'BFS', group_response.get_data(as_text = True)
 
-	def test_get_deck(self):
-		self.refresh(self.alice, self.algos)
-		self.login()
-		res = self.client.get(f'deck/{self.algos.id}')
-		self.assertEqual(200, res.status_code)
+	def test_get_deck(self, decks, login, client):
+		login()
+		res = client.get(f'deck/{decks[0].id}')
+		assert 200 == res.status_code
 
-	def test_edit_deck(self):
-		self.refresh(self.algos)
-		self.login()
-		res = self.client.post(
-			f'/deck/{self.algos.id}/edit', data = {'name': 'Algorythms'})
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Algorythms', res.data)
+	def test_edit_deck(self, decks, login, client):
+		login()
+		res = client.post(
+			f'/deck/{decks[0].id}/edit', data = {'name': 'Algorythms'})
+		assert res.status_code == 200
+		assert 'Algorythms', res.get_data(as_text = True)
 
-	def test_delete_deck(self):
-		self.refresh(self.algos)
-		self.login()
-		res = self.client.post(
-			f'/deck/{self.algos.id}/delete')
-		self.assertEqual(200, res.status_code)
-		self.assertEqual(None, Deck.query.filter_by(id = self.algos.id).first())
+	def test_delete_deck(self, decks, login, client):
+		login()
+		res = client.post(
+			f'/deck/{decks[0].id}/delete')
+		assert 200 == res.status_code
+		assert Deck.query.filter_by(id = decks[0].id).first() is None
 
-	def test_get_groups(self):
-		self.refresh(self.alice, self.algos)
-		self.login()
-		res = self.client.get('/decks')
-		self.assertEqual(200, res.status_code)
+	def test_get_decks(self, login, decks, client):
+		login()
+		res = client.get('/decks')
+		assert 200 == res.status_code
 
-	def test_create_study_plan(self):
-		self.login()
-		res = self.client.post('/plan', data = {
+	def test_create_study_plan(self, login, client):
+		login()
+		res = client.post('/plan', data = {
 			'name': 'test_plan', 'description': 'test study plan', 'order': 'random'})
-		self.assertEqual(200, res.status_code)
+		assert 200 == res.status_code
 
-	def test_get_study_plan(self):
-		self.refresh(self.plan)
-		self.login()
-		res = self.client.get(f'/plan/{self.plan.id}')
-		self.assertEqual(200, res.status_code)
+	def test_get_study_plan(self, plan, login, client):
+		login()
+		res = client.get(f'/plan/{plan.id}')
+		assert 200 == res.status_code
 
-	def test_get_study_plans(self):
-		self.refresh(self.plan)
-		self.login()
-		res = self.client.get('/plans')
-		self.assertEqual(200, res.status_code)
+	def test_get_study_plans(self, plan, login, client):
+		login()
+		res = client.get('/plans')
+		assert 200 == res.status_code
 
-	def test_reset_deck(self):
-		self.refresh(self.dp, self.card)
-		self.login()
-		res = self.client.post(f'/deck/{self.dp.id}/reset', data = {
+	def test_reset_deck(self, card, decks, login, client):
+		login()
+		res = client.post(f'/deck/{decks[1].id}/reset', data = {
 			'state': 'solved'})
-		self.assertEqual(200, res.status_code)
-		card = Card.query.filter_by(deck_id = self.dp.id).first()
-		self.assertEqual('solved', card.state)
+		assert 200 == res.status_code
+		card = Card.query.filter_by(deck_id = decks[1].id).first()
+		assert card.state == 'solved'
 
-	def test_get_next_card(self):
-		self.refresh(self.dp, self.card, self.plan)
-		self.login()
-		self.plan = StudyPlan.get_by_id(self.plan.id)
-		card2 = Card(front = 'test', back = 'test', deck = self.dp, user = self.alice)
+	def test_get_next_card(self, login, plan, decks, user, client, card):
+		login()
+		study_plan = StudyPlan.get_by_id(plan.id)
+		card2 = Card(front = 'test', back = 'test', deck = decks[0], user = user)
 		card2.save()
-		res = self.client.post('/study_plan/next', data = {
-			'study_plan_id': self.plan.id, 'deck_id': self.dp.id})
-		self.assertEqual(200, res.status_code)
-		self.assertIn(b'Dynamic Programming', res.data)
+		res = client.post('/study_plan/next', data = {
+			'study_plan_id': study_plan.id, 'deck_id': decks[1].id})
+		assert 200 == res.status_code
+		assert 'Dynamic Programming' in res.get_data(as_text = True)
