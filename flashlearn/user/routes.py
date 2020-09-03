@@ -69,10 +69,10 @@ def list_users():
 @login_required
 def get_user(user_id):
 	if request.method == 'GET':
-		user = User.get_by_id(user_id)
+		user = User.get_or_404(user_id)
 		if user is None:
 			return 'User not found', 404
-		return jsonify(User.get_by_id(user_id).to_json)
+		return jsonify(User.get_or_404(user_id).to_json)
 	return jsonify('Invalid request ')
 
 
@@ -87,9 +87,7 @@ def delete_user(user_id):
 @bp.route('/<int:user_id>/edit', methods = ('POST',))
 @login_required
 def edit_user(user_id):
-	user = User.get_by_id(user_id)
-	if user is None:
-		abort(404)
+	user = User.get_or_404(user_id)
 	password = request.form.get('password', None)
 	email = request.form.get('email', user.email)
 
@@ -97,3 +95,9 @@ def edit_user(user_id):
 		user.set_password(password)
 	user.update(email = email)
 	return jsonify(user.to_json)
+
+
+@bp.route('/<str:username>/reset_password', methods = ('POST', 'GET'))
+def reset_password(username):
+	# TODO: Add emailing options for resetting a password
+	pass
