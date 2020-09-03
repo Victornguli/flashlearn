@@ -89,6 +89,13 @@ class TestRoutes:
 		res = client.get('/plans')
 		assert 200 == res.status_code
 
+	@staticmethod
+	def test_delete_study_plan(plan, login, client):
+		login()
+		res = client.get(f'/plan/{plan.id}/delete')
+		assert res.status_code == 200
+		assert StudyPlan.query.filter_by(id = plan.id).first() is None
+
 	def test_reset_deck(self, card, decks, login, client):
 		login()
 		res = client.post(f'/deck/{decks[1].id}/reset', data = {

@@ -37,6 +37,7 @@ def get_or_create_card(card_id):
 
 
 @bp.route('/card/<int:card_id>/edit', methods = ('POST',))
+@login_required
 def edit_card(card_id):
 	if request.method == 'POST':
 		state = request.form.get('state')
@@ -55,6 +56,7 @@ def edit_card(card_id):
 
 
 @bp.route('/card/<int:card_id>/delete', methods = ('POST',))
+@login_required
 def delete_card(card_id):
 	if request.method == 'POST':
 		card = Card.query.filter_by(id = card_id)
@@ -96,6 +98,7 @@ def get_or_create_deck(deck_id):
 
 
 @bp.route('/deck/<int:deck_id>/edit', methods = ('POST',))
+@login_required
 def edit_deck(deck_id):
 	deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
 	error = ''
@@ -111,6 +114,7 @@ def edit_deck(deck_id):
 
 
 @bp.route('/deck/<int:deck_id>/delete', methods = ('POST',))
+@login_required
 def delete_deck(deck_id):
 	if request.method == 'POST':
 		deck = Deck.query.filter_by(id = deck_id, state = 'active').first()
@@ -125,6 +129,7 @@ def delete_deck(deck_id):
 
 
 @bp.route('/decks', methods = ('GET', 'POST'))
+@login_required
 def list_decks():
 	decks = Deck.query.all()
 	res = []
@@ -134,6 +139,7 @@ def list_decks():
 
 
 @bp.route('/deck/<int:deck_id>/reset', methods = ('GET', 'POST'))
+@login_required
 def reset_deck(deck_id):
 	state = request.form.get('state')
 	if state not in ('active', 'solved'):
@@ -148,6 +154,7 @@ def reset_deck(deck_id):
 
 
 @bp.route('/plans', methods = ('GET', 'POST'))
+@login_required
 def list_study_plans():
 	plans = [plan.to_json for plan in StudyPlan.all()]
 	return jsonify(plans)
@@ -155,6 +162,7 @@ def list_study_plans():
 
 @bp.route('/plan', methods = ('POST',), defaults = {'plan_id': None})
 @bp.route('/plan/<int:plan_id>')
+@login_required
 def get_or_create_study_plan(plan_id):
 	if request.method == 'POST':
 		order = request.form.get('order', None)
@@ -175,7 +183,16 @@ def get_or_create_study_plan(plan_id):
 	return jsonify('study plan')
 
 
+@bp.route('/plan/<int:plan_id>/delete', methods = ['POST', 'GET'])
+@login_required
+def delete_plan(plan_id):
+	plan = StudyPlan.query.get_or_404(plan_id)
+	plan.delete()
+	return jsonify('OK')
+
+
 @bp.route('study_plan/next', methods = ('GET', 'POST'))
+@login_required
 def get_next_card():
 	study_plan_id = request.form.get('study_plan_id')
 	deck_id = request.form.get('deck_id')
