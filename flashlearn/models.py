@@ -16,14 +16,22 @@ class TimestampedModel(db.Model):
     __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    date_created = db.Column(
+        db.DateTime(timezone=True),
+        server_default=func.now()
+    )
     date_updated = db.Column(
-        db.DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        db.DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
     )
     state = db.Column(db.String, default="active")
 
     def save(self):
-        """Save a user to a database. This includes creating a new user and editing too"""
+        """
+        Save a user to a database.
+        This includes creating a new user and editing too
+        """
         db.session.add(self)
         db.session.commit()
 
@@ -96,7 +104,10 @@ class Deck(TimestampedModel):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     parent_id = db.Column(db.Integer, db.ForeignKey("decks.id"))
 
-    user = db.relationship(User, backref=backref("decks", cascade="all,delete"))
+    user = db.relationship(
+        User,
+        backref=backref("decks", cascade="all,delete")
+    )
     children = db.relationship("Deck", cascade="all,delete")
 
     def __init__(self, **kwargs):
@@ -110,7 +121,8 @@ class Deck(TimestampedModel):
         super(Deck, self).__init__(**kwargs)
 
     def save(self):
-        if self.parent_id and Deck.query.filter_by(id=self.parent_id).first() is None:
+        if self.parent_id and Deck.query.filter_by(
+                id=self.parent_id).first() is None:
             raise ValueError("Parent does not exist")
         db.session.add(self)
         db.session.commit()
@@ -148,20 +160,32 @@ class Card(TimestampedModel):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     deck_id = db.Column(db.Integer, db.ForeignKey("decks.id"), nullable=False)
 
-    user = db.relationship(User, backref=backref("cards", cascade="all,delete"))
-    deck = db.relationship(Deck, backref=backref("cards", cascade="all,delete"))
+    user = db.relationship(
+        User,
+        backref=backref("cards", cascade="all,delete")
+    )
+    deck = db.relationship(
+        Deck,
+        backref=backref("cards", cascade="all,delete")
+    )
 
     def __init__(self, **kwargs):
         """Initialize a card"""
         super(Card, self).__init__(**kwargs)
 
     def __repr__(self):
-        return f"<Card: {self.name} - {self.user.username} - {self.group.name}>"
+        return (
+            f"<Card: {self.name} - {self.user.username}"
+            f" - {self.group.name}>"
+        )
 
     @property
     def to_json(self):
         return dict(
-            id=self.id, front=self.front, back=self.back, user=self.user.to_json
+            id=self.id,
+            front=self.front,
+            back=self.back,
+            user=self.user.to_json
         )
 
 
@@ -178,7 +202,10 @@ class StudyPlan(TimestampedModel):
     see_solved = db.Column(db.Boolean(), default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-    user = db.relationship(User, backref=backref("study_plans", cascade="all,delete"))
+    user = db.relationship(
+        User,
+        backref=backref("study_plans", cascade="all,delete")
+    )
 
     def __init__(self, **kwargs):
         """Initialize a study plan"""
@@ -221,7 +248,9 @@ def add_defaults_on_user_create(mapper, connection, target):
         study_plan = StudyPlan.__table__
         connection.execute(
             study_plan.insert().values(
-                name="Default", description="Default Study Plan", user_id=target.id
+                name="Default",
+                description="Default Study Plan",
+                user_id=target.id
             )
         )
 
