@@ -1,16 +1,17 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from flask import Flask, jsonify, g
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
-from flashlearn.decorators import login_required
+# from flashlearn.decorators import login_required
+
 # from flashlearn.database import SQLAlchemyDB
 
 db = SQLAlchemy()
 
 
-def create_app(config = None):
+def create_app(config=None):
     """
     Create app factory function to initialize the Flask App
     :param config: The configuration name, if required:
@@ -27,22 +28,25 @@ def create_app(config = None):
     if config:
         flask_env = config
     else:
-        flask_env = os.getenv('FLASK_ENV')
+        flask_env = os.getenv("FLASK_ENV")
     if not flask_env:
-        flask_env = 'development'
-    os.environ['FLASK_ENV'] = flask_env
-    conf_mapping = app_config.get(flask_env, '')
+        flask_env = "development"
+    os.environ["FLASK_ENV"] = flask_env
+    conf_mapping = app_config.get(flask_env, "")
     if not conf_mapping:
-        raise ValueError('Invalid environment settings')
+        raise ValueError("Invalid environment settings")
     app.config.from_object(conf_mapping)
 
     # Setup logging
     if not app.testing:
         formatter = logging.Formatter(
-            '[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s')
+            "[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s"
+            "- %(message)s"
+        )
         handler = RotatingFileHandler(
-            app.config.get('LOG_FILE'), maxBytes = 10000000, backupCount = 1)
-        handler.setLevel(logging.getLevelName(app.config.get('LOG_LEVEL', 20)))
+            app.config.get("LOG_FILE"), maxBytes=10000000, backupCount=1
+        )
+        handler.setLevel(logging.getLevelName(app.config.get("LOG_LEVEL", 20)))
         handler.setFormatter(formatter)
         app.logger.addHandler(handler)
 
@@ -52,13 +56,14 @@ def create_app(config = None):
     except OSError:
         pass
 
-    @app.route('/')
+    @app.route("/")
     def index():
         # user = g.user
         # TODO: Add index code
         return "Index"
 
     from flashlearn.commands import register_commands
+
     register_commands(app)  # Register app cli commands
 
     db.init_app(app)
@@ -66,8 +71,10 @@ def create_app(config = None):
     # app.teardown_appcontext(db.close_session)
 
     from flashlearn.user import bp, routes
+
     app.register_blueprint(bp)
 
-    from flashlearn.core import bp, routes
+    from flashlearn.core import bp, routes  # noqa
+
     app.register_blueprint(bp)
     return app
