@@ -1,9 +1,10 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
+
 # from flashlearn.decorators import login_required
 
 # from flashlearn.database import SQLAlchemyDB
@@ -40,8 +41,7 @@ def create_app(config=None):
     # Setup logging
     if not app.testing:
         formatter = logging.Formatter(
-            "[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s"
-            "- %(message)s"
+            "[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s" "- %(message)s"
         )
         handler = RotatingFileHandler(
             app.config.get("LOG_FILE"), maxBytes=10000000, backupCount=1
@@ -60,7 +60,7 @@ def create_app(config=None):
     def index():
         # user = g.user
         # TODO: Add index code
-        return "Index"
+        return render_template("dashboard/index.html")
 
     from flashlearn.commands import register_commands
 
