@@ -94,7 +94,7 @@ body {
 }
 
 .navbar .navbar-toggler {
-    top: .25rem;
+    /* top: .25rem; */
     right: 1rem;
 }
 
@@ -128,11 +128,15 @@ body {
     border: none;
 }
 
+#navbar-nav-no-collapse .nav-link {
+    padding: 0;
+}
+
 .navbar-toggler:focus {
     outline: none;
 }
 
 .nav-search {
-    padding-right: 1rem;
+    padding-right: 0.75rem;
     border-right: 2px solid rgb(148, 148, 148);
 }
