@@ -6,3 +6,6 @@ htmlcov
 .coverage
 *.log
 *.sqlite3
+.vscode
+.pytest_cache
+.editorconfig
