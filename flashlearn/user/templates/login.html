@@ -20,8 +20,13 @@
                         <input type="password" class="form-control" name="password" id="password"
                             placeholder="Enter your password" required>
                     </div>
-                    <div class="form-group mt-5">
+                    <hr class="mt-1 mb-3">
+                    <div class="form-group">
                         <input class="form-control btn-primary" type="submit" value="Login" id="auth-submit-btn">
+                    </div>
+                    <hr class="mt-5 mb-2">
+                    <div class="text-left">
+                        <a href="{{ url_for('user.reset_password') }}">Forgot password?</a>
                     </div>
                 </form>
             </div>

@@ -110,7 +110,10 @@ def edit_user(user_id):
     return jsonify(user.to_json)
 
 
-@bp.route("/<string:username>/reset_password", methods=("POST", "GET"))
-def reset_password(username):
-    # TODO: Add emailing options for resetting a password
-    pass
+@bp.route("/reset-password", methods=("POST", "GET"))
+def reset_password():
+    if request.method == "GET":
+        return render_template("forgot-password.html")
+    elif request.method == "POST":
+        flash("Password reset successfully")
+        return redirect("reset-password")
