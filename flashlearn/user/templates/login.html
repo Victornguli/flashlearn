@@ -9,7 +9,8 @@
                 {%if error %}
                 <div class="alert alert-danger">{{error}}</div>
                 {% endif %}
-                <form class="form" action="/user/login" method="POST">
+                <form class="form" action="{{ url_for('user.login') }}" method="POST">
+                    <input type="hidden" name="next" value="{{ request.args.get('next', '') }}" />
                     <div class="form-group text-left">
                         <label for="username">Username:</label>
                         <input type="text" class="form-control" name="username" id="username"

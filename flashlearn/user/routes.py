@@ -18,6 +18,8 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        next_url = request.form.get("next")
+
         error = ""
         user = User.query.filter_by(username=username).first()
         if user is None or not user.password_is_valid(password):
@@ -27,9 +29,9 @@ def login():
             session.clear()
             session["user_id"] = user.id
             flash("You were successfully logged in")
-            if request.args.get("next"):
-                return redirect(request.args.get("next", ""))
-            # return render_template("/dashboard/_decks.html")
+            print(next_url)
+            if next_url:
+                return redirect(next_url)
             return redirect(url_for("index"))
         return render_template("login.html", error=error)
     else:
