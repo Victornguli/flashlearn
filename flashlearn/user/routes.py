@@ -1,4 +1,13 @@
-from flask import jsonify, g, request, session, url_for, redirect
+from flask import (
+    jsonify,
+    g,
+    request,
+    session,
+    url_for,
+    redirect,
+    render_template,
+    flash,
+)
 from flashlearn.user import bp
 from flashlearn.models import User
 from flashlearn.decorators import login_required
@@ -17,10 +26,14 @@ def login():
         if not error:
             session.clear()
             session["user_id"] = user.id
+            flash("You were successfully logged in")
             if request.args.get("next"):
                 return redirect(request.args.get("next", ""))
+            # return render_template("/dashboard/_decks.html")
             return redirect(url_for("index"))
-        return jsonify(error)  # TODO: Replace with flash(message)
+        return render_template("/auth/login.html", error=error)
+    else:
+        return render_template("/auth/login.html")
     return jsonify("Login Route")
 
 

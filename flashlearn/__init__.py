@@ -5,7 +5,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
 
-# from flashlearn.decorators import login_required
+from flashlearn.decorators import login_required
 
 # from flashlearn.database import SQLAlchemyDB
 
@@ -57,10 +57,11 @@ def create_app(config=None):
         pass
 
     @app.route("/")
+    @login_required
     def index():
         # user = g.user
         # TODO: Add index code
-        return render_template("dashboard/index.html")
+        return render_template("dashboard/_decks.html")
 
     from flashlearn.commands import register_commands
 

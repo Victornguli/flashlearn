@@ -127,6 +127,16 @@ body {
 }
 
 
+/* Auth form container */
+#auth-form-container .card {
+    width: 500px;
+}
+
+#auth-form-container .form #auth-submit-btn {
+    width: 100%;
+}
+
+
 /* Media queries */
 @media (max-width: 767.98px) {
 
@@ -149,5 +159,9 @@ body {
 
     #navbar-nav-no-collapse {
         margin-right: 4rem !important;
+    }
+
+    #auth-form-container .card {
+        width: 100%;
     }
 }
