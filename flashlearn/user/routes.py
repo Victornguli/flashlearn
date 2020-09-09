@@ -31,9 +31,9 @@ def login():
                 return redirect(request.args.get("next", ""))
             # return render_template("/dashboard/_decks.html")
             return redirect(url_for("index"))
-        return render_template("/auth/login.html", error=error)
+        return render_template("login.html", error=error)
     else:
-        return render_template("/auth/login.html")
+        return render_template("login.html")
     return jsonify("Login Route")
 
 
