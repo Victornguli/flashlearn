@@ -1,4 +1,13 @@
-from flask import jsonify, g, request, session, url_for, redirect
+from flask import (
+    jsonify,
+    g,
+    request,
+    session,
+    url_for,
+    redirect,
+    render_template,
+    flash,
+)
 from flashlearn.user import bp
 from flashlearn.models import User
 from flashlearn.decorators import login_required
@@ -9,6 +18,8 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        next_url = request.form.get("next")
+
         error = ""
         user = User.query.filter_by(username=username).first()
         if user is None or not user.password_is_valid(password):
@@ -17,10 +28,14 @@ def login():
         if not error:
             session.clear()
             session["user_id"] = user.id
-            if request.args.get("next"):
-                return redirect(request.args.get("next", ""))
+            flash("You were successfully logged in")
+            print(next_url)
+            if next_url:
+                return redirect(next_url)
             return redirect(url_for("index"))
-        return jsonify(error)  # TODO: Replace with flash(message)
+        return render_template("login.html", error=error)
+    else:
+        return render_template("login.html")
     return jsonify("Login Route")
 
 
@@ -97,7 +112,10 @@ def edit_user(user_id):
     return jsonify(user.to_json)
 
 
-@bp.route("/<string:username>/reset_password", methods=("POST", "GET"))
-def reset_password(username):
-    # TODO: Add emailing options for resetting a password
-    pass
+@bp.route("/reset-password", methods=("POST", "GET"))
+def reset_password():
+    if request.method == "GET":
+        return render_template("forgot-password.html")
+    elif request.method == "POST":
+        flash("Password reset successfully")
+        return redirect("reset-password")

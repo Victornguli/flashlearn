@@ -1,0 +1,16 @@
+/* Auth form container */
+#auth-form-container .card {
+    width: 500px;
+}
+
+#auth-form-container .form #auth-submit-btn {
+    width: 100%;
+}
+
+
+/* Media queries */
+@media (max-width: 767.98px) {
+    #auth-form-container .card {
+        width: 100%;
+    }
+}

@@ -7,7 +7,7 @@ class TestAuth:
     def test_get_login(self, client):
         res = client.get("user/login")
         assert res.status_code == 200
-        assert "Login Route" in res.get_data(as_text=True)
+        assert "Login to flashlearn" in res.get_data(as_text=True)
 
     def test_get_register(self, client):
         res = client.get("user/register")
@@ -39,7 +39,7 @@ class TestAuth:
         assert (
             User.query.filter_by(username="testuser").first() is not None
         ), "Should create user successfully"
-        assert "Login Route" in res.get_data(as_text=True)
+        assert "Login to flashlearn" in res.get_data(as_text=True)
 
     def test_register_fail(self, user, client):
         """
@@ -56,8 +56,7 @@ class TestAuth:
 
     def test_logout(self, logout):
         response = logout()
-        assert response.status_code == 302,\
-            "Should logout and redirect to login"
+        assert response.status_code == 302, "Should logout and redirect to login"
 
     def test_login_required(self, client):
         res = client.get("/cards")
