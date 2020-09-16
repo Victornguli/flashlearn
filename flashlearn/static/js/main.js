@@ -91,3 +91,29 @@ function deleteDeck(deck_id) {
         }
     });
 }
+
+$("#create-deck-form").submit(function (e) {
+
+    e.preventDefault();
+
+    var form = $(this);
+    $.ajax({
+        type: "POST",
+        url: '/deck',
+        data: form.serialize(),
+        success: (data) => {
+            Toast.fire({
+                icon: 'success',
+                title: 'Deck created successfully'
+            }).then(() => {
+                location.replace('/decks');
+            })
+        },
+        error: (data) => {
+            Toast.fire({
+                icon: 'error',
+                title: 'Failed to create deck. Try again later'
+            })
+        }
+    });
+});

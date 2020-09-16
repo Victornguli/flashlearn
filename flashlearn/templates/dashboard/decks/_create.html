@@ -21,15 +21,15 @@
             </div>
         </div>
     </div>
-    <form class="form mt-4">
+    <form class="form mt-4" id="create-deck-form">
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Deck Name">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Deck Name" required>
             </div>
             <div class="col-md-6 form-group">
-                <label for="parent">Parent Deck:</label>
-                <select class="form-control select2" id="parent" name="parent">
+                <label for="parent_id">Parent Deck:</label>
+                <select class="form-control select2" id="parent_id" name="parent_id">
                     {% for deck in decks %}
                     <option value="{{deck.id}}">deck.name</option>
                     {% endfor %}
