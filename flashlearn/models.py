@@ -29,8 +29,7 @@ class TimestampedModel(db.Model):
 
     def save(self):
         """
-        Save a user to a database.
-        This includes creating a new user and editing too
+        Save an object to the database.
         """
         db.session.add(self)
         db.session.commit()
@@ -90,6 +89,15 @@ class User(TimestampedModel):
             is_active=True if self.state == "active" else False,
         )
 
+    def save(self):
+        """
+        Overrides default save method.
+        """
+        db.session.add(self)
+        db.session.commit()
+        Deck.create_default_deck(user_id=self.id)
+        StudyPlan.create_default_study_plan(user_id=self.id)
+
     def __repr__(self):
         return f"<User: {self.username} - {self.state}>"
 
@@ -145,6 +153,27 @@ class Deck(TimestampedModel):
     @property
     def child_count(self):
         return len(self.children)
+
+    @classmethod
+    def create_default_deck(cls, user_id):
+        user = User.query.get_or_404(user_id)
+        default_deck = Deck(
+            name='Default',
+            description='Default Deck',
+            user=user
+        )
+        default_deck.save()
+        return default_deck
+
+    def delete(self):
+        create_default = False
+        user = User.query.filter_by(id=self.user_id).first()
+        if user and len(user.decks) < 2:
+            create_default = True
+        db.session.delete(self.query.filter_by(id=self.id).first())
+        db.session.commit()
+        if create_default:
+            self.create_default_deck(user_id=user.id)
 
     def __repr__(self):
         return f"<Deck: {self.name}>"
@@ -232,48 +261,23 @@ class StudyPlan(TimestampedModel):
             order=self.order.value,
         )
 
-
-@event.listens_for(User, "after_insert")
-def add_defaults_on_user_create(mapper, connection, target):
-    assert target.id is not None
-    if not target.decks:
-        deck = Deck.__table__
-        connection.execute(
-            deck.insert().values(
-                name="Default", description="Default Deck", user_id=target.id
-            )
+    @classmethod
+    def create_default_study_plan(cls, user_id):
+        user = User.query.get_or_404(user_id)
+        default_plan = StudyPlan(
+            name='Default',
+            description='Default Study Plan',
+            user=user
         )
+        default_plan.save()
+        return default_plan
 
-    if not target.study_plans:
-        study_plan = StudyPlan.__table__
-        connection.execute(
-            study_plan.insert().values(
-                name="Default",
-                description="Default Study Plan",
-                user_id=target.id
-            )
-        )
-
-
-@event.listens_for(Deck, "after_delete")
-def set_default_deck_on_delete(mapper, connection, target):
-    assert target.id is not None
-    if len(target.user.decks) == 0:
-        deck = Deck.__table__
-        connection.execute(
-            deck.insert().values(
-                name="Default", description="Default Deck", user_id=target.id
-            )
-        )
-
-
-@event.listens_for(StudyPlan, "after_delete")
-def set_default_plan_on_delete(mapper, connection, target):
-    assert target.id is not None
-    if len(target.user.study_plans) == 0:
-        deck = Deck.__table__
-        connection.execute(
-            deck.insert().values(
-                name="Default", description="Default Deck", user_id=target.id
-            )
-        )
+    def delete(self):
+        create_default = False
+        user = User.query.filter_by(id=self.user_id).first()
+        if user and len(user.study_plans) < 2:
+            create_default = True
+        db.session.delete(self.query.filter_by(id=self.id).first())
+        db.session.commit()
+        if create_default:
+            self.create_default_study_plan(user_id=user.id)
