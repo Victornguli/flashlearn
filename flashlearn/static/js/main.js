@@ -6,11 +6,62 @@ $(document).ready(function () {
     });
 
     var decksDt = $('#decks').DataTable({
+        responsive: {
+            details: {
+                renderer: function (api, rowIdx, columns) {
+                    var data = $.map(columns, function (col, i) {
+                        // Hacky way of hiding the index column for good :)
+                        if (col.columnIndex == 0) {
+                            return ''
+                        }
+                        return col.hidden ?
+                            `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
+                                <span class="dtr-title">${col.title}</span>
+                                <span class="dtr-data">${col.data}</span>
+                            </li>` :
+                            '';
+                    }).join('');
+
+                    data = `
+                    <ul class="dtr-details" data-dtr-index="${rowIdx}">
+                    ${data}
+                    </ul>`;
+                    return data ?
+                        $('<table/>').append(data) :
+                        false;
+                }
+            }
+        },
         "columnDefs": [{
-            "searchable": false,
-            "orderable": false,
-            "targets": 0
-        }],
+                "searchable": false,
+                "orderable": false,
+                "targets": 0
+            },
+            {
+                "responsivePriority": 1,
+                "targets": 1
+            },
+            {
+                "responsivePriority": 2,
+                "targets": 5
+            },
+            {
+                "responsivePriority": 10001,
+                "targets": 0
+            },
+            {
+                "responsivePriority": 3,
+                "targets": 2
+            },
+            {
+                "responsivePriority": 3,
+                "targets": 3
+            },
+            {
+                "responsivePriority": 5,
+                "targets": 4
+            }
+        ],
         "order": [
             [1, 'asc']
         ],
