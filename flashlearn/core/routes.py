@@ -28,7 +28,12 @@ def get_or_create_card(card_id):
         if not Deck.query.filter_by(id=deck_id, state="active").first():
             error += "Selected deck does not exist"
         if not error:
-            new_card = Card(front=front, back=back, deck_id=deck_id, user_id=user.id)
+            new_card = Card(
+                front=front,
+                back=back,
+                deck_id=deck_id,
+                user_id=user.id
+            )
             new_card.save()
             return jsonify(new_card.to_json)
         return jsonify(error)
@@ -80,14 +85,11 @@ def list_cards():
     return jsonify(res)
 
 
-@bp.route("/deck", defaults={"deck_id": None}, methods=("POST",))
-@bp.route("/deck/<int:deck_id>")
+@bp.route("/deck", methods=("POST", "GET"))
 @login_required
-def get_or_create_deck(deck_id):
+def create_deck():
     if request.method == "GET":
-        deck = Deck.query.filter_by(id=deck_id, state="active").first()
-        if deck is not None:
-            return jsonify(deck.to_json)
+        return render_template('dashboard/decks/_create.html')
     elif request.method == "POST":
         deck = Deck(
             name=request.form.get("name"),
@@ -96,8 +98,16 @@ def get_or_create_deck(deck_id):
             parent_id=request.form.get("parent_id", None),
         )
         deck.save()
-        return jsonify(deck.to_json)
-    return "Deck not found"
+        return jsonify("Success")
+
+
+@bp.route("/deck/<int:deck_id>")
+@login_required
+def get_deck(deck_id):
+    if request.method == "GET":
+        deck = Deck.query.filter_by(id=deck_id, state="active").first()
+        if deck is not None:
+            return jsonify(deck.to_json)
 
 
 @bp.route("/deck/<int:deck_id>/edit", methods=("POST",))
@@ -125,7 +135,6 @@ def delete_deck(deck_id):
         deck = Deck.query.get_or_404(deck_id)
         deck.delete()
         return jsonify("success")
-    abort("Failed to Delete Deck")
 
 
 @bp.route("/decks", methods=("GET", "POST"))
@@ -133,7 +142,7 @@ def delete_deck(deck_id):
 def decks():
     decks = Deck.query.filter_by(user_id=g.user.id)
     if request.method == "GET":
-        return render_template("dashboard/_decks.html", decks=decks)
+        return render_template("dashboard/decks/_decks.html", decks=decks)
     elif request.method == "POST":
         res = []
         for deck in decks:

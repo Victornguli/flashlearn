@@ -1,4 +1,10 @@
 $(document).ready(function () {
+    // Init Select2 Options
+    $('.select2').select2({
+        placeholder: "Select an option",
+        allowClear: true
+    });
+
     var decksDt = $('#decks').DataTable({
         "columnDefs": [{
             "searchable": false,

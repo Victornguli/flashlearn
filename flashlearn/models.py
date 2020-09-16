@@ -1,5 +1,4 @@
 import logging
-from sqlalchemy import event
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt

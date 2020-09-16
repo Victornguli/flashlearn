@@ -1,8 +1,8 @@
 {% extends "./dashboard/index.html" %}
 
 {% block maincontent %}
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-    <div class="chartjs-size-monitor"
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3">
+    <!-- <div class="chartjs-size-monitor"
         style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;">
         <div class="chartjs-size-monitor-expand"
             style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
@@ -12,7 +12,7 @@
             style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
             <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
         </div>
-    </div>
+    </div> -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="flashes mt-2" style="text-decoration: none; list-style: none; margin: 0; padding: 0">
@@ -24,25 +24,27 @@
     {% endwith %}
     <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Decks</h1>
+        <h3 class="h3">Decks</h3>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-folder-plus">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
-                        </path>
-                        <line x1="12" y1="11" x2="12" y2="17"></line>
-                        <line x1="9" y1="14" x2="15" y2="14"></line>
-                    </svg>
-                    Create a deck
-                </button>
+                <a href="{{ url_for('core.create_deck') }}">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-folder-plus">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                            </path>
+                            <line x1="12" y1="11" x2="12" y2="17"></line>
+                            <line x1="9" y1="14" x2="15" y2="14"></line>
+                        </svg>
+                        Create a deck
+                    </button>
+                </a>
             </div>
         </div>
     </div>
 
-    <table id="decks" class="table table-striped row-border hover w-100">
+    <table id="decks" class="table table-striped row-border table-border hover w-100 dt-table">
         <thead>
             <tr>
                 <th>#</th>
