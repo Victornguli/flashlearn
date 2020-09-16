@@ -139,6 +139,19 @@ body {
     border-top: none;
 }
 
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0.85em;
+    white-space: pre-wrap;
+}
+
+@media screen and (max-width: 767px) {
+
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: left;
+    }
+}
+
 
 /* Select-2 */
 .select2-container--default .select2-selection--single {
