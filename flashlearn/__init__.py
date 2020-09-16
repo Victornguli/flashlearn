@@ -1,7 +1,7 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
 
@@ -61,7 +61,8 @@ def create_app(config=None):
     def index():
         # user = g.user
         # TODO: Add index code
-        return render_template("dashboard/_decks.html")
+        return redirect(url_for("core.decks"))
+        # return render_template("dashboard/_decks.html")
 
     from flashlearn.commands import register_commands
 

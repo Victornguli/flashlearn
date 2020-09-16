@@ -1,4 +1,4 @@
-from flask import request, jsonify, flash, g, abort
+from flask import request, jsonify, flash, g, abort, render_template
 from sqlalchemy.sql.expression import func
 from flashlearn.core import bp
 from flashlearn.models import Card, Deck, StudyPlan
@@ -28,12 +28,7 @@ def get_or_create_card(card_id):
         if not Deck.query.filter_by(id=deck_id, state="active").first():
             error += "Selected deck does not exist"
         if not error:
-            new_card = Card(
-                front=front,
-                back=back,
-                deck_id=deck_id,
-                user_id=user.id
-            )
+            new_card = Card(front=front, back=back, deck_id=deck_id, user_id=user.id)
             new_card.save()
             return jsonify(new_card.to_json)
         return jsonify(error)
@@ -127,25 +122,23 @@ def edit_deck(deck_id):
 @login_required
 def delete_deck(deck_id):
     if request.method == "POST":
-        deck = Deck.query.filter_by(id=deck_id, state="active").first()
-        error = ""
-        if not deck:
-            error = "Deck not found"
-        if not error:
-            deck.delete()
-            return jsonify("OK")
-        return jsonify(error)
-    return jsonify("Could not delete deck")
+        deck = Deck.query.get_or_404(deck_id)
+        deck.delete()
+        return jsonify("success")
+    abort("Failed to Delete Deck")
 
 
 @bp.route("/decks", methods=("GET", "POST"))
 @login_required
-def list_decks():
-    decks = Deck.query.all()
-    res = []
-    for deck in decks:
-        res.append(deck.to_json)
-    return jsonify(res)
+def decks():
+    decks = Deck.query.filter_by(user_id=g.user.id)
+    if request.method == "GET":
+        return render_template("dashboard/_decks.html", decks=decks)
+    elif request.method == "POST":
+        res = []
+        for deck in decks:
+            res.append(deck.to_json)
+        return jsonify(res)
 
 
 @bp.route("/deck/<int:deck_id>/reset", methods=("GET", "POST"))

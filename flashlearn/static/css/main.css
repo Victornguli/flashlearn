@@ -127,6 +127,12 @@ body {
 }
 
 
+/* Datatable */
+.dt-icon {
+    cursor: pointer;
+}
+
+
 /* Media queries */
 @media (max-width: 767.98px) {
 
