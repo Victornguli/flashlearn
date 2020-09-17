@@ -77,12 +77,10 @@ def delete_card(card_id):
 
 @bp.route("/cards")
 @login_required
-def list_cards():
-    cards = Card.query.all()
-    res = []
-    for card in cards:
-        res.append(card.to_json)
-    return jsonify(res)
+def cards():
+    if request.method == 'GET':
+        cards = Card.query.filter_by(user_id=g.user.id)
+        return render_template('dashboard/cards/_cards.html', cards=cards)
 
 
 @bp.route("/deck", methods=("POST", "GET"))
