@@ -153,7 +153,9 @@ div.dataTables_wrapper div.dataTables_info {
 }
 
 
-/* Select-2 */
+
+/* Select-2 styles */
+
 .select2-container--default .select2-selection--single {
     display: block;
     width: 100%;
@@ -177,6 +179,22 @@ div.dataTables_wrapper div.dataTables_info {
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 36px;
 }
+
+.select2-search__field {
+    border-radius: 0.25rem;
+}s
+
+.select2-selection.select2-selection--single:focus,
+.select2-search__field:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+}
+
+/* Select 2 styles end */
+
 
 
 

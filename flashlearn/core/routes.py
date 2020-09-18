@@ -6,17 +6,33 @@ from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 
 
-@bp.route("/card", methods=("POST",), defaults={"card_id": None})
 @bp.route("/card/<int:card_id>", methods=("GET", "POST"))
 @login_required
-def get_or_create_card(card_id):
+def get_card(card_id):
     if request.method == "GET":
         if card_id is not None:
             target_card = Card.query.filter_by(id=card_id).first()
             if target_card:
                 return jsonify(target_card.to_json)
         flash("Failed to retrieve card")
-    elif request.method == "POST":
+    elif request.method == "POST":  # pragma: no cover
+        return jsonify("OK")
+
+
+@bp.route("/card", methods=("GET", "POST"))
+@login_required
+def create_card():
+    if request.method == 'GET':
+        decks = Deck.query.filter_by(user_id=g.user.id)
+        error = ""
+        if decks is None:
+            error += "You have not created any deck yet."
+        return render_template(
+            'dashboard/cards/_create.html',
+            decks=decks,
+            error=error
+        )
+    else:
         front = request.form.get("front")
         back = request.form.get("back")
         deck_id = request.form.get("deck_id")
@@ -25,8 +41,11 @@ def get_or_create_card(card_id):
 
         if not front or not back:
             error += "front and back fields are required."
-        if not Deck.query.filter_by(id=deck_id, state="active").first():
-            error += "Selected deck does not exist"
+        if (
+            Deck.query.filter_by(id=deck_id, state="active").first()
+            is not None
+        ):
+            error += "\nSelected deck does not exist"
         if not error:
             new_card = Card(
                 front=front,
@@ -35,9 +54,8 @@ def get_or_create_card(card_id):
                 user_id=user.id
             )
             new_card.save()
-            return jsonify(new_card.to_json)
+            return jsonify("Success")
         return jsonify(error)
-    return jsonify("OK")
 
 
 @bp.route("/card/<int:card_id>/edit", methods=("POST",))

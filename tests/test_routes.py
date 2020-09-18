@@ -6,6 +6,10 @@ class TestRoutes:
 
     def test_create_card(self, user, decks, login, client):
         login()
+        create_card_page = client.get("/card")
+        assert create_card_page.status_code == 200,\
+            "Should retrieve create card page"
+
         res = client.post(
             "/card",
             data={
@@ -15,7 +19,7 @@ class TestRoutes:
                 "user_id": user.id,
             },
         )
-        assert 200 == res.status_code
+        assert 200 == res.status_code, "Should create card"
 
     def test_get_card(self, client, card, login):
         login()

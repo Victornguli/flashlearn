@@ -201,10 +201,15 @@ class Card(TimestampedModel):
         """Initialize a card"""
         super(Card, self).__init__(**kwargs)
 
+    @property
+    def short_front(self):
+        if len(self.front) > 50:
+            return self.front[:50] 
+
     def __repr__(self):
         return (
-            f"<Card: {self.name} - {self.user.username}"
-            f" - {self.group.name}>"
+            f"<Card: {self.short_front} - {self.user.username}"
+            f" - {self.deck.name}>"
         )
 
     @property
@@ -213,6 +218,7 @@ class Card(TimestampedModel):
             id=self.id,
             front=self.front,
             back=self.back,
+            short_front=self.short_front,
             user=self.user.to_json
         )
 
