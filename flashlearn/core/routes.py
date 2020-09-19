@@ -39,12 +39,9 @@ def create_card():
         user = g.user
         error = ""
 
-        if not front or not back:
-            error += "front and back fields are required."
-        if (
-            Deck.query.filter_by(id=deck_id, state="active").first()
-            is not None
-        ):
+        if not front or not back or not deck_id:
+            error += "front back and deck_id fields are required."
+        if Deck.query.filter_by(id=deck_id, state="active").first() is None:
             error += "\nSelected deck does not exist"
         if not error:
             new_card = Card(

@@ -21,7 +21,7 @@
             </div>
         </div>
     </div>
-    <form class="form mt-4" id="create-deck-form">
+    <form class="form mt-4" id="create-deck-form" onsubmit="handleAjax(event, this, 'deck', 'POST', '/deck', '/decks')">
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="name">Name:</label>

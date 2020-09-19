@@ -97,7 +97,6 @@ $(document).ready(function () {
         });
     }).draw();
 
-
     var cardsDt = $('#cards').DataTable({
         responsive: {
             details: {
@@ -228,28 +227,38 @@ function deleteDeck(deck_id) {
     });
 }
 
-$("#create-deck-form").submit(function (e) {
-
+// Basic Wrapper to ease the handling of simple Ajax requests
+function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
 
-    var form = $(this);
+    var form = $(form);
     $.ajax({
-        type: "POST",
-        url: '/deck',
+        type: method,
+        url: target_url,
         data: form.serialize(),
         success: (data) => {
-            Toast.fire({
-                icon: 'success',
-                title: 'Deck created successfully'
-            }).then(() => {
-                location.replace('/decks');
-            })
+            if (data == 'Success') {
+                Toast.fire({
+                    icon: 'success',
+                    title: `${item} created successfully`,
+                }).then(() => {
+                    if (success_url !== null) {
+                        location.replace(success_url);
+                    }
+                })
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: `Failed to create ${item}: ${data}`
+                })
+            }
+
         },
         error: (data) => {
             Toast.fire({
                 icon: 'error',
-                title: 'Failed to create deck. Try again later'
+                title: `Failed to create ${item}. Try again later`
             })
         }
     });
-});
+}

@@ -37,9 +37,9 @@
         <thead>
             <tr>
                 <th class="min-tablet-p">#</th>
-                <th>Name</th>
                 <th>Front</th>
                 <th>Back</th>
+                <th>State</th>
                 <th>Date Added</th>
                 <th>Action</th>
             </tr>
@@ -48,9 +48,9 @@
             {% for card in cards %}
             <tr>
                 <td class="min-tablet-p"></td>
-                <td>{{ card.name }}</td>
                 <td>{{ card.front }}</td>
                 <td>{{ card.back }}</td>
+                <td>{{ card.state }}</td>
                 <td>{{ card.date_created }}</td>
                 <td>
                     <span class="text-danger dt-icon mr-1" onclick="deleteCard('{{card.id}}')" data-id="{{card.id}}">
