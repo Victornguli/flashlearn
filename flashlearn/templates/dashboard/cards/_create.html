@@ -1,23 +1,5 @@
 {% extends './dashboard/index.html' %}
 
-{% block sidebar %}
-{{ super() }}
-
-{% block cards_active %}
-<li class="nav-item">
-    <a class="active nav-link" href="{{url_for("core.cards")}}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="feather feather-credit-card">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-            <line x1="1" y1="10" x2="23" y2="10"></line>
-        </svg>
-        Cards
-        <span class="sr-only">(current)</span>
-    </a>
-</li>
-{% endblock %}
-{% endblock %}
 
 {% block maincontent %}
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-2">
