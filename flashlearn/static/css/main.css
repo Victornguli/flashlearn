@@ -196,6 +196,53 @@ div.dataTables_wrapper div.dataTables_info {
 /* Select 2 styles end */
 
 
+/* Custom Checkbox styles begin */
+.custom-switch .custom-control-label::before {
+    width: 3rem;
+    height: 1.65rem;
+    border-radius: 1rem;
+}
+
+.custom-switch .custom-control-input:checked~.custom-control-label::after {
+    background-color: #fff;
+    -webkit-transform: translateX(.4rem);
+    transform: translateX(1.4rem);
+}
+
+.custom-control-label::before {
+    position: absolute;
+    top: .25rem;
+    left: -1.5rem;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+    content: "";
+    background-color: #fff;
+    border: #adb5bd solid 1px;
+}
+
+.custom-switch .custom-control-label::after {
+    top: calc(.3rem + 2px);
+    left: calc(-2.2rem + 2px);
+    width: calc(1.5rem - 4px);
+    height: calc(1.5rem - 4px);
+    background-color: #adb5bd;
+    border-radius: 1rem;
+}
+
+.custom-control-label::after {
+    position: absolute;
+    top: .25rem;
+    left: -1.5rem;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    content: "";
+    background: no-repeat 50%/50% 50%;
+}
+
+/* Checkbox styles end */
 
 
 /* Media queries */
