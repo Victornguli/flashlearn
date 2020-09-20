@@ -4,6 +4,7 @@ from flashlearn.core import bp
 from flashlearn.models import Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
+from flashlearn.utils import to_bool
 
 
 @bp.route("/card/<int:card_id>")
@@ -204,7 +205,7 @@ def create_study_plan():
         return render_template('dashboard/plans/_create.html')
     else:
         order = request.form.get("order", None)
-        if not hasattr(OrderTypeEnum, order):
+        if order is None or not hasattr(OrderTypeEnum, order):
             abort(400)
 
         study_plan = StudyPlan(
@@ -212,6 +213,7 @@ def create_study_plan():
             description=request.form.get("description", None),
             user_id=g.user.id,
             order=order,
+            see_solved=to_bool(request.form.get("see_solved", False))
         )
         study_plan.save()
         return jsonify("Success")
