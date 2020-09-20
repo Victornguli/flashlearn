@@ -230,12 +230,23 @@ function deleteDeck(deck_id) {
 // Basic Wrapper to ease the handling of simple Ajax requests
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
+    var formData = new FormData(form);
 
-    var form = $(form);
+    // Override see_solved check-box to post boolean values
+    if (form.id === 'create-plan-form') {
+        if (formData.has('see_solved')) {
+            formData.set('see_solved', true);
+        } else {
+            formData.set('see_solved', false);
+        }
+    }
+
     $.ajax({
         type: method,
         url: target_url,
-        data: form.serialize(),
+        data: formData,
+        contentType: false,
+        processData: false,
         success: (data) => {
             if (data == 'Success') {
                 Toast.fire({
