@@ -16,7 +16,7 @@
         <h3 class="h3">All Study Plans</h3>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="{{ url_for('core.create_deck') }}">
+                <a href="{{ url_for('core.create_study_plan') }}">
                     <button type="button" class="btn btn-sm btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -41,7 +41,6 @@
                 <th>Description</th>
                 <th>Ordering</th>
                 <th>See Solved</th>
-                <th>See Solved</th>
                 <th>Date Created</th>
                 <th>Action</th>
             </tr>
@@ -52,11 +51,11 @@
                 <td class="min-tablet-p"></td>
                 <td>{{ plan.name }}</td>
                 <td>{{ plan.description }}</td>
-                <td>{{ plan.order }}</td>
+                <td>{{ plan.order.name | capitalize }}</td>
                 <td>{{ plan.see_solved }}</td>
                 <td>{{ plan.date_created }}</td>
                 <td>
-                    <span class="text-danger dt-icon mr-1" onclick="deleteDeck('{{deck.id}}')" data-id="{{deck.id}}">
+                    <span class="text-danger dt-icon mr-1" onclick="deletePlan('{{plan.id}}')" data-id="{{plan.id}}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="feather feather-trash-2">

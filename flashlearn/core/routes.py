@@ -6,17 +6,13 @@ from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 
 
-@bp.route("/card/<int:card_id>", methods=("GET", "POST"))
+@bp.route("/card/<int:card_id>")
 @login_required
 def get_card(card_id):
-    if request.method == "GET":
-        if card_id is not None:
-            target_card = Card.query.filter_by(id=card_id).first()
-            if target_card:
-                return jsonify(target_card.to_json)
-        flash("Failed to retrieve card")
-    elif request.method == "POST":  # pragma: no cover
-        return jsonify("OK")
+    target_card = Card.query.filter_by(id=card_id).first()
+    if target_card:
+        return jsonify(target_card.to_json)
+    flash("Failed to retrieve card")
 
 
 @bp.route("/card", methods=("GET", "POST"))
@@ -180,16 +176,33 @@ def reset_deck(deck_id):
 
 @bp.route("/plans", methods=("GET", "POST"))
 @login_required
-def list_study_plans():
-    plans = [plan.to_json for plan in StudyPlan.all()]
-    return jsonify(plans)
+def study_plans():
+    if request.method == "GET":
+        study_plans = StudyPlan.query.filter_by(user_id=g.user.id)
+        return render_template(
+            'dashboard/plans/_plans.html',
+            study_plans=study_plans
+        )
+    else:
+        plans = [plan.to_json for plan in StudyPlan.query.filter_by(
+            user_id=g.user.id
+        )]
+        return jsonify(plans)
 
 
-@bp.route("/plan", methods=("POST",), defaults={"plan_id": None})
 @bp.route("/plan/<int:plan_id>")
 @login_required
-def get_or_create_study_plan(plan_id):
-    if request.method == "POST":
+def get_study_plan(plan_id):
+    study_plan = StudyPlan.query.get_or_404(plan_id)
+    return jsonify(study_plan.to_json)
+
+
+@bp.route("/plan", methods=("GET", "POST"))
+@login_required
+def create_study_plan():
+    if request.method == "GET":
+        return render_template('dashboard/plans/_create.html')
+    else:
         order = request.form.get("order", None)
         if not hasattr(OrderTypeEnum, order):
             abort(400)
@@ -201,13 +214,7 @@ def get_or_create_study_plan(plan_id):
             order=order,
         )
         study_plan.save()
-        return jsonify("Study Plan created successfully")
-    elif request.method == "GET":
-        study_plan = StudyPlan.query.filter_by(id=plan_id).first()
-        if not study_plan:
-            abort(404)
-        return jsonify(study_plan.to_json)
-    return jsonify("study plan")
+        return jsonify("Success")
 
 
 @bp.route("/plan/<int:plan_id>/delete", methods=["POST", "GET"])
