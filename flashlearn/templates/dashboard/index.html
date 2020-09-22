@@ -8,7 +8,13 @@
 {% block dashboard %}
 <div class="container-fluid">
     <div class="row">
-        {% include "dashboard/_sidebar.html" %}
+
+        <!-- Side navigation -->
+        {% block sidebar %}
+        {% include 'dashboard/_sidebar.html' %}
+        {% endblock %}
+        <!-- End side-nav -->
+
         {% block maincontent %}
         {% endblock %}
     </div>
