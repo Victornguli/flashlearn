@@ -11,6 +11,21 @@ $(document).ready(function () {
 });
 
 
+// Retrieve checked rows..
+function getSelectedChekboxes(dt) {
+    var counter = 1;
+    dt.$('input[type="checkbox"]').each(function () {
+        // If checkbox is checked
+        if (this.checked) {
+            // Create a hidden element
+            // console.log(`Checked ${counter}`);
+            counter += 1;
+        }
+    });
+    // console.log(counter);
+}
+
+
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
@@ -41,13 +56,18 @@ function dtInitWrapper(id, name) {
         },
         "columnDefs": [{
             "orderable": false,
-            "className": 'select-checkbox',
-            "targets": 0
+            "targets": 0,
+            "searcheable": false,
+            "className": "dtr-control",
+            'render': function (data, type, full, meta) {
+                // console.log(meta.row);
+                return `
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="dataCheck${meta.row}" name="id[]" value="${$('<div/>').text(meta.row).html()}">
+                    <label class="custom-control-label" for="dataCheck${meta.row}"></label>
+                </div> `
+            }
         }],
-        "select": {
-            "style": 'multi',
-            "selector": 'td:first-child'
-        },
         "order": [
             [1, 'asc']
         ],
@@ -80,14 +100,50 @@ function dtInitWrapper(id, name) {
         }
     });
 
-    // dt.on('order.dt search.dt', function () {
-    //     dt.column(0, {
-    //         search: 'applied',
-    //         order: 'applied'
-    //     }).nodes().each(function (cell, i) {
-    //         cell.innerHTML = i + 1;
-    //     });
-    // }).draw();
+    // Handle click on checkbox to set state of "Select all" control
+    $('.custom-dt').on('change', 'input[type="checkbox"][name="id[]"]', function () {
+        // Get the target row and select it or deselect
+        var target = $(this).parents().eq(2);
+        if (this.checked) {
+            dt.row(target).select();
+        } else {
+            dt.row(target).deselect();
+        }
+        // getSelectedChekboxes(dt);
+    });
+
+    $('#dt-select-all').click(function () {
+        var rows = dt.rows({
+            'search': 'applied'
+        }).nodes();
+
+        // Check/uncheck while also selecting(With regards to the dt..) 
+        // checkboxes for all rows in the table
+        if (!this.checked) {
+            dt.rows().deselect();
+            $('input[type="checkbox"]', rows).prop('checked', false);
+            return;
+        } else {
+            dt.rows().select();
+            $('input[type="checkbox"]', rows).prop('checked', true);
+            return;
+        }
+    });
+
+    // dt.on('select deselect', function (e, dt, type, indexes) {
+    //     const selected = dt.rows({
+    //         selected: true
+    //     }).count();
+    //     const unselected = dt.rows({
+    //         selected: false
+    //     }).count();
+    //     el = $("#dt-select-all").get(0);
+    //     if (el.checked && ('indeterminate' in el)) {
+    //         // Set visual state of "Select all" control
+    //         // as 'indeterminate'
+    //         el.indeterminate = true;
+    //     }
+    // });
 }
 
 
