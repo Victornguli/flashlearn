@@ -5,12 +5,22 @@ $(document).ready(function () {
         allowClear: true
     });
 
-    var decksDt = $('#decks').DataTable({
-        responsive: {
-            details: {
+    const decksDt = dtInitWrapper("#decksDt", "decks");
+    const cardsDt = dtInitWrapper("#cardsDt", "cards");
+    const plansDt = dtInitWrapper("#plansDt", "study plans");
+});
+
+
+// Datatables initializer wrapper
+function dtInitWrapper(id, name) {
+    let dt = $(id).DataTable({
+        "responsive": {
+            "details": {
                 renderer: function (api, rowIdx, columns) {
                     var data = $.map(columns, function (col, i) {
-                        // Hacky way of hiding the index column for good :)
+
+                        // Hacky way of hiding the index column completely for now
+                        // The index value seems not to be evaluated when responsive dt is rendered..
                         if (col.columnIndex == 0) {
                             return ''
                         }
@@ -18,60 +28,32 @@ $(document).ready(function () {
                             `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
                                 <span class="dtr-title">${col.title}</span>
                                 <span class="dtr-data">${col.data}</span>
-                            </li>` :
-                            '';
+                            </li>` : '';
                     }).join('');
 
                     data = `
                     <ul class="dtr-details" data-dtr-index="${rowIdx}">
                     ${data}
                     </ul>`;
-                    return data ?
-                        $('<table/>').append(data) :
-                        false;
+                    return data ? $('<table/>').append(data) : false;
                 }
             }
         },
         "columnDefs": [{
-                "searchable": false,
-                "orderable": false,
-                "targets": 0
-            },
-            {
-                "responsivePriority": 1,
-                "targets": 1
-            },
-            {
-                "responsivePriority": 2,
-                "targets": 5
-            },
-            {
-                "responsivePriority": 10001,
-                "targets": 0
-            },
-            {
-                "responsivePriority": 3,
-                "targets": 2
-            },
-            {
-                "responsivePriority": 3,
-                "targets": 3
-            },
-            {
-                "responsivePriority": 5,
-                "targets": 4
-            }
-        ],
+            "searchable": false,
+            "orderable": false,
+            "targets": 0
+        }, ],
         "order": [
             [1, 'asc']
         ],
         "language": {
-            "emptyTable": "You do not have created any deck yet.",
-            "zeroRecords": "No matching decks found. Try another set of filters",
-            "info": "Showing _START_ to _END_ of _TOTAL_ decks",
-            "infoEmpty": "Showing 0 to 0 of 0 decks",
-            "infoFiltered": "(filtered from _MAX_ total decks)",
-            "lengthMenu": "Show _MENU_ decks",
+            "emptyTable": `You do have not created any ${name} yet.`,
+            "zeroRecords": `No matching ${name} found. Try another set of filters`,
+            "info": `Showing _START_ to _END_ of _TOTAL_ ${name}`,
+            "infoEmpty": `Showing 0 to 0 of 0 ${name}`,
+            "infoFiltered": `(filtered from _MAX_ total ${name})`,
+            "lengthMenu": `Show _MENU_ ${name}`,
             "loadingRecords": "Loading...",
             "processing": "Processing...",
             "search": "Search:",
@@ -88,100 +70,18 @@ $(document).ready(function () {
         }
     });
 
-    decksDt.on('order.dt search.dt', function () {
-        decksDt.column(0, {
+    dt.on('order.dt search.dt', function () {
+        dt.column(0, {
             search: 'applied',
             order: 'applied'
         }).nodes().each(function (cell, i) {
             cell.innerHTML = i + 1;
         });
     }).draw();
+}
 
-    var cardsDt = $('#cards').DataTable({
-        responsive: {
-            details: {
-                renderer: function (api, rowIdx, columns) {
-                    var data = $.map(columns, function (col, i) {
-                        // Hacky way of hiding the index column for good :)
-                        if (col.columnIndex == 0) {
-                            return ''
-                        }
-                        return col.hidden ?
-                            `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
-                                <span class="dtr-title">${col.title}</span>
-                                <span class="dtr-data">${col.data}</span>
-                            </li>` :
-                            '';
-                    }).join('');
 
-                    data = `
-                    <ul class="dtr-details" data-dtr-index="${rowIdx}">
-                    ${data}
-                    </ul>`;
-                    return data ?
-                        $('<table/>').append(data) :
-                        false;
-                }
-            }
-        },
-        "columnDefs": [{
-                "searchable": false,
-                "orderable": false,
-                "targets": 0
-            },
-            {
-                "responsivePriority": 1,
-                "targets": 1
-            },
-            {
-                "responsivePriority": 2,
-                "targets": 5
-            },
-            {
-                "responsivePriority": 10001,
-                "targets": 0
-            },
-            {
-                "responsivePriority": 3,
-                "targets": 2
-            },
-            {
-                "responsivePriority": 3,
-                "targets": 3
-            },
-            {
-                "responsivePriority": 5,
-                "targets": 4
-            }
-        ],
-        "order": [
-            [1, 'asc']
-        ],
-        "language": {
-            "emptyTable": "You do not have added any cards yet.",
-            "zeroRecords": "No matching cards found. Try another set of filters",
-            "info": "Showing _START_ to _END_ of _TOTAL_ cards",
-            "infoEmpty": "Showing 0 to 0 of 0 cards",
-            "infoFiltered": "(filtered from _MAX_ total cards)",
-            "lengthMenu": "Show _MENU_ cards",
-            "loadingRecords": "Loading...",
-            "processing": "Processing...",
-            "search": "Search:",
-            "paginate": {
-                "first": "First",
-                "last": "Last",
-                "next": "Next",
-                "previous": "Previous"
-            },
-            "aria": {
-                "sortAscending": ": activate to sort column ascending",
-                "sortDescending": ": activate to sort column descending"
-            }
-        }
-    });
-
-});
-
+// A Swal mixin for timed alerts.
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',

@@ -132,8 +132,8 @@ body {
     cursor: pointer;
 }
 
-.dt-table th,
-.dt-table td {
+.custom-dt th,
+.custom-dt td {
     padding: 0.75rem;
     vertical-align: top;
     border-top: none;
