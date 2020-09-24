@@ -1,7 +1,7 @@
 {% extends "./dashboard/index.html" %}
 
 {% block maincontent %}
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-2">
+<main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="flashes mt-2" style="text-decoration: none; list-style: none; margin: 0; padding: 0">

@@ -2,6 +2,7 @@ body {
     padding: 0;
     margin: 0;
     font-family: "Nunito", sans-serif;
+    background: #EFF1F3;
 }
 
 .feather {
@@ -20,8 +21,9 @@ body {
     bottom: 0;
     left: 0;
     z-index: 100;
+    background: #ffffff;
     /* Behind the navbar */
-    padding: 48px 0 0;
+    padding: 3rem 0 0 0;
     /* Height of navbar */
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
@@ -46,6 +48,7 @@ body {
 .sidebar .nav-link {
     font-weight: 500;
     color: #333;
+    border-left: 3px solid #ffff;
 }
 
 .sidebar .nav-link .feather {
@@ -54,8 +57,10 @@ body {
 }
 
 .sidebar .nav-link.active {
-    color: #007bff;
+    border-left: solid 3px #D77A61;
+    background-color: #fcf4f3;
 }
+
 
 .sidebar .nav-link:hover .feather,
 .sidebar .nav-link.active .feather {
@@ -70,6 +75,10 @@ body {
 /*
    * Navbar
 */
+
+.navbar {
+    background: #223843
+}
 
 .navbar-brand {
     padding-top: .75rem;
@@ -245,12 +254,14 @@ div.dataTables_wrapper div.dataTables_info {
 /* Checkbox styles end */
 
 
+/* Main content container */
+#main-content {}
+
+
 /* Media queries */
 @media (max-width: 767.98px) {
 
-    /* .sidebar {
-        top: 5rem;
-    } */
+
     .navbar-brand.col-lg-2,
     .navbar-brand.col-md-3 {
         position: relative;
