@@ -22,35 +22,42 @@
             </div>
         </div>
     </div>
-    <form class="form mt-4" id="create-deck-form" onsubmit="handleAjax(event, this, 'card', 'POST', '/card', '/cards')">
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="front">Front: </label>
-                <textarea name="front" class="form-control" id="front" cols="30" rows="3" required></textarea>
-            </div>
-            <div class="col-md-6 form-group">
-                <label for="back">Back: </label>
-                <textarea name="back" class="form-control" id="back" cols="30" rows="3" required></textarea>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-12 col-sm-12 col-lg-6">
-                <label for="deck_id">Deck:</label>
-                <select class="form-control select2" id="deck_id" name="deck_id" required>
-                    {% for deck in decks %}
-                    <option value="{{deck.id}}">{{deck.name}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col"></div>
-        </div>
 
-        <div class="form-group row">
-            <div class="col"></div>
-            <div class="col-md-4 col-sm-12 col-lg-3">
-                <input type="submit" id="add-card" value="Create Card" class="btn btn-md btn-primary mt-2 w-100">
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <form class="form mt-4" id="create-deck-form"
+                onsubmit="handleAjax(event, this, 'card', 'POST', '/card', '/cards')">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="front">Front: </label>
+                        <textarea name="front" class="form-control" id="front" cols="30" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="back">Back: </label>
+                        <textarea name="back" class="form-control" id="back" cols="30" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-12 col-sm-12 col-lg-6">
+                        <label for="deck_id">Deck:</label>
+                        <select class="form-control select2" id="deck_id" name="deck_id" required>
+                            {% for deck in decks %}
+                            <option value="{{deck.id}}">{{deck.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col"></div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col"></div>
+                    <div class="col-md-4 col-sm-12 col-lg-3">
+                        <input type="submit" id="add-card" value="Create Card"
+                            class="btn btn-md btn-primary mt-2 w-100">
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </main>
 {% endblock %}

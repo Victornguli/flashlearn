@@ -2,6 +2,8 @@ body {
     padding: 0;
     margin: 0;
     font-family: "Nunito", sans-serif;
+    font-family: "Open Sans", sans-serif;
+    font-size: .875rem;
     background: #EFF1F3;
 }
 
@@ -81,7 +83,7 @@ body {
 */
 
 .navbar {
-    background: #223843
+    background: #223843;
 }
 
 .navbar .nav-link {
@@ -91,6 +93,16 @@ body {
 
 .navbar .nav-link:hover {
     color: #D8B4A0;
+}
+
+.navbar .dropdown-item:focus,
+.navbar .dropdown-item:hover {
+    background-color: #fcf4f3;
+}
+
+.navbar .dropdown-item.active,
+.navbar .dropdown-item:active {
+    background-color: #223843
 }
 
 .navbar-brand {
