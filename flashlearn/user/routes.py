@@ -64,7 +64,7 @@ def load_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = User.query.filter_by(id=user_id).first()
+        g.user = User.query.get_or_404(user_id)
 
 
 @bp.route("/logout", methods=("GET", "POST"))
@@ -99,17 +99,20 @@ def delete_user(user_id):
     return "deleted"
 
 
-@bp.route("/<int:user_id>/edit", methods=("POST",))
+@bp.route("/<int:user_id>/edit", methods=("GET", "POST"))
 @login_required
 def edit_user(user_id):
-    user = User.query.get_or_404(user_id)
-    password = request.form.get("password", None)
-    email = request.form.get("email", user.email)
+    if request.method == "GET":
+        user = User.query.get_or_404(user_id)
+        return render_template("dashboard/settings.html", user=user)
+    else:
+        password = request.form.get("password", None)
+        email = request.form.get("email", user.email)
 
-    if password is not None:  # pragma:no-cover
-        user.set_password(password)
-    user.update(email=email)
-    return jsonify(user.to_json)
+        if password is not None:  # pragma:no-cover
+            user.set_password(password)
+        user.update(email=email)
+        return jsonify(user.to_json)
 
 
 @bp.route("/reset-password", methods=("POST", "GET"))
