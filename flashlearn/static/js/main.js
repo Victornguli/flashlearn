@@ -52,11 +52,17 @@ function dtInitWrapper(id, name) {
             [1, 'asc']
         ],
         "language": {
-            "emptyTable": `You do have not created any ${name} yet.`,
-            "zeroRecords": `No matching ${name} found. Try another set of filters`,
-            "info": `Showing _START_ to _END_ of _TOTAL_ ${name}`,
-            "infoEmpty": `Showing 0 to 0 of 0 ${name}`,
-            "infoFiltered": `(filtered from _MAX_ total ${name})`,
+            "emptyTable": `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
+                <p class="text-muted">No ${name} to show</p>
+            </div>`,
+            "zeroRecords": `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
+                <p class="text-muted">No ${name} to show</p>
+            </div>`,
+            "info": `Showing _END_ of _TOTAL_ ${name}`,
+            "infoEmpty": `Showing 0 of 0 ${name}`,
+            "infoFiltered": ``,
             "lengthMenu": `Show _MENU_ ${name}`,
             "loadingRecords": "Loading...",
             "processing": "Processing...",
@@ -65,7 +71,7 @@ function dtInitWrapper(id, name) {
                 "first": "First",
                 "last": "Last",
                 "next": "Next",
-                "previous": "Previous"
+                "previous": "Prev"
             },
             "aria": {
                 "sortAscending": ": activate to sort column ascending",
