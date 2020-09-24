@@ -61,6 +61,10 @@ body {
     background-color: #fcf4f3;
 }
 
+.sidebar .nav-link:hover {
+    background-color: #fcf4f3;
+}
+
 
 .sidebar .nav-link:hover .feather,
 .sidebar .nav-link.active .feather {
@@ -78,6 +82,15 @@ body {
 
 .navbar {
     background: #223843
+}
+
+.navbar .nav-link {
+    color: #ffff;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    color: #D8B4A0;
 }
 
 .navbar-brand {
