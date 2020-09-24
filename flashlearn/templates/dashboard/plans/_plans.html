@@ -13,10 +13,10 @@
     {% endwith %}
     <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h3 class="h3">All Decks</h3>
+        <h3 class="h3">All Study Plans</h3>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="{{ url_for('core.create_deck') }}">
+                <a href="{{ url_for('core.create_study_plan') }}">
                     <button type="button" class="btn btn-sm btn-outline-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -26,35 +26,37 @@
                             <line x1="12" y1="11" x2="12" y2="17"></line>
                             <line x1="9" y1="14" x2="15" y2="14"></line>
                         </svg>
-                        Create a deck
+                        Create a study plan
                     </button>
                 </a>
             </div>
         </div>
     </div>
 
-    <table id="decksDt"
+    <table id="plansDt"
         class="custom-dt table table-responsive-md table-striped border-bottom table-border hover w-100 dt-table">
         <thead>
             <tr>
                 <th class="min-tablet-p">#</th>
                 <th>Name</th>
-                <th>Known</th>
-                <th>Unknown</th>
-                <th>Date Added</th>
+                <th>Description</th>
+                <th>Ordering</th>
+                <th>See Solved</th>
+                <th>Date Created</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for deck in decks %}
+            {% for plan in study_plans %}
             <tr>
                 <td class="min-tablet-p"></td>
-                <td>{{ deck.name }}</td>
-                <td>{{ deck.id }}</td>
-                <td>{{ deck.id }}</td>
-                <td>{{ deck.date_created }}</td>
+                <td>{{ plan.name }}</td>
+                <td>{{ plan.description }}</td>
+                <td>{{ plan.order.name | capitalize }}</td>
+                <td>{{ plan.see_solved }}</td>
+                <td>{{ plan.date_created }}</td>
                 <td>
-                    <span class="text-danger dt-icon mr-1" onclick="deleteDeck('{{deck.id}}')" data-id="{{deck.id}}">
+                    <span class="text-danger dt-icon mr-1" onclick="deletePlan('{{plan.id}}')" data-id="{{plan.id}}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="feather feather-trash-2">

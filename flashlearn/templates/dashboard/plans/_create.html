@@ -1,0 +1,63 @@
+{% extends './dashboard/index.html' %}
+
+{% block maincontent %}
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-2">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h3 class="h3">Create a study plan</h3>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="{{ url_for('core.study_plans') }}">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-skip-back">
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="19" x2="5" y2="5"></line>
+                        </svg>
+                        Back
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <form class="form mt-4" id="create-plan-form"
+        onsubmit="handleAjax(event, this, 'Study plan', 'POST', '/plan', '/plans')">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Study plan name" required>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="order">Order:</label>
+                <select class="form-control select2" id="order" name="order" required>
+                    <option value="oldest">Oldest</option>
+                    <option value="latest">Latest</option>
+                    <option value="random">Random</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="description">Description</label>
+                <textarea name="description" class="form-control" id="description" cols="30" rows="3"></textarea>
+            </div>
+
+            <div class="form-group col-md-6">
+                See solved:
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" name="see_solved" class="custom-control-input form-control" id="see_solved">
+                    <label class="custom-control-label" for="see_solved"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col"></div>
+            <div class="col-md-4 col-sm-12 col-lg-3">
+                <input type="submit" id="add-plan" value="Create Study Plan" class="btn btn-md btn-primary mt-2 w-100">
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock %}

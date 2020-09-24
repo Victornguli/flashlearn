@@ -95,6 +95,9 @@ class TestRoutes:
 
     def test_create_study_plan(self, login, client):
         login()
+        create_page_res = client.get("/plan")
+        assert 200 == create_page_res.status_code,\
+            "Should retrieve create plan page"
         res = client.post(
             "/plan",
             data={
@@ -113,7 +116,9 @@ class TestRoutes:
     def test_get_study_plans(self, plan, login, client):
         login()
         res = client.get("/plans")
-        assert 200 == res.status_code
+        rest_res = client.post("plans")
+        assert 200 == res.status_code, "Should return plans page"
+        assert 200 == rest_res.status_code, "Should fetch plans as json"
 
     @staticmethod
     def test_delete_study_plan(plan, login, client):
