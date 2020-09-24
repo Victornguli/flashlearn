@@ -40,10 +40,14 @@ function dtInitWrapper(id, name) {
             }
         },
         "columnDefs": [{
-            "searchable": false,
             "orderable": false,
+            "className": 'select-checkbox',
             "targets": 0
-        }, ],
+        }],
+        "select": {
+            "style": 'multi',
+            "selector": 'td:first-child'
+        },
         "order": [
             [1, 'asc']
         ],
@@ -70,14 +74,14 @@ function dtInitWrapper(id, name) {
         }
     });
 
-    dt.on('order.dt search.dt', function () {
-        dt.column(0, {
-            search: 'applied',
-            order: 'applied'
-        }).nodes().each(function (cell, i) {
-            cell.innerHTML = i + 1;
-        });
-    }).draw();
+    // dt.on('order.dt search.dt', function () {
+    //     dt.column(0, {
+    //         search: 'applied',
+    //         order: 'applied'
+    //     }).nodes().each(function (cell, i) {
+    //         cell.innerHTML = i + 1;
+    //     });
+    // }).draw();
 }
 
 
