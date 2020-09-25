@@ -197,6 +197,10 @@ body {
     outline: none;
 }
 
+.custom-dt td .custom-control.custom-checkbox {
+    padding-right: 0;
+}
+
 /* div.dataTables_wrapper div.dataTables_info {
     padding-top: 0.85em;
     white-space: pre-wrap;
@@ -210,6 +214,20 @@ body {
 .dataTables_wrapper .row:last-of-type {
     padding: 1.3125rem 1.3125rem;
     padding-top: 0.5rem;
+}
+
+.dataTables_paginate .pagination .paginate_button {
+    margin-right: 0.2rem;
+}
+
+.dataTables_paginate .pagination .paginate_button .page-link {
+    border: none;
+    border-radius: .3rem;
+}
+
+.dataTables_paginate .pagination .paginate_button .page-link:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 
