@@ -4,14 +4,22 @@ body {
     font-family: "Nunito", sans-serif;
     font-family: "Open Sans", sans-serif;
     font-size: .875rem;
-    background: #EFF1F3;
+    background: #fcfdfd;
 }
 
+
+/* Feather icons */
 .feather {
     width: 16px;
     height: 16px;
     vertical-align: text-bottom;
 }
+
+.feather.feather-settings {
+    height: 5rem;
+    width: 5rem;
+}
+
 
 /*
    * Sidebar
@@ -164,14 +172,34 @@ body {
 .card {
     box-shadow: 0 6px 12px rgba(140, 152, 164, .075);
     background-color: #fff;
-    border-radius: .75rem;
+    border-radius: 5px;
 }
 
 .card .card-header {
     border-bottom: none;
     background-color: #fff;
-    border-radius: 0.75rem;
+    border-radius: 5px;
     padding: 1rem 1.25rem;
+}
+
+.settings-card {
+    border-radius: 5px;
+    width: 80%;
+    /* margin: auto; */
+}
+
+.settings-card .card-header {
+    background-color: #f7f2f2;
+    border-radius: 0.45rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1rem 0 1rem;
+}
+
+.settings-card h3 {
+    color: #22323a;
+    font-weight: 600;
 }
 
 /* Cards end */
@@ -183,7 +211,7 @@ body {
 }
 
 .custom-dt thead {
-    background-color: #fafafa;
+    background-color: #f7f2f2;
 }
 
 .custom-dt thead th {
@@ -332,7 +360,7 @@ body {
 /* Select 2 styles end */
 
 
-/* Custom Checkbox styles begin */
+/* Custom checkbox switch styles begin */
 .custom-switch .custom-control-label::before {
     width: 3rem;
     height: 1.65rem;
@@ -381,6 +409,35 @@ body {
 /* Checkbox styles end */
 
 
+
+
+/* Nav tabs styles start */
+.nav.nav-tabs {
+    justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: nowrap;
+}
+
+.nav.nav-tabs .nav-item .nav-link {
+    background-color: #e9e9e9;
+    color: #22323a;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    font-weight: 600;
+    padding: .5rem 1.5rem;
+}
+
+.nav.nav-tabs .nav-item .nav-link.active {
+    background-color: #ffff;
+}
+
+.nav.nav-tabs .nav-item .nav-link:not(.active):hover {
+    background-color: #d4d1d1;
+}
+
+
+
+
 /* Main content container */
 #main-content {}
 
@@ -406,4 +463,22 @@ body {
     #navbar-nav-no-collapse {
         margin-right: 4rem !important;
     }
+
+    .nav.nav-tabs {
+        overflow-x: scroll;
+        white-space: nowrap;
+    }
+
+    .card.settings-card {
+        width: 100%;
+        margin: auto;
+    }
 }
+
+/* @media (max-width: 450px) {
+    .nav.nav-tabs {
+        justify-content: start;
+        overflow-x: scroll;
+        white-space: nowrap;
+    }
+} */
