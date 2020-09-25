@@ -183,11 +183,11 @@ body {
 }
 
 .custom-dt thead {
-    background-color: #f3f4f5;
+    background-color: #fafafa;
 }
 
 .custom-dt thead th {
-    font-weight: 600;
+    font-weight: 500;
     font-size: .75rem;
     color: #677788;
     text-transform: uppercase;
