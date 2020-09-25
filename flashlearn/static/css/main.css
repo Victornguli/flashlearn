@@ -160,11 +160,30 @@ body {
     border-right: 2px solid rgb(148, 148, 148);
 }
 
+/* Cards */
+.card {
+    box-shadow: 0 6px 12px rgba(140, 152, 164, .075);
+    background-color: #fff;
+    border-radius: .75rem;
+}
+
 
 /* Datatable */
 .dt-icon {
     cursor: pointer;
 }
+
+.custom-dt thead {
+    background-color: #f3f4f5;
+}
+
+.custom-dt thead th {
+    font-weight: 600;
+    font-size: .75rem;
+    color: #677788;
+    text-transform: uppercase;
+}
+
 
 .custom-dt th,
 .custom-dt td {
@@ -178,10 +197,21 @@ body {
     outline: none;
 }
 
-div.dataTables_wrapper div.dataTables_info {
+/* div.dataTables_wrapper div.dataTables_info {
     padding-top: 0.85em;
     white-space: pre-wrap;
+} */
+
+.dataTables_wrapper .row:first-of-type {
+    padding: 1.3125rem 1.3125rem;
+    padding-bottom: 0.5rem;
 }
+
+.dataTables_wrapper .row:last-of-type {
+    padding: 1.3125rem 1.3125rem;
+    padding-top: 0.5rem;
+}
+
 
 @media screen and (max-width: 767px) {
 
