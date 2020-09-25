@@ -18,17 +18,16 @@ function getSelectedChekboxes(dt) {
         // If checkbox is checked
         if (this.checked) {
             // Create a hidden element
-            // console.log(`Checked ${counter}`);
             counter += 1;
         }
     });
-    // console.log(counter);
 }
 
 
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
+        "dom": 'rt <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
         "responsive": {
             "details": {
                 renderer: function (api, rowIdx, columns) {
@@ -60,7 +59,6 @@ function dtInitWrapper(id, name) {
             "searcheable": false,
             "className": "dtr-control",
             'render': function (data, type, full, meta) {
-                // console.log(meta.row);
                 return `
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="dataCheck${meta.row}" name="id[]" value="${$('<div/>').text(meta.row).html()}">
@@ -144,6 +142,16 @@ function dtInitWrapper(id, name) {
     //         el.indeterminate = true;
     //     }
     // });
+
+    // Custom search input.
+    $('#datatableSearch').keyup(function () {
+        console.log($(this).val());
+        dt.search($(this).val()).draw();
+    })
+    $("#datableSearch").on("search", function () {
+        console.log("Searching...");
+        dt.search('').draw();
+    })
 }
 
 
