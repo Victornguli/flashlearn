@@ -102,8 +102,8 @@ def delete_user(user_id):
 @bp.route("/<int:user_id>/edit", methods=("GET", "POST"))
 @login_required
 def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
     if request.method == "GET":
-        user = User.query.get_or_404(user_id)
         return render_template("dashboard/settings.html", user=user)
     else:
         password = request.form.get("password", None)
