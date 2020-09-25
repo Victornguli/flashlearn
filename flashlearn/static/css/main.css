@@ -435,7 +435,38 @@ body {
     background-color: #d4d1d1;
 }
 
+/* End nav tabs */
 
+
+
+/* Custom Alert styles */
+.custom-alert {
+    color: #22323a;
+    background-color: #faedef;
+    border-color: transparent;
+}
+
+.custom-alert .alert-heading {
+    font-weight: 600;
+    color: #384850;
+}
+
+/* Custom alert styles end */
+
+
+/* background-color: #dc3545; */
+
+/* Custom danger btn */
+.settings-card .custom-btn {
+    background-color: #ce4855;
+    border-color: transparent;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.settings-card .custom-btn:hover {
+    background-color: #ee7985;
+}
 
 
 /* Main content container */

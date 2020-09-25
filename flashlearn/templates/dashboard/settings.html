@@ -11,100 +11,143 @@
     </div>
     {% endif %}
     {% endwith %}
+
+    <!-- Account and settings tab nav start -->
     <ul class="nav nav-tabs" id="settings_tab" role="tablist">
         <li class="nav-item mr-2">
             <a class="nav-link active" id="account-tab" data-toggle="tab" href="#account" role="tab"
                 aria-controls="account" aria-selected="true">Account</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+            <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings"
                 aria-selected="false">Settings</a>
         </li>
     </ul>
-    <div class="mt-4 tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
-        <div class="row mb-4">
-            <div class="col-sm-12 col-md-3 col-lg-4">
-                <div class="update-details text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-user settings-page">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <h4>Edit your details</h4>
+    <!-- Account & settings tab nav end -->
+
+    <!-- Tab content start -->
+    <div class="tab-content">
+
+        <!-- Account tab start -->
+        <div class="mt-4 tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+            <div class="row mb-4">
+                <div class="col-sm-12 col-md-3 col-lg-4">
+                    <div class="update-details text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-user settings-page">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <h4>Edit your details</h4>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-9 col-lg-8">
+                    <div class="card settings-card">
+                        <div class="card-body">
+                            <h3 class="h6 mb-3">Change your username or email</h3>
+                            <form class="form" action="">
+                                <div class="form-group">
+                                    <label for="username">Username:</label>
+                                    <input type="text" name="username" id="username" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="text" name="email" id="username" class="form-control">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-3 col-lg-4">
+                    <div class="update-details text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-key settings-page">
+                            <path
+                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                            </path>
+                        </svg>
+                        <h4>Update your password</h4>
+                    </div>
+                </div>
 
-            <div class="col-sm-12 col-md-9 col-lg-8">
-                <div class="card settings-card">
-                    <div class="card-body">
-                        <h3 class="h6 mb-3">Change your username or email</h3>
-                        <form class="form" action="">
-                            <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" name="username" id="username" class="form-control">
-                            </div>
+                <div class="col-sm-12 col-md-9 col-lg-8">
+                    <div class="card settings-card">
+                        <div class="card-body">
+                            <h3 class="h6 mb-3">Confirm your old password first before changing your password</h3>
+                            <form class="form" action="">
+                                <div class="form-group">
+                                    <label for="old_password">Old password:</label>
+                                    <input type="password" id="old_password" name="old_password" class="form-control">
+                                </div>
 
-                            <div class="form-group">
-                                <label for="email">Email:</label>
-                                <input type="text" name="email" id="username" class="form-control">
-                            </div>
-                        </form>
+                                <div class="form-group">
+                                    <label for="password">New password:</label>
+                                    <input type="password" id="password" name="password" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password_confirm">Confirm password:</label>
+                                    <input type="password" id="password_confirm" name="password_confirm"
+                                        class="form-control">
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-3 col-lg-4">
-                <div class="update-details text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-key settings-page">
-                        <path
-                            d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
-                        </path>
-                    </svg>
-                    <h4>Update your password</h4>
+        <!-- Account tab end -->
+
+        <!-- Settings tab start -->
+        <div class="mt-4 tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+            <div class="row mb-4">
+                <div class="col-sm-12 col-md-3 col-lg-4">
+                    <div class="update-details text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-trash settings-page">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                        <h4>Delete your account</h4>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-sm-12 col-md-9 col-lg-8">
-                <div class="card settings-card">
-                    <div class="card-body">
-                        <h3 class="h6 mb-3">Confirm your old password first before changing your password</h3>
-                        <form class="form" action="">
-                            <div class="form-group">
-                                <label for="old_password">Old password:</label>
-                                <input type="password" id="old_password" name="old_password" class="form-control">
+                <div class="col-sm-12 col-md-9 col-lg-8">
+                    <div class="card settings-card">
+                        <div class="card-body">
+                            <h3 class="h6 mb-3">Delete your account permanently</h3>
+                            <div class="alert alert-danger custom-alert" role="alert">
+                                <h6 class="alert-heading">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" color="rgb(255, 139, 0)" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-alert-triangle" style="width: 1.3rem; height: 1.3rem;">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                        </path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    Warning!</h6>
+                                You will not be able to recover your account after this
                             </div>
-
-                            <div class="form-group">
-                                <label for="password">New password:</label>
-                                <input type="password" id="password" name="password" class="form-control">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="password_confirm">Confirm password:</label>
-                                <input type="password" id="password_confirm" name="password_confirm"
-                                    class="form-control">
-                            </div>
-                        </form>
+                            <button class="btn btn-danger pr-5 pl-5 pt-2 pb-2 custom-btn">Delete Account</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Settings tab end -->
     </div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+    <!-- Tab content end -->
 
-    <!-- <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    </div> -->
-    <!-- <div class="card">
-        <div class="card-body">
-            <h5>Update your profile</h4>
-                <div class="card-body">
-                </div>
-        </div>
-    </div> -->
 </main>
 {% endblock %}
