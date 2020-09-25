@@ -167,6 +167,15 @@ body {
     border-radius: .75rem;
 }
 
+.card .card-header {
+    border-bottom: none;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+}
+
+/* Cards end */
+
 
 /* Datatable */
 .dt-icon {
@@ -229,6 +238,46 @@ body {
     outline: none;
     box-shadow: none;
 }
+
+/* Dt controls styling*/
+.input-group-merge {
+    position: relative;
+}
+
+.input-group-merge .input-group-prepend {
+    left: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+.input-group-flush .form-control {
+    background-color: transparent;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.input-group-merge .input-group-text {
+    border: none;
+    background-color: transparent;
+    padding: 0 0 0 0;
+    border-radius: 0;
+}
+
+.input-group-flush.input-group-merge .custom-select:not(:first-child),
+.input-group-flush.input-group-merge .form-control:not(:first-child) {
+    padding-left: 1.5rem;
+}
+
+.input-group-text:focus {
+    border-color: #80bdff;
+}
+
+/* Datatables end */
+
 
 
 @media screen and (max-width: 767px) {
