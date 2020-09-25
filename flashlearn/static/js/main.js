@@ -128,30 +128,69 @@ function dtInitWrapper(id, name) {
         }
     });
 
-    // dt.on('select deselect', function (e, dt, type, indexes) {
-    //     const selected = dt.rows({
-    //         selected: true
-    //     }).count();
-    //     const unselected = dt.rows({
-    //         selected: false
-    //     }).count();
-    //     el = $("#dt-select-all").get(0);
-    //     if (el.checked && ('indeterminate' in el)) {
-    //         // Set visual state of "Select all" control
-    //         // as 'indeterminate'
-    //         el.indeterminate = true;
-    //     }
-    // });
+    dt.on('select deselect', function (e, dt, type, indexes) {
+        const selected = dt.rows({
+            selected: true
+        });
+        const unselected = dt.rows({
+            selected: false
+        }).count();
+
+        if (selected.count() > 0) {
+            var ids = []
+            // console.log(selected[0]);
+            selected[0].forEach(function (r) {
+                let data = dt.row(r).data();
+                if (data) {
+                    ids.push(Number(data[data.length - 1]));
+                }
+            });
+            $("#selected_count").html(
+                `
+                <span class="mr-2">${selected.count()} Selected</span>
+                <a href="#" id="delete_selected">
+                <button class="btn btn-sm btn-outline-danger delete-selected-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete
+                </button>   
+                </a>
+                `
+            );
+
+            $("#delete_selected").click(function () {
+                Swal.fire({
+                    title: 'Confirm Decks deletion!',
+                    text: `${selected.count()} deck(s) will be deleted permanently.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Delete them'
+                })
+            });
+        } else if (selected.count() == 0) {
+            $("#selected_count").html(
+                ``
+            );
+        }
+        // , function (r) {
+        //     ids.push(r[-1]);
+        // })
+        // console.log(dt.row(selected[0]).data());
+    });
 
     // Custom search input.
     $('#datatableSearch').keyup(function () {
         console.log($(this).val());
         dt.search($(this).val()).draw();
     })
-    $("#datableSearch").on("search", function () {
-        console.log("Searching...");
-        dt.search('').draw();
-    })
+    // $("#datableSearch").on("search", function () {
+    //     console.log("Searching...");
+    //     dt.search('').draw();
+    // })
 }
 
 
@@ -169,7 +208,6 @@ const Toast = Swal.mixin({
 })
 
 function deleteDeck(deck_id) {
-    console.log(deck_id);
     Swal.fire({
         title: 'Confirm Deck deletion!',
         text: 'This deck will be deleted permanently.',

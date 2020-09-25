@@ -55,6 +55,9 @@
                         <!-- End Search -->
                     </form>
                 </div>
+                <div id="selected_count" class="col-sm-6 col-md-4 md-4 mb-sm-0">
+
+                </div>
             </div>
         </div>
         <table id="decksDt" class="custom-dt table border-bottom border-top w-100">
@@ -71,11 +74,12 @@
                     <th>Unknown</th>
                     <th>Date Added</th>
                     <th>Action</th>
+                    <th class="d-none"></th>
                 </tr>
             </thead>
             <tbody>
                 {% for deck in decks %}
-                <tr>
+                <tr data-id="{{deck.id}}">
                     <td class="min-tablet-p pr-0"></td>
                     <td class="pl-0">{{ deck.name }}</td>
                     <td>{{ deck.id }}</td>
@@ -114,6 +118,7 @@
                             </svg>
                         </span>
                     </td>
+                    <td class="d-none">{{deck.id}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
