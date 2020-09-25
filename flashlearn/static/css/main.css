@@ -15,7 +15,7 @@ body {
     vertical-align: text-bottom;
 }
 
-.feather.feather-settings {
+.feather.settings-page {
     height: 5rem;
     width: 5rem;
 }
@@ -414,7 +414,7 @@ body {
 /* Nav tabs styles start */
 .nav.nav-tabs {
     justify-content: center;
-    margin-top: 3rem;
+    margin-top: 2rem;
     flex-wrap: nowrap;
 }
 
@@ -475,10 +475,10 @@ body {
     }
 }
 
-/* @media (max-width: 450px) {
-    .nav.nav-tabs {
-        justify-content: start;
-        overflow-x: scroll;
-        white-space: nowrap;
+@media (max-width: 1024px) {
+    .settings-card {
+        border-radius: 5px;
+        width: 90%;
+        margin: auto;
     }
-} */
+}
