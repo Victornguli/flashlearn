@@ -9,6 +9,15 @@ body {
     font-weight: 400;
 }
 
+/* Dropdown Items */
+.dropdown-item {
+    padding: .25rem 1rem;
+}
+
+.dropdown-divider {
+    margin: .2rem 0;
+}
+
 
 /* Feather icons */
 .feather {
@@ -212,6 +221,12 @@ body {
     cursor: pointer;
 }
 
+.custom-dt {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+}
+
 .custom-dt thead {
     background-color: #f7f2f2;
 }
@@ -229,6 +244,7 @@ body {
     padding: 0.75rem;
     vertical-align: top;
     border-top: none;
+    white-space: nowrap;
 }
 
 .custom-dt td {
@@ -257,7 +273,7 @@ body {
 
 .dataTables_wrapper .row:last-of-type {
     padding: 1.3125rem 1.3125rem;
-    padding-top: 0.5rem;
+    padding-top: 0;
 }
 
 .dataTables_paginate .pagination .paginate_button {

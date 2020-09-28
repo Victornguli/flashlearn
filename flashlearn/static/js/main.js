@@ -8,7 +8,7 @@ $(document).ready(function () {
     $("#deck_name").select2({
         placeholder: "Filter by deck status",
         allowClear: true,
-        
+
     });
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
@@ -19,32 +19,32 @@ $(document).ready(function () {
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
-        "dom": 'rt <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
-        "responsive": {
-            "details": {
-                renderer: function (api, rowIdx, columns) {
-                    var data = $.map(columns, function (col, i) {
+        "dom": '<"div custom-dt" rt> <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
+        // "responsive": {
+        //     "details": {
+        //         renderer: function (api, rowIdx, columns) {
+        //             var data = $.map(columns, function (col, i) {
 
-                        // Hacky way of hiding the index column completely for now
-                        // The index value seems not to be evaluated when responsive dt is rendered..
-                        if (col.columnIndex == 0) {
-                            return ''
-                        }
-                        return col.hidden ?
-                            `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
-                                <span class="dtr-title">${col.title}</span>
-                                <span class="dtr-data">${col.data}</span>
-                            </li>` : '';
-                    }).join('');
+        //                 // Hacky way of hiding the index column completely for now
+        //                 // The index value seems not to be evaluated when responsive dt is rendered..
+        //                 if (col.columnIndex == 0) {
+        //                     return ''
+        //                 }
+        //                 return col.hidden ?
+        //                     `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
+        //                         <span class="dtr-title">${col.title}</span>
+        //                         <span class="dtr-data">${col.data}</span>
+        //                     </li>` : '';
+        //             }).join('');
 
-                    data = `
-                    <ul class="dtr-details" data-dtr-index="${rowIdx}">
-                    ${data}
-                    </ul>`;
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
+        //             data = `
+        //             <ul class="dtr-details" data-dtr-index="${rowIdx}">
+        //             ${data}
+        //             </ul>`;
+        //             return data ? $('<table/>').append(data) : false;
+        //         }
+        //     }
+        // },
         "columnDefs": [{
             "orderable": false,
             "targets": 0,
