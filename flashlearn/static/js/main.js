@@ -5,6 +5,12 @@ $(document).ready(function () {
         allowClear: true
     });
 
+    $("#deck_name").select2({
+        placeholder: "Filter by deck status",
+        allowClear: true,
+        
+    });
+
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
@@ -182,8 +188,11 @@ function dtInitWrapper(id, name) {
     $("#deck_name").on("change", function () {
         var $this = $(this),
             elVal = $this.val();
-        // targetColumnIndex = $this.data('target-col-index');
-        dt.column(2).search(elVal).draw();
+        if (elVal == null) {
+            dt.column(3).search('').draw();
+        } else {
+            dt.column(3).search(elVal).draw();
+        }
     });
 
     // dt.column(3).search(10).draw();

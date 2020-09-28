@@ -65,9 +65,10 @@
                 <!-- Custom filters -->
                 <div class="col-sm-6 col-md-4">
                     <select class="form-control select2" id="deck_name" name="deck_name">
-                        {% for deck in decks %}
-                        <option value="{{deck.id}}">{{deck.name}}</option>
-                        {% endfor %}
+                        <option></option>
+                        <option value="Complete">Complete</option>
+                        <option value="Studying">Studying</option>
+                        <option value="New">New</option>
                     </select>
                 </div>
             </div>
