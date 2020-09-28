@@ -10,6 +10,8 @@ $(document).ready(function () {
         allowClear: true,
     });
 
+    $('[data-toggle="tooltip"]').tooltip()
+
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");

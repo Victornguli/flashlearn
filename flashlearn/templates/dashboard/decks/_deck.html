@@ -5,6 +5,18 @@
     .dropdown-toggle::after {
         display: none;
     }
+
+    @media (max-width: 767.98px) {
+        .card .front {
+            border-right: 0px solid #ffff !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding-bottom: 1rem;
+        }
+
+        .card .back {
+            padding-top: 1rem;
+        }
+    }
 </style>
 <main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
     <div
@@ -28,17 +40,21 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="{{ url_for('core.decks') }}" class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary"
-                    style="width: 40px; height: 40px; border-radius: 50%;
+                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Edit deck"
+                    class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Add cards"
+                    class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
                 text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-plus"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary"
-                    style="width: 40px; height: 40px; border-radius: 50%;
+                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Study now"
+                    class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
                 text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-book-open"></i>
                 </a>
-
                 <div class="dropdown">
                     <a data-toggle="dropdown"
                         class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary btn-sm dropdown-toggle" style="width: 40px; height: 40px; border-radius: 50%;
@@ -209,7 +225,7 @@
     <div class="card">
         <div class="card-body" style="padding: 1rem 1rem;">
             <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto"
+                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
                     style="border-right: 1px solid rgb(189, 189, 189);">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
                     Lorem ipsum, dolor sit amet consectetur.
