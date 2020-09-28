@@ -252,6 +252,20 @@ body {
     font-weight: 400;
 }
 
+.custom-dt td a.dt-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.custom-dt td a.dt-link:hover .text-hover-primary {
+    color: #007bff;
+}
+
+.custom-dt td a.dt-link .h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
 .custom-dt th:focus,
 .custom-dt td:focus {
     outline: none;
@@ -494,7 +508,9 @@ body {
 
 
 /* Main content container */
-#main-content {}
+#main-content {
+    display: none;
+}
 
 
 /* Media queries */

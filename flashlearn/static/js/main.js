@@ -8,12 +8,12 @@ $(document).ready(function () {
     $("#deck_name").select2({
         placeholder: "Filter by deck status",
         allowClear: true,
-
     });
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
+    $('#main-content').fadeIn('slow');
 });
 
 // Datatables initializer wrapper

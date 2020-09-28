@@ -114,10 +114,11 @@ def create_deck():
 @bp.route("/deck/<int:deck_id>")
 @login_required
 def get_deck(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
     if request.method == "GET":
-        deck = Deck.query.filter_by(id=deck_id, state="active").first()
-        if deck is not None:
-            return jsonify(deck.to_json)
+        return render_template('dashboard/decks/_deck.html', deck=deck)
+    else:
+        return jsonify(deck.to_json)
 
 
 @bp.route("/deck/<int:deck_id>/edit", methods=("POST",))
