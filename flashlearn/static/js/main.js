@@ -10,20 +10,6 @@ $(document).ready(function () {
     const plansDt = dtInitWrapper("#plansDt", "study plans");
 });
 
-
-// Retrieve checked rows..
-function getSelectedChekboxes(dt) {
-    var counter = 1;
-    dt.$('input[type="checkbox"]').each(function () {
-        // If checkbox is checked
-        if (this.checked) {
-            // Create a hidden element
-            counter += 1;
-        }
-    });
-}
-
-
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
@@ -184,9 +170,23 @@ function dtInitWrapper(id, name) {
 
     // Custom search input.
     $('#datatableSearch').keyup(function () {
-        console.log($(this).val());
         dt.search($(this).val()).draw();
     })
+
+    // $("#some-el").on("change", function () {
+    //     var $this = $(this),
+    //         elVal = $this.val(),
+    //         targetColumnIndex = $this.data('target-col-index');
+    //     dt.column(targetColumnIndex).search(elVal).draw();
+    // });
+    $("#deck_name").on("change", function () {
+        var $this = $(this),
+            elVal = $this.val();
+        // targetColumnIndex = $this.data('target-col-index');
+        dt.column(2).search(elVal).draw();
+    });
+
+    // dt.column(3).search(10).draw();
     // $("#datableSearch").on("search", function () {
     //     console.log("Searching...");
     //     dt.search('').draw();
