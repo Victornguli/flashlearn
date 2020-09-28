@@ -189,8 +189,43 @@
             </div>
         </div>
     </div> -->
+    <!-- <h1 style="font-weight: 600;" class="pb-2 border-bottom">Cards in this deck</h1> -->
+    <div class="row d-flex justify-content-between align-items-center flex-grow-1 mb-4">
 
-    <h1 style="font-weight: 600;">Cards in this deck</h1>
+        <!-- Search filter -->
+        <div class="col-sm-6 col-md-4 mb-sm-0">
+            <form>
+                <!-- Search -->
+                <div class="input-group input-group-merge input-group-flush">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-search">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <input id="datatableSearch" type="search" class="form-control" placeholder="Search cards">
+                </div>
+                <!-- End Search -->
+            </form>
+        </div>
+
+        <!-- Selected items count -->
+        <div id="selected_count" class="col-sm-6 col-md-4 md-4 mb-sm-0">
+        </div>
+
+        <!-- Custom filters -->
+        <div class="col-sm-6 col-md-4 pull-right">
+            <select class="form-control select2" id="cards_filter" name="cards_filter">
+                <option></option>
+                <option value="Complete">Known</option>
+                <option value="Studying">Unknown</option>
+            </select>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body" style="padding: 1rem 1rem;">
             <div class="row">
