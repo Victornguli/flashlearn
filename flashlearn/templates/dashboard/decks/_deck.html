@@ -6,15 +6,31 @@
         display: none;
     }
 
+    .custom-dropdown .dropdown-menu {
+        margin-top: 0px;
+    }
+
+    .custom-dropdown.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .column-divider-md {
+        border-left: 1px solid #dee2e6
+    }
+
     @media (max-width: 767.98px) {
         .card .front {
-            border-right: 0px solid #ffff !important;
+            border-right: 0 solid #ffff !important;
             border-bottom: 1px solid #dee2e6 !important;
             padding-bottom: 1rem;
         }
 
         .card .back {
             padding-top: 1rem;
+        }
+
+        .column-divider-md {
+            border-left: 0 solid #ffff;
         }
     }
 </style>
@@ -74,14 +90,15 @@
         <!-- Body -->
         <div class="card-body">
             <div class="media align-items-md-center">
-                <span class="display-3 text-dark mr-3">55</span>
+                <span class="display-3 text-dark mr-3">24</span>
 
                 <div class="media-body">
                     <div class="row mx-md-n3">
                         <div class="col-md px-md-4">
                             <span class="d-block">Total cards</span>
-                            <span class="badge badge-soft-danger badge-pill p-1">
-                                <i class="tio-trending-down"></i> 23 known</span>
+                            <span class="badge badge-info badge-pill p-1">
+                                -2 late in due
+                            </span>
                         </div>
 
                         <div class="col-md-9 col-lg-10 column-divider-md px-md-4">
@@ -89,15 +106,15 @@
                             <div class="row justify-content-start mb-2">
                                 <div class="col-auto">
                                     <span class="legend-indicator bg-primary"></span>
-                                    Studying (10)
+                                    Unknown (10)
                                 </div>
                                 <div class="col-auto">
                                     <span class="legend-indicator bg-success"></span>
-                                    Completed (8)
+                                    Known (8)
                                 </div>
                                 <div class="col-auto">
                                     <span class="legend-indicator"></span>
-                                    To do (6)
+                                    Skipped (6)
                                 </div>
                             </div>
                             <!-- End Legend Indicators -->

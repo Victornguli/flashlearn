@@ -12,9 +12,9 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $(".custom-dropdown").hover(function () {
-        $(this).find(".dropdown-toggle").dropdown("toggle");
-    });
+    // $(".custom-dropdown").hover(function () {
+    //     $(this).find(".dropdown-toggle").dropdown("toggle");
+    // });
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
