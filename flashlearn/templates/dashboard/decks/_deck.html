@@ -202,12 +202,14 @@
         </div>
     </div> -->
     <!-- <h1 style="font-weight: 600;" class="pb-2 border-bottom">Cards in this deck</h1> -->
-    <div class="row d-flex justify-content-between align-items-center flex-grow-1 mb-4">
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <!-- Search filter -->
-        <div class="col-sm-6 col-md-4 mb-sm-0">
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="custom-control custom-checkbox mr-2" style="padding-right: 0!important">
+                <input type="checkbox" class="custom-control-input" id="dt-select-all" value="1">
+                <label class="custom-control-label" for="dt-select-all"></label>
+            </div>
             <form>
-                <!-- Search -->
                 <div class="input-group input-group-merge input-group-flush">
                     <div class="input-group-prepend">
                         <div class="input-group-text">
@@ -219,19 +221,16 @@
                             </svg>
                         </div>
                     </div>
-                    <input id="datatableSearch" type="search" class="form-control"
-                        placeholder="Search cards in this deck">
+                    <input id="datatableSearch" type="search" class="form-control" placeholder="Search cards">
                 </div>
-                <!-- End Search -->
             </form>
         </div>
 
-        <!-- Selected items count -->
-        <div id="selected_count" class="col-sm-6 col-md-4 md-4 mb-sm-0">
-        </div>
-
         <!-- Custom filters -->
-        <div class="col-sm-6 col-md-4 pull-right">
+        <div class="d-flex justify-content-start align-items-end">
+            <!-- Selected items count -->
+            <div id="selected_count" class="mr-2">
+            </div>
             <select class="form-control select2" id="cards_filter" name="cards_filter">
                 <option></option>
                 <option value="Complete">Known</option>
@@ -239,119 +238,67 @@
             </select>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
-                    style="border-right: 1px solid rgb(189, 189, 189);">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body" style="padding: 1rem 1rem;">
-            <div class="row">
-                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                    Lorem ipsum, dolor sit amet consectetur.
-                </div>
-                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi fugiat totam.
-                    Rerum
-                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat harum aliquid
-                    suscipi.
-                </div>
-            </div>
-        </div>
-    </div>
+    <table id="decksDt" class="table-lg table-borderless table-nowrap table-align-middle border-bottom w-100">
+        <thead style="display: none;">
+            <tr>
+                <th>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem 0;"></td>
+                <td style="white-space: normal; padding: 0.5rem 0;">
+                    <div class="card">
+                        <div class="card-body" style="padding: 1rem 1rem;">
+                            <div class="row">
+                                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
+                                    style="border-right: 1px solid rgb(189, 189, 189);">
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
+                                    Lorem ipsum, dolor sit amet consectetur.
+                                </div>
+                                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
+                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
+                                    fugiat totam.
+                                    Rerum
+                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
+                                    harum
+                                    aliquid
+                                    suscipi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem 0;"></td>
+                <td style="white-space: normal; padding: 0.5rem 0">
+                    <div class="card">
+                        <div class="card-body" style="padding: 1rem 1rem;">
+                            <div class="row">
+                                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
+                                    style="border-right: 1px solid rgb(189, 189, 189);">
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
+                                    Lorem ipsum, dolor sit amet consectetur.
+                                </div>
+                                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
+                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
+                                    fugiat totam.
+                                    Rerum
+                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
+                                    harum
+                                    aliquid
+                                    suscipi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
 </main>
 {% endblock %}
