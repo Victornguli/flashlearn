@@ -12,6 +12,12 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    // Toggle modal manually: When edit button also suports a tooltip
+    // it is not possible to add data-target as the modal anymore..
+    $("#edit-deck-toggle").click(() => {
+        $('#editDeckModal').modal('show');
+    })
+
     // $(".custom-dropdown").hover(function () {
     //     $(this).find(".dropdown-toggle").dropdown("toggle");
     // });
