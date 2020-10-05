@@ -35,10 +35,9 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="row d-flex justify-content-between align-items-center flex-grow-1">
-
+            <div class="d-flex justify-content-between align-items-center mb-2">
                 <!-- Search filter -->
-                <div class="col-sm-6 col-md-4 mb-sm-0">
+                <div class="d-flex justify-content-start align-items-center">
                     <form>
                         <!-- Search -->
                         <div class="input-group input-group-merge input-group-flush">
@@ -58,18 +57,21 @@
                     </form>
                 </div>
 
-                <!-- Selected items count -->
-                <div id="selected_count" class="col-sm-6 col-md-4 md-4 mb-sm-0">
-                </div>
-
                 <!-- Custom filters -->
-                <div class="col-sm-6 col-md-4">
-                    <select class="form-control select2" id="deck_name" name="deck_name">
-                        <option></option>
-                        <option value="Complete">Complete</option>
-                        <option value="Studying">Studying</option>
-                        <option value="New">New</option>
-                    </select>
+                <div class="d-flex justify-content-start align-items-end">
+                    <!-- Selected items count -->
+                    <div id="selected_count" class="mr-2">
+                    </div>
+
+                    <!-- Filter decks by state -->
+                    <div class="col-sm-6 col-md-4">
+                        <select class="form-control select2" id="deck_name" name="deck_name">
+                            <option></option>
+                            <option value="Complete">Complete</option>
+                            <option value="Studying">Studying</option>
+                            <option value="New">New</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
