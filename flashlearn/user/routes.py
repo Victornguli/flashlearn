@@ -85,7 +85,7 @@ def list_users():
 def get_user(user_id):
     if request.method == "GET":
         user = User.query.get_or_404(user_id)
-        if user is None:
+        if user is None:  # pragma:no cover
             return "User not found", 404
         return jsonify(User.query.get_or_404(user_id).to_json)
     return jsonify("Invalid request ")
@@ -117,8 +117,8 @@ def edit_user(user_id):
 
 @bp.route("/reset-password", methods=("POST", "GET"))
 def reset_password():
-    if request.method == "GET":
+    if request.method == "GET":  # pragma:no cover
         return render_template("forgot-password.html")
-    elif request.method == "POST":
+    elif request.method == "POST":  # pragma:no cover
         flash("Password reset successfully")
         return redirect("reset-password")
