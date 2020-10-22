@@ -17,7 +17,7 @@ def create_app(config=None):
     Create app factory function to initialize the Flask App
     :param config: The configuration name, if required:
         - Can be development, testing or production.
-        - You can add more environments by  following the similar
+        - You can add more environments by following the similar
           structure defined in instance/config.py
     :type config: str | None
     :return: Flask app

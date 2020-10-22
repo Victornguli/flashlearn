@@ -1,7 +1,7 @@
 {% extends './dashboard/index.html' %}
 
 {% block maincontent %}
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-2">
+<main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
     <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h3 class="h3">Create a deck</h3>
@@ -21,32 +21,39 @@
             </div>
         </div>
     </div>
-    <form class="form mt-4" id="create-deck-form" onsubmit="handleAjax(event, this, 'deck', 'POST', '/deck', '/decks')">
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Deck Name" required>
-            </div>
-            <div class="col-md-6 form-group">
-                <label for="parent_id">Parent Deck:</label>
-                <select class="form-control select2" id="parent_id" name="parent_id">
-                    {% for deck in decks %}
-                    <option value="{{deck.id}}">deck.name</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea name="description" class="form-control" id="description" cols="30" rows="3"></textarea>
-        </div>
 
-        <div class="form-group row">
-            <div class="col"></div>
-            <div class="col-md-4 col-sm-12 col-lg-3">
-                <input type="submit" id="add-deck" value="Create Deck" class="btn btn-md btn-primary mt-2 w-100">
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <form class="form mt-4" id="create-deck-form"
+                onsubmit="handleAjax(event, this, 'deck', 'POST', '/deck', '/decks')">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Deck Name" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="parent_id">Parent Deck:</label>
+                        <select class="form-control select2" id="parent_id" name="parent_id">
+                            {% for deck in decks %}
+                            <option value="{{deck.id}}">deck.name</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" class="form-control" id="description" cols="30" rows="3"></textarea>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col"></div>
+                    <div class="col-md-4 col-sm-12 col-lg-3">
+                        <input type="submit" id="add-deck" value="Create Deck"
+                            class="btn btn-md btn-primary mt-2 w-100">
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </main>
 {% endblock %}

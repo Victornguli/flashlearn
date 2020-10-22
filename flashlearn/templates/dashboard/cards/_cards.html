@@ -1,7 +1,7 @@
 {% extends "./dashboard/index.html" %}
 
 {% block maincontent %}
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-2">
+<main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="flashes mt-2" style="text-decoration: none; list-style: none; margin: 0; padding: 0">
@@ -17,76 +17,107 @@
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <a href="{{ url_for('core.create_card') }}">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                    <button type="button" class="btn btn-sm btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-folder-plus">
-                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
-                            </path>
-                            <line x1="12" y1="11" x2="12" y2="17"></line>
-                            <line x1="9" y1="14" x2="15" y2="14"></line>
+                            class="feather feather-plus">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Create a card
+                        New card
                     </button>
                 </a>
             </div>
         </div>
     </div>
 
-    <table id="cardsDt"
-        class="custom-dt table table-responsive-md table-striped border-bottom table-border hover w-100 dt-table">
-        <thead>
-            <tr>
-                <th class="min-tablet-p">#</th>
-                <th>Front</th>
-                <th>Back</th>
-                <th>State</th>
-                <th>Date Added</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for card in cards %}
-            <tr>
-                <td class="min-tablet-p"></td>
-                <td>{{ card.front }}</td>
-                <td>{{ card.back }}</td>
-                <td>{{ card.state }}</td>
-                <td>{{ card.date_created }}</td>
-                <td>
-                    <span class="text-danger dt-icon mr-1" onclick="deleteCard('{{card.id}}')" data-id="{{card.id}}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-trash-2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                            </path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                        </svg>
-                    </span>
-                    <span class="text-info dt-icon mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-edit">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </span>
-                    <span class="text-success dt-icon mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-folder-plus">
-                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
-                            </path>
-                            <line x1="12" y1="11" x2="12" y2="17"></line>
-                            <line x1="9" y1="14" x2="15" y2="14"></line>
-                        </svg>
-                    </span>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-header">
+            <div class="row justify-content-between align-items-center flex-grow-1">
+                <div class="col-sm-6 col-md-4 mb-3 mb-sm-0">
+                    <form>
+                        <!-- Search -->
+                        <div class="input-group input-group-merge input-group-flush">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-search">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                            <input id="datatableSearch" type="search" class="form-control" placeholder="Search cards">
+                        </div>
+                        <!-- End Search -->
+                    </form>
+                </div>
+                <div id="selected_count" class="col-sm-6 col-md-4 md-4 mb-sm-0">
+                </div>
+            </div>
+        </div>
+        <table id="cardsDt" class="table border-bottom border-top w-100">
+            <thead>
+                <tr>
+                    <th class="pr-0" style="width: 26px">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="dt-select-all" value="1">
+                            <label class="custom-control-label" for="dt-select-all"></label>
+                        </div>
+                    </th>
+                    <th class="pl-0">Front</th>
+                    <th>Back</th>
+                    <th>State</th>
+                    <th>Date Added</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for card in cards %}
+                <tr>
+                    <td class="min-tablet-p pr-0"></td>
+                    <td class="pl-0">{{ card.front }}</td>
+                    <td>{{ card.back }}</td>
+                    <td>{{ card.state }}</td>
+                    <td>{{ card.date_created }}</td>
+                    <td>
+                        <span class="text-danger dt-icon mr-1" onclick="deleteCard('{{card.id}}')"
+                            data-id="{{card.id}}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-trash-2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </span>
+                        <span class="text-info dt-icon mr-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-edit">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </span>
+                        <span class="text-success dt-icon mr-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-folder-plus">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                                </path>
+                                <line x1="12" y1="11" x2="12" y2="17"></line>
+                                <line x1="9" y1="14" x2="15" y2="14"></line>
+                            </svg>
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </main>
 {% endblock %}
