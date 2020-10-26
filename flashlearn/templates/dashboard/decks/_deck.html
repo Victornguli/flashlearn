@@ -45,13 +45,13 @@
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                 </svg>
                 <h1 class="mr-1" style="margin-top: 0.5em;">
-                    Data Structures and Algorithms
+                    {{ deck.name }}
                     <span class="badge badge-success pl-2 pr-2"
-                        style="font-size: 0.75rem!important; vertical-align: center;">Studying</span>
+                        style="font-size: 0.75rem!important; vertical-align: center;">{{ deck.state }}</span>
                 </h1>
             </div>
             <div class="deck-description">
-                A deck containing a collection of data structures and algorithm cards.
+                {{ deck.description }}
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 mt-3 mt-md-0">
@@ -129,15 +129,16 @@
                         <form action="">
                             <div class="form-group">
                                 <label for="deck-name">Deck Name</label>
-                                <input type="text" name="deck-name" id="deck-name" class="form-control" value="">
+                                <input type="text" name="deck-name" id="deck-name" class="form-control"
+                                    value="{{ deck.name }}">
                             </div>
                             <div class="form-group">
                                 <label for="deck-description">Description</label>
                                 <textarea type="deck-description" name="deck-description"
-                                    class="form-control"></textarea>
+                                    class="form-control">{{ deck.description }}</textarea>
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Update" class="btn btn-block     btn-sm btn-primary">
+                                <input type="submit" value="Update" class="btn btn-block btn-sm btn-primary">
                             </div>
                         </form>
                     </div>
@@ -154,7 +155,7 @@
         <!-- Body -->
         <div class="card-body">
             <div class="media align-items-md-center">
-                <span class="display-3 text-dark mr-3">24</span>
+                <span class="display-3 text-dark mr-3">{{ deck.cards | length }}</span>
 
                 <div class="media-body">
                     <div class="row mx-md-n3">
@@ -304,6 +305,7 @@
             </select>
         </div>
     </div>
+
     <table id="decksDt" class="table-lg table-borderless table-nowrap table-align-middle w-100">
         <thead style="display: none;">
             <tr>
@@ -313,6 +315,7 @@
             </tr>
         </thead>
         <tbody>
+            {% for card in deck.cards %}
             <tr>
                 <td style="padding: 0.5rem 0;"></td>
                 <td style="white-space: normal; padding: 0.5rem 0;">
@@ -321,48 +324,17 @@
                             <div class="row">
                                 <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
                                     style="border-right: 1px solid rgb(189, 189, 189);">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                                    Lorem ipsum, dolor sit amet consectetur.
+                                    {{ card.front }}
                                 </div>
                                 <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
-                                    fugiat totam.
-                                    Rerum
-                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
-                                    harum
-                                    aliquid
-                                    suscipi.
+                                    {{ card.back }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td style="padding: 0.5rem 0;"></td>
-                <td style="white-space: normal; padding: 0.5rem 0">
-                    <div class="card">
-                        <div class="card-body" style="padding: 1rem 1rem;">
-                            <div class="row">
-                                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
-                                    style="border-right: 1px solid rgb(189, 189, 189);">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                                    Lorem ipsum, dolor sit amet consectetur.
-                                </div>
-                                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
-                                    fugiat totam.
-                                    Rerum
-                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
-                                    harum
-                                    aliquid
-                                    suscipi.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
