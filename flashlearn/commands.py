@@ -7,8 +7,7 @@ from flashlearn import db
 @with_appcontext
 def init_db_command():
     confirm = click.prompt(
-        "The database will be re-defined."
-        "\nReply with Y/N to confirm or cancel",
+        "The database will be re-defined." "\nReply with Y/N to confirm or cancel",
         type=str,
     )
     if confirm.lower() == "y":
@@ -35,8 +34,7 @@ def clear_db_command():
 
 def prompt_password():
     password = click.prompt("Password", type=str, hide_input=True)
-    password_2 = click.prompt(
-        "Confirm your password", type=str, hide_input=True)
+    password_2 = click.prompt("Confirm your password", type=str, hide_input=True)
     if password == password_2:
         return password
     else:

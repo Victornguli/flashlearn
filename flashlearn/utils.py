@@ -10,5 +10,4 @@ def to_bool(inp):
         return True
     elif inp in ["false", "0", 0, False]:
         return False
-    raise ValueError(
-        f"{inp} is not a valid string representation of a boolean value")
+    raise ValueError(f"{inp} is not a valid string representation of a boolean value")
