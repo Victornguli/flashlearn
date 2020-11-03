@@ -47,7 +47,7 @@
                 <h1 class="mr-1" style="margin-top: 0.5em;">
                     {{ deck.name }}
                     <span class="badge badge-success pl-2 pr-2"
-                        style="font-size: 0.75rem!important; vertical-align: center;">{{ deck.state }}</span>
+                        style="font-size: 0.75rem!important; vertical-align: middle;">{{ deck.state }}</span>
                 </h1>
             </div>
             <div class="deck-description">
@@ -56,22 +56,28 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 mt-3 mt-md-0">
             <div class="btn-group">
+                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Add cards"
+                    class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-plus"></i>
+                </a>
+                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Study now"
+                    class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-book-open"></i>
+                </a>
                 <a id="edit-deck-toggle" data-toggle="tooltip" data-placement="bottom" title="Edit deck"
                     class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
             text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-edit"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Add cards"
+                <a id="edit-deck-toggle" onclick="deleteDeck('{{deck.id}}')" data-id="{{deck.id}}" data-toggle="tooltip"
+                    data-placement="bottom" title="Delete deck"
                     class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
-                text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
-                    <i class="fas fa-plus"></i>
+        text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-trash"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Study now"
-                    class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
-                text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
-                    <i class="fas fa-book-open"></i>
-                </a>
-                <div class="dropdown custom-dropdown">
+                <!-- <div class="dropdown custom-dropdown">
                     <a data-toggle="dropdown"
                         class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary btn-sm dropdown-toggle" style="width: 40px; height: 40px; border-radius: 50%;
                 text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
@@ -93,8 +99,7 @@
                             <span class="text-muted">Edit</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item dt-icon d-flex align-items-center" onclick="deleteDeck('{{deck.id}}')"
-                            data-id="{{deck.id}}">
+                        <a class="dropdown-item dt-icon d-flex align-items-center" >
                             <span class="text-danger mr-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -110,7 +115,7 @@
                             <span class="text-muted">Delete</span>
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -120,7 +125,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="staticBackdropLabel">Edit Deck</h5>
+                        <h4 class="modal-title" id="staticBackdropLabel">Edit Deck Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -137,13 +142,13 @@
                                 <textarea type="deck-description" name="deck-description"
                                     class="form-control">{{ deck.description }}</textarea>
                             </div>
-                            <div class="form-group">
-                                <input type="submit" value="Update" class="btn btn-block btn-sm btn-primary">
-                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                        <div class="form-group">
+                            <input type="submit" value="Update" class="btn btn-sm btn-primary">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
