@@ -269,10 +269,10 @@
     <!-- <h1 style="font-weight: 600;" class="pb-2 border-bottom">Cards in this deck</h1> -->
 
     <!-- Filters for cards in the deck -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div id="cardsDt_filters_wrapper" class="d-flex justify-content-between align-items-center mb-2 ">
         <!-- Search filter -->
-        <div class="d-flex justify-content-start align-items-center">
-            <div class="custom-control custom-checkbox mr-2" style="padding-right: 0!important">
+        <div id="cardsDt_filters_search" class="d-flex justify-content-start align-items-center">
+            <div class="custom-control custom-checkbox mr-2 dtr-control">
                 <input type="checkbox" class="custom-control-input" id="dt-select-all" value="1">
                 <label class="custom-control-label" for="dt-select-all"></label>
             </div>
@@ -294,11 +294,11 @@
         </div>
 
         <!-- Custom filters -->
-        <div class="d-flex justify-content-start align-items-end">
+        <div id="cardsDt_filters_custom" class="d-flex justify-content-start align-items-end">
             <!-- Selected items count -->
             <div id="selected_count" class="mr-2">
             </div>
-            <select class="form-control select2" id="cards_filter" name="cards_filter">
+            <select class="form-control select2_deck_cards" id="cards_filter" name="cards_filter">
                 <option></option>
                 <option value="Complete">Known</option>
                 <option value="Studying">Unknown</option>
@@ -306,7 +306,7 @@
         </div>
     </div>
 
-    <table id="decksDt" class="table-lg table-borderless table-nowrap table-align-middle w-100">
+    <table id="cardsDt" class="table-lg table-borderless table-nowrap table-align-middle w-100">
         <thead style="display: none;">
             <tr>
                 <th>

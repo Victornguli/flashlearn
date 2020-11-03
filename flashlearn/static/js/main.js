@@ -1,8 +1,13 @@
 $(document).ready(function () {
     // Init Select2 Options
-    $('.select2').select2({
+    $(".select2").select2({
         placeholder: "Select an option",
-        allowClear: true
+        allowClear: true,
+    });
+
+    $(".select2_deck_cards").select2({
+        placeholder: "Filter by state",
+        allowClear: true,
     });
 
     $("#deck_name").select2({
@@ -15,8 +20,8 @@ $(document).ready(function () {
     // Toggle modal manually: When edit button also suports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {
-        $('#editDeckModal').modal('show');
-    })
+        $("#editDeckModal").modal("show");
+    });
 
     // $(".custom-dropdown").hover(function () {
     //     $(this).find(".dropdown-toggle").dropdown("toggle");
@@ -25,13 +30,14 @@ $(document).ready(function () {
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
-    $('#main-content').fadeIn('slow');
+    $("#main-content").fadeIn("slow");
 });
 
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
-        "dom": '<"div custom-dt" rt> <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
+        dom:
+            '<"div custom-dt" rt> <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
         // "responsive": {
         //     "details": {
         //         renderer: function (api, rowIdx, columns) {
@@ -57,91 +63,103 @@ function dtInitWrapper(id, name) {
         //         }
         //     }
         // },
-        "columnDefs": [{
-            "orderable": false,
-            "targets": 0,
-            "searcheable": false,
-            "className": "dtr-control",
-            'render': function (data, type, full, meta) {
-                return `
+        columnDefs: [
+            {
+                orderable: false,
+                targets: 0,
+                searcheable: false,
+                className: "dtr-control",
+                render: function (data, type, full, meta) {
+                    return `
                 <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="dataCheck${meta.row}" name="id[]" value="${$('<div/>').text(meta.row).html()}">
-                    <label class="custom-control-label" for="dataCheck${meta.row}"></label>
-                </div> `
-            }
-        }],
-        "order": [
-            [1, 'asc']
-        ],
-        "language": {
-            "emptyTable": `<div class="text-center">
-                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
-            </div>`,
-            "zeroRecords": `<div class="text-center">
-                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
-            </div>`,
-            "info": `Showing _END_ of _TOTAL_ ${name}`,
-            "infoEmpty": `Showing 0 of 0 ${name}`,
-            "infoFiltered": ``,
-            "lengthMenu": `Show _MENU_ ${name}`,
-            "loadingRecords": "Loading...",
-            "processing": "Processing...",
-            "search": "Search:",
-            "paginate": {
-                "first": "First",
-                "last": "Last",
-                "next": "Next",
-                "previous": "Prev"
+                    <input type="checkbox" class="custom-control-input" id="dataCheck${
+                        meta.row
+                    }" name="id[]" value="${$("<div/>").text(meta.row).html()}">
+                    <label class="custom-control-label" for="dataCheck${
+                        meta.row
+                    }"></label>
+                </div> `;
+                },
             },
-            "aria": {
-                "sortAscending": ": activate to sort column ascending",
-                "sortDescending": ": activate to sort column descending"
-            }
-        }
+        ],
+        order: [[1, "asc"]],
+        language: {
+            emptyTable: `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
+                <p class="text-muted">No ${name} to show</p>
+            </div>`,
+            zeroRecords: `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
+                <p class="text-muted">No ${name} to show</p>
+            </div>`,
+            info: `Showing _END_ of _TOTAL_ ${name}`,
+            infoEmpty: `Showing 0 of 0 ${name}`,
+            infoFiltered: ``,
+            lengthMenu: `Show _MENU_ ${name}`,
+            loadingRecords: "Loading...",
+            processing: "Processing...",
+            search: "Search:",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Prev",
+            },
+            aria: {
+                sortAscending: ": activate to sort column ascending",
+                sortDescending: ": activate to sort column descending",
+            },
+        },
     });
 
     // Handle click on checkbox to set state of "Select all" control
-    $('.custom-dt').on('change', 'input[type="checkbox"][name="id[]"]', function () {
-        // Get the target row and select it or deselect
-        var target = $(this).parents().eq(2);
-        if (this.checked) {
-            dt.row(target).select();
-        } else {
-            dt.row(target).deselect();
+    $(".custom-dt").on(
+        "change",
+        'input[type="checkbox"][name="id[]"]',
+        function () {
+            // Get the target row and select it or deselect
+            var target = $(this).parents().eq(2);
+            if (this.checked) {
+                dt.row(target).select();
+            } else {
+                dt.row(target).deselect();
+            }
+            // getSelectedChekboxes(dt);
         }
-        // getSelectedChekboxes(dt);
-    });
+    );
 
-    $('#dt-select-all').click(function () {
-        var rows = dt.rows({
-            'search': 'applied'
-        }).nodes();
+    $("#dt-select-all").click(function () {
+        var rows = dt
+            .rows({
+                search: "applied",
+            })
+            .nodes();
 
-        // Check/uncheck while also selecting(With regards to the dt..) 
+        // Check/uncheck while also selecting(With regards to the dt..)
         // checkboxes for all rows in the table
         if (!this.checked) {
             dt.rows().deselect();
-            $('input[type="checkbox"]', rows).prop('checked', false);
+            $('input[type="checkbox"]', rows).prop("checked", false);
             return;
         } else {
             dt.rows().select();
-            $('input[type="checkbox"]', rows).prop('checked', true);
+            $('input[type="checkbox"]', rows).prop("checked", true);
             return;
         }
     });
 
-    dt.on('select deselect', function (e, dt, type, indexes) {
+    dt.on("select deselect", function (e, dt, type, indexes) {
         const selected = dt.rows({
-            selected: true
+            selected: true,
         });
-        const unselected = dt.rows({
-            selected: false
-        }).count();
+        const unselected = dt
+            .rows({
+                selected: false,
+            })
+            .count();
 
         if (selected.count() > 0) {
-            var ids = []
+            var ids = [];
             // console.log(selected[0]);
             selected[0].forEach(function (r) {
                 let data = dt.row(r).data();
@@ -166,19 +184,17 @@ function dtInitWrapper(id, name) {
 
             $("#delete_selected").click(function () {
                 Swal.fire({
-                    title: 'Confirm Decks deletion!',
+                    title: "Confirm Decks deletion!",
                     text: `${selected.count()} deck(s) will be deleted permanently.`,
-                    icon: 'warning',
+                    icon: "warning",
                     showCancelButton: true,
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Delete them'
-                })
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonColor: "#d33",
+                    confirmButtonText: "Delete them",
+                });
             });
         } else if (selected.count() == 0) {
-            $("#selected_count").html(
-                ``
-            );
+            $("#selected_count").html(``);
         }
         // , function (r) {
         //     ids.push(r[-1]);
@@ -187,9 +203,9 @@ function dtInitWrapper(id, name) {
     });
 
     // Custom search input.
-    $('#datatableSearch').keyup(function () {
+    $("#datatableSearch").keyup(function () {
         dt.search($(this).val()).draw();
-    })
+    });
 
     // $("#some-el").on("change", function () {
     //     var $this = $(this),
@@ -201,7 +217,7 @@ function dtInitWrapper(id, name) {
         var $this = $(this),
             elVal = $this.val();
         if (elVal == null) {
-            dt.column(3).search('').draw();
+            dt.column(3).search("").draw();
         } else {
             dt.column(3).search(elVal).draw();
         }
@@ -214,48 +230,48 @@ function dtInitWrapper(id, name) {
     // })
 }
 
-
 // A Swal mixin for timed alerts.
 const Toast = Swal.mixin({
     toast: true,
-    position: 'top-end',
+    position: "top-end",
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
     onOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-})
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+});
 
 function deleteDeck(deck_id) {
     Swal.fire({
-        title: 'Confirm Deck deletion!',
-        text: 'This deck will be deleted permanently.',
-        icon: 'warning',
+        title: "Confirm Deck deletion!",
+        text: "This deck will be deleted permanently.",
+        icon: "warning",
         showCancelButton: true,
-        cancelButtonColor: '#3085d6',
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Delete it'
+        cancelButtonColor: "#3085d6",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Delete it",
     }).then(function (result) {
         if (result.value) {
             $.ajax({
-                    method: 'POST',
-                    url: `/deck/${deck_id}/delete`
-                }).done(function () {
+                method: "POST",
+                url: `/deck/${deck_id}/delete`,
+            })
+                .done(function () {
                     Swal.fire({
-                        text: 'Deck deleted succesfully',
-                        icon: 'success'
+                        text: "Deck deleted succesfully",
+                        icon: "success",
                     }).then(() => {
                         location.reload();
-                    })
+                    });
                 })
                 .fail(() => {
                     Toast.fire({
-                        icon: 'error',
-                        title: 'Failed to delete deck. Try again later'
-                    })
-                })
+                        icon: "error",
+                        title: "Failed to delete deck. Try again later",
+                    });
+                });
         }
     });
 }
@@ -266,11 +282,11 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
     var formData = new FormData(form);
 
     // Override see_solved check-box to post boolean values
-    if (form.id === 'create-plan-form') {
-        if (formData.has('see_solved')) {
-            formData.set('see_solved', true);
+    if (form.id === "create-plan-form") {
+        if (formData.has("see_solved")) {
+            formData.set("see_solved", true);
         } else {
-            formData.set('see_solved', false);
+            formData.set("see_solved", false);
         }
     }
 
@@ -281,28 +297,27 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
         contentType: false,
         processData: false,
         success: (data) => {
-            if (data == 'Success') {
+            if (data == "Success") {
                 Toast.fire({
-                    icon: 'success',
+                    icon: "success",
                     title: `${item} created successfully`,
                 }).then(() => {
                     if (success_url !== null) {
                         location.replace(success_url);
                     }
-                })
+                });
             } else {
                 Toast.fire({
-                    icon: 'error',
-                    title: `Failed to create ${item}: ${data}`
-                })
+                    icon: "error",
+                    title: `Failed to create ${item}: ${data}`,
+                });
             }
-
         },
         error: (data) => {
             Toast.fire({
-                icon: 'error',
-                title: `Failed to create ${item}. Try again later`
-            })
-        }
+                icon: "error",
+                title: `Failed to create ${item}. Try again later`,
+            });
+        },
     });
 }
