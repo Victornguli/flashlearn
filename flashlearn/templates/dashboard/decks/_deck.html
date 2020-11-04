@@ -2,15 +2,15 @@
 
 {% block maincontent %}
 <style>
-    .custom-dropdown .dropdown-toggle::after {
+    .hover-dropdown .dropdown-toggle::after {
         display: none;
     }
 
-    .custom-dropdown .dropdown-menu {
+    .hover-dropdown .dropdown-menu {
         margin-top: 0px;
     }
 
-    .custom-dropdown.dropdown:hover .dropdown-menu {
+    .hover-dropdown.dropdown:hover .dropdown-menu {
         display: block;
     }
 
@@ -77,7 +77,7 @@
         text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-trash"></i>
                 </a>
-                <!-- <div class="dropdown custom-dropdown">
+                <!-- <div class="dropdown hover-dropdown">
                     <a data-toggle="dropdown"
                         class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary btn-sm dropdown-toggle" style="width: 40px; height: 40px; border-radius: 50%;
                 text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
@@ -311,12 +311,14 @@
         </div>
     </div>
 
-    <table id="cardsDt" class="table-lg table-borderless table-nowrap table-align-middle w-100">
+    <table id="cardsDt" class="table-lg table-nowrap table-align-middle w-100">
         <thead style="display: none;">
             <tr>
                 <th>
                 </th>
                 <th></th>
+                <th></th>
+                <th class="d-none"></th>
             </tr>
         </thead>
         <tbody>
@@ -338,6 +340,26 @@
                         </div>
                     </div>
                 </td>
+                <td class="text-center" style="padding: 0;">
+                    <div class="dropdown custom-dropdown">
+                        <a data-toggle="dropdown"
+                            class="btn btn-sm mr-2 text-decoration-none text-secondary dropdown_hover">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </a>
+                        <div class=" dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item">
+                                <i class="fa fa-edit mr-2"></i> Edit
+                            </a>
+                            <a class="dropdown-item">
+                                <i class="fa fa-ban mr-2"></i> Remove
+                            </a>
+                            <a class="dropdown-item text-danger">
+                                <i class="fa fa-trash mr-2"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </td>
+                <td class="d-none">{{ card.id }}</td>
             </tr>
             {% endfor %}
         </tbody>
