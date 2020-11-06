@@ -32,7 +32,6 @@ $(document).ready(function () {
 
     // Flip card action
     $("#flip-card-btn, .flip-card").click(() => {
-        console.log("clcik");
         if (face == "front") {
             $(".flip-card-inner").css({ transform: "rotateY(180deg)" });
             face = "back";
@@ -43,6 +42,20 @@ $(document).ready(function () {
             $("#card-legend-text").css({ color: "#223843" });
         }
         $("#card-legend-text").text(face).fadeIn(0.6);
+    });
+
+    // Mark Known / Unknown cards
+    $("#known-card, #unknown-card").click(() => {
+        // Fetch next card in the deck
+
+        $(".flip-card-front").text(Math.random().toString(36).substring(7));
+        $(".flip-card-back").text(Math.random().toString(36).substring(7));
+        let el = $(".flip-card-wrapper").addClass(
+            "animate__animated animate__zoomIn"
+        );
+        setTimeout(() => {
+            el.removeClass("animate__animated animate__zoomIn");
+        }, 500);
     });
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
