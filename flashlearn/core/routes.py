@@ -214,6 +214,15 @@ def delete_plan(plan_id):
     return jsonify("OK")
 
 
+@bp.route("deck/<int:deck_id>/study")
+@login_required
+def study_deck(deck_id):
+    """Study a deck"""
+    deck = Deck.query.get_or_404(deck_id)
+    card = Card.query.filter_by(deck_id=deck_id, state="unknown").first()
+    return render_template("dashboard/decks/_study.html", deck=deck, card=card)
+
+
 @bp.route("study_plan/next", methods=("GET", "POST"))
 @login_required
 def get_next_card():

@@ -23,9 +23,27 @@ $(document).ready(function () {
         $("#editDeckModal").modal("show");
     });
 
-    // $(".custom-dropdown").hover(function () {
-    //     $(this).find(".dropdown-toggle").dropdown("toggle");
-    // });
+    $("#configure-studyplan-toggle").click(() => {
+        $("#configureStudyPlan").modal("show");
+    });
+
+    // Current card face; tracks the face to be synchronize flipping front and back faces
+    var face = "front";
+
+    // Flip card action
+    $("#flip-card-btn, .flip-card").click(() => {
+        console.log("clcik");
+        if (face == "front") {
+            $(".flip-card-inner").css({ transform: "rotateY(180deg)" });
+            face = "back";
+            $("#card-legend-text").css({ color: "#fff" });
+        } else if (face == "back") {
+            $(".flip-card-inner").css({ transform: "none" });
+            face = "front";
+            $("#card-legend-text").css({ color: "#223843" });
+        }
+        $("#card-legend-text").text(face).fadeIn(0.6);
+    });
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");

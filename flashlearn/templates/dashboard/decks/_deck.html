@@ -61,7 +61,8 @@
             text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-plus"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Study now"
+                <a href="{{ url_for('core.study_deck', deck_id=deck.id) }}" data-toggle="tooltip"
+                    data-placement="bottom" title="Study now"
                     class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
             text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-book-open"></i>

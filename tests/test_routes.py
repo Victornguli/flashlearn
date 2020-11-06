@@ -127,6 +127,12 @@ class TestRoutes:
         card = Card.query.filter_by(deck_id=decks[1].id).first()
         assert card.state == "solved"
 
+    def test_study_deck(self, card, decks, login, client):
+        login()
+
+        res = client.get(f"/deck/{decks[1].id}/study")
+        assert 200 == res.status_code
+
     def test_get_next_card(self, login, plan, decks, user, client, card):
         login()
         study_plan = StudyPlan.get_by_id(plan.id)

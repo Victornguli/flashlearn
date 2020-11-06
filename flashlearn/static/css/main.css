@@ -190,6 +190,11 @@ h1 {
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
 }
 
+a.navbar-brand {
+    text-decoration: none;
+    color: #eeeeee;
+}
+
 .navbar .navbar-toggler {
     /* top: .25rem; */
     right: 1rem;
@@ -415,6 +420,87 @@ h1 {
 
 /* Datatables end */
 
+
+/* Study Flashcards section */
+#flashcards {
+    width: 80%;
+    margin: auto;
+    margin-top: 3rem;
+}
+
+#flashcards #flashcard-progress {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #223843;
+    margin-bottom: 0.5rem;
+}
+
+#flashcards #card-legend {
+    position: absolute;
+    z-index: 10;
+    right: 10px;
+    top: 6px;
+    transition: transform 0.6s;
+}
+
+#flashcards #card-legend #card-legend-text {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    color: #223843;
+    transition: transform 0.6s;
+}
+
+#flashcards #flashcard-controls {
+    margin-top: 1rem;
+}
+
+#flashcards #flashcard-controls .btn {
+    width: 33%;
+}
+
+#flashcards #flashcard-controls .btn i {
+    font-size: 1.5rem;
+}
+
+.flip-card {
+  background-color: transparent;
+  cursor: pointer;
+  height: 300px;
+  perspective: 1000px;
+  text-align: center;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.flip-card-front, .flip-card-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.flip-card-front {
+  background-color:whitesmoke;
+  color: #223843;
+}
+
+.flip-card-back {
+  background-color: #72b6e4;
+  color: white;
+  transform: rotateY(180deg);
+}
 
 
 @media screen and (max-width: 767px) {
