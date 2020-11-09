@@ -518,6 +518,11 @@ a.navbar-brand {
   transform: rotateY(180deg);
 }
 
+/* Add Deck card formset */
+.remove-card-formset {
+    cursor: pointer;
+}
+
 
 @media screen and (max-width: 767px) {
 

@@ -58,6 +58,31 @@ $(document).ready(function () {
         }, 500);
     });
 
+    // Add cards to a deck
+    var formsetCount = 1;
+    var extra_formsets = 0;
+    $("#add-deck-card-formset").click(() => {
+        let addFormsetBtn = $("#add-deck-card-formset").parent();
+        extra_formsets += 1;
+        let formset = `
+        <div class="form-group">
+            <hr style="color: #dee2e6; margin: 0;" class="mt-4 mb-2">
+            <div class="row">
+                <div class="col-md-6 mt-2">
+                    <label for="front${formsetCount}">Front</label>
+                    <textarea name="front${formsetCount}" class="form-control" id="front${formsetCount}" rows="2" required></textarea>
+                </div>
+                <div class="col-md-6 mt-2">
+                    <label for="back${formsetCount}">Back</label>
+                    <i onclick="removeFormset(event, this)" class="fa fa-times remove-card-formset float-right text-danger"></i>
+                    <textarea name="back${formsetCount}" class="form-control" id="back${formsetCount}" rows="2" required></textarea>
+                </div>
+            </div>
+        </div>`;
+        formsetCount += 1;
+        $(formset).insertBefore(addFormsetBtn);
+    });
+
     // Doughnut Charts
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
@@ -65,6 +90,11 @@ $(document).ready(function () {
     const plansDt = dtInitWrapper("#plansDt", "study plans");
     $("#main-content").fadeIn("slow");
 });
+
+// Remove add card formset
+function removeFormset(e, formset) {
+    $(formset).parent().parent().parent().remove();
+}
 
 // Datatables initializer wrapper
 function dtInitWrapper(id, name) {
@@ -313,6 +343,35 @@ function deleteDeck(deck_id) {
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
     var formData = new FormData(form);
+
+    // Handle Deck cards formsets
+    // Loop through each textarea, and construct a card object with
+    // its front and back by simply checking which is first i.e the front
+    // value will always be in an index divisible by 2, so the next textarea automatically is back
+    // Consecutively check each 'prevCard' object for front and back value, append this to cards array
+    // and empty it else continue to the next textarea.
+    if ($(form).attr("id") == "add-deck-cards-form") {
+        var cards = [];
+        prevCard = {};
+        var cardFormSets = $(form).find("textarea");
+        for (var i = 0; i < cardFormSets.length; i++) {
+            if (i % 2 == 0) {
+                prevCard["front"] = $(cardFormSets[i]).val();
+            } else {
+                prevCard["back"] = $(cardFormSets[i]).val();
+            }
+            if (
+                prevCard.hasOwnProperty("front") &&
+                prevCard.hasOwnProperty("back")
+            ) {
+                cards.push(prevCard);
+                prevCard = {};
+            }
+            // console.log($(cardFormSets[i]).val());
+        }
+        // The current formData will be JSON serialized cards array..
+        formData = JSON.stringify(cards);
+    }
 
     // Override see_solved check-box to post boolean values
     if (form.id === "create-plan-form") {

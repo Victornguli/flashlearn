@@ -247,3 +247,15 @@ def get_next_card():
         return jsonify(card.to_json)
     flash("You have studied all cards in this deck")
     return "OK"
+
+
+@bp.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))
+@login_required
+def add_cards(deck_id):
+    """Add cards to a deck"""
+    if request.method == "GET":
+        deck = Deck.query.get_or_404(deck_id)
+        return render_template("dashboard/decks/_add_cards.html", deck=deck)
+    else:
+        # Bulk add cards to the decks
+        return jsonify("OK")

@@ -144,3 +144,8 @@ class TestRoutes:
         )
         assert 200 == res.status_code
         assert "Dynamic Programming" in res.get_data(as_text=True)
+
+    def test_add_cards_to_deck(self, decks, login, client):
+        login()
+        res = client.get(f"/deck/{decks[1].id}/add-cards")
+        assert 200 == res.status_code
