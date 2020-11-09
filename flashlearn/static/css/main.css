@@ -426,6 +426,8 @@ a.navbar-brand {
     width: 80%;
     margin: auto;
     margin-top: 3rem;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #flashcards #flashcard-progress {
@@ -435,6 +437,7 @@ a.navbar-brand {
     margin-bottom: 0.5rem;
 }
 
+
 #flashcards #card-legend {
     position: absolute;
     z-index: 10;
@@ -442,6 +445,7 @@ a.navbar-brand {
     top: 6px;
     transition: transform 0.6s;
 }
+
 
 #flashcards #card-legend #card-legend-text {
     text-transform: uppercase;
@@ -470,6 +474,17 @@ a.navbar-brand {
   text-align: center;
 }
 
+.study-complete {
+    background-color: transparent;
+    cursor: pointer;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    text-align: center;
+}
+
 .flip-card-inner {
   position: relative;
   width: 100%;
@@ -479,6 +494,7 @@ a.navbar-brand {
   transform-style: preserve-3d;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
+
 
 .flip-card-front, .flip-card-back {
     display: flex;
@@ -504,6 +520,10 @@ a.navbar-brand {
 
 
 @media screen and (max-width: 767px) {
+
+    #flashcards {
+        width: 100%;
+    }
 
     div.dataTables_wrapper div.dataTables_length,
     div.dataTables_wrapper div.dataTables_filter {

@@ -50,13 +50,15 @@ $(document).ready(function () {
 
         $(".flip-card-front").text(Math.random().toString(36).substring(7));
         $(".flip-card-back").text(Math.random().toString(36).substring(7));
-        let el = $(".flip-card-wrapper").addClass(
-            "animate__animated animate__zoomIn"
+        let el = $(".flip-card-inner").addClass(
+            "animate__animated animate__slideInRight"
         );
         setTimeout(() => {
-            el.removeClass("animate__animated animate__zoomIn");
+            el.removeClass("animate__animated animate__slideInRight");
         }, 500);
     });
+
+    // Doughnut Charts
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#cardsDt", "cards");
