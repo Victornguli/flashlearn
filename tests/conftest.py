@@ -34,10 +34,7 @@ def decks(client, user):
     )
     algos.save()
     dp = Deck(
-        name="DP",
-        description="Dynamic Programming",
-        user=user,
-        parent_id=algos.id
+        name="DP", description="Dynamic Programming", user=user, parent_id=algos.id
     )
     dp.save()
     return algos, dp

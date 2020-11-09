@@ -1,0 +1,156 @@
+{% extends './dashboard/index.html' %}
+
+{% block maincontent %}
+<style>
+    .hover-dropdown .dropdown-toggle::after {
+        display: none;
+    }
+
+    .hover-dropdown .dropdown-menu {
+        margin-top: 0px;
+    }
+
+    .hover-dropdown.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .column-divider-md {
+        border-left: 1px solid #dee2e6
+    }
+
+    @media (max-width: 767.98px) {
+        .card .front {
+            border-right: 0 solid #ffff !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding-bottom: 1rem;
+        }
+
+        .card .back {
+            padding-top: 1rem;
+        }
+
+        .column-divider-md {
+            border-left: 0 solid #ffff;
+        }
+    }
+</style>
+<main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-4 mb-3 border-bottom">
+        <div id="deck-header" class="d-flex flex-column">
+            <div class="d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-book-open mr-2" style="height: 3rem; width: 2.5rem; color: #1e2022;">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z">
+                    </path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z">
+                    </path>
+                </svg>
+                <h1 class="mr-1" style="margin-top: 0.5em;">
+                    Studying {{ deck.name }}
+                </h1>
+            </div>
+            <div class="deck-description">
+                {{ deck.description }}
+            </div>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0 mt-3 mt-md-0">
+            <div class="btn-group">
+                <a id="configure-studyplan-toggle" data-toggle="tooltip" data-placement="bottom"
+                    title="Configure Study Plan" class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary"
+                    style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="{{ url_for('core.get_deck', deck_id=deck.id) }}" data-toggle="tooltip" data-placement="bottom"
+                    title="End Study Session" class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+        text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </div>
+
+        <!--Configure Study Plan modal start-->
+        <div class="modal fade" id="configureStudyPlan" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            aria-labelledby="configureStudyPlan" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="staticBackdropLabel">Configure Study Plan Settings</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="">
+                            <div class="form-group">
+                                <label for="deck-name">Deck Name</label>
+                                <input type="text" name="deck-name" id="deck-name" class="form-control"
+                                    value="{{ deck.name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="deck-description">Description</label>
+                                <textarea type="deck-description" name="deck-description"
+                                    class="form-control">{{ deck.description }}</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="form-group">
+                            <input type="submit" value="Update" class="btn btn-sm btn-primary">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Configure Study Plan modal end -->
+    </div>
+
+    <div id="flashcards">
+        <div class="text-center" id="flashcard-progress">
+            Studied 12/20 cards
+        </div>
+        <div class="flip-card-wrapper mt-1 mb-1 mb-lg-2">
+            <div class="flip-card">
+                <div id="card-legend">
+                    <span id="card-legend-text" data-toggle="tooltip" data-placement="bottom"
+                        title="Click card to flip side">front</span>
+                </div>
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi quod quos, distinctio in commodi
+                        possimus?
+                    </div>
+                    <div class="flip-card-back">
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi quod quos, distinctio in commodi
+                        possimus?
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="study-complete d-flex flex-column">
+                You have studied all cards in this deck
+                <div id="study-again" class="btn btn-success pl-5 pr-5 mt-2" data-toggle="tooltip"
+                    data-placement="bottom" title="Study Deck Again">
+                    <i class="fa fa-redo"></i>
+                </div>
+            </div> -->
+        </div>
+        <div id="flashcard-controls" class="d-flex justify-content-between">
+            <div id="unknown-card" class="btn btn-danger pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
+                title="Mark Card as UnKnown">
+                <i class="fa fa-times"></i>
+            </div>
+            <div id="flip-card-btn" class="btn btn-info pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
+                title="Flip FlashCard">
+                <i class="fa fa-random"></i>
+            </div>
+            <div id="known-card" class="btn btn-success pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
+                title="Mark Card as Known">
+                <i class="fa fa-check"></i>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

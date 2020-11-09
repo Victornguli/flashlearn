@@ -2,15 +2,15 @@
 
 {% block maincontent %}
 <style>
-    .custom-dropdown .dropdown-toggle::after {
+    .hover-dropdown .dropdown-toggle::after {
         display: none;
     }
 
-    .custom-dropdown .dropdown-menu {
+    .hover-dropdown .dropdown-menu {
         margin-top: 0px;
     }
 
-    .custom-dropdown.dropdown:hover .dropdown-menu {
+    .hover-dropdown.dropdown:hover .dropdown-menu {
         display: block;
     }
 
@@ -45,33 +45,40 @@
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                 </svg>
                 <h1 class="mr-1" style="margin-top: 0.5em;">
-                    Data Structures and Algorithms
+                    {{ deck.name }}
                     <span class="badge badge-success pl-2 pr-2"
-                        style="font-size: 0.75rem!important; vertical-align: center;">Studying</span>
+                        style="font-size: 0.75rem!important; vertical-align: middle;">{{ deck.state }}</span>
                 </h1>
             </div>
             <div class="deck-description">
-                A deck containing a collection of data structures and algorithm cards.
+                {{ deck.description }}
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 mt-3 mt-md-0">
             <div class="btn-group">
+                <a href="{{ url_for('core.add_cards', deck_id=deck.id) }}" data-toggle="tooltip" data-placement="bottom"
+                    title="Add cards" class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-plus"></i>
+                </a>
+                <a href="{{ url_for('core.study_deck', deck_id=deck.id) }}" data-toggle="tooltip"
+                    data-placement="bottom" title="Study now"
+                    class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
+            text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-book-open"></i>
+                </a>
                 <a id="edit-deck-toggle" data-toggle="tooltip" data-placement="bottom" title="Edit deck"
                     class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
             text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
                     <i class="fas fa-edit"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Add cards"
+                <a onclick="deleteDeck('{{deck.id}}')" data-id="{{deck.id}}" data-toggle="tooltip"
+                    data-placement="bottom" title="Delete deck"
                     class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
-                text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
-                    <i class="fas fa-plus"></i>
+        text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
+                    <i class="fas fa-trash"></i>
                 </a>
-                <a href="{{ url_for('core.decks') }}" data-toggle="tooltip" data-placement="bottom" title="Study now"
-                    class="mr-3 text-decoration-none btn btn-sm btn-outline-secondary" style="width: 40px; height: 40px; border-radius: 50%;
-                text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
-                    <i class="fas fa-book-open"></i>
-                </a>
-                <div class="dropdown custom-dropdown">
+                <!-- <div class="dropdown hover-dropdown">
                     <a data-toggle="dropdown"
                         class="mr-2 text-decoration-none btn btn-sm btn-outline-secondary btn-sm dropdown-toggle" style="width: 40px; height: 40px; border-radius: 50%;
                 text-align: center; line-height: 40px; vertical-align: middle; padding: 0px;">
@@ -93,8 +100,7 @@
                             <span class="text-muted">Edit</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item dt-icon d-flex align-items-center" onclick="deleteDeck('{{deck.id}}')"
-                            data-id="{{deck.id}}">
+                        <a class="dropdown-item dt-icon d-flex align-items-center" >
                             <span class="text-danger mr-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -110,7 +116,7 @@
                             <span class="text-muted">Delete</span>
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -120,7 +126,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="staticBackdropLabel">Edit Deck</h5>
+                        <h4 class="modal-title" id="staticBackdropLabel">Edit Deck Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -129,20 +135,21 @@
                         <form action="">
                             <div class="form-group">
                                 <label for="deck-name">Deck Name</label>
-                                <input type="text" name="deck-name" id="deck-name" class="form-control" value="">
+                                <input type="text" name="deck-name" id="deck-name" class="form-control"
+                                    value="{{ deck.name }}">
                             </div>
                             <div class="form-group">
                                 <label for="deck-description">Description</label>
                                 <textarea type="deck-description" name="deck-description"
-                                    class="form-control"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <input type="submit" value="Update" class="btn btn-block     btn-sm btn-primary">
+                                    class="form-control">{{ deck.description }}</textarea>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                        <div class="form-group">
+                            <input type="submit" value="Update" class="btn btn-sm btn-primary">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -154,7 +161,7 @@
         <!-- Body -->
         <div class="card-body">
             <div class="media align-items-md-center">
-                <span class="display-3 text-dark mr-3">24</span>
+                <span class="display-3 text-dark mr-3">{{ deck.cards | length }}</span>
 
                 <div class="media-body">
                     <div class="row mx-md-n3">
@@ -268,10 +275,10 @@
     <!-- <h1 style="font-weight: 600;" class="pb-2 border-bottom">Cards in this deck</h1> -->
 
     <!-- Filters for cards in the deck -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div id="cardsDt_filters_wrapper" class="d-flex justify-content-between align-items-center mb-2 ">
         <!-- Search filter -->
-        <div class="d-flex justify-content-start align-items-center">
-            <div class="custom-control custom-checkbox mr-2" style="padding-right: 0!important">
+        <div id="cardsDt_filters_search" class="d-flex justify-content-start align-items-center">
+            <div class="custom-control custom-checkbox mr-2 dtr-control">
                 <input type="checkbox" class="custom-control-input" id="dt-select-all" value="1">
                 <label class="custom-control-label" for="dt-select-all"></label>
             </div>
@@ -293,26 +300,30 @@
         </div>
 
         <!-- Custom filters -->
-        <div class="d-flex justify-content-start align-items-end">
+        <div id="cardsDt_filters_custom" class="d-flex justify-content-start align-items-end">
             <!-- Selected items count -->
             <div id="selected_count" class="mr-2">
             </div>
-            <select class="form-control select2" id="cards_filter" name="cards_filter">
+            <select class="form-control select2_deck_cards" id="cards_filter" name="cards_filter">
                 <option></option>
                 <option value="Complete">Known</option>
                 <option value="Studying">Unknown</option>
             </select>
         </div>
     </div>
-    <table id="decksDt" class="table-lg table-borderless table-nowrap table-align-middle w-100">
+
+    <table id="cardsDt" class="table-lg table-nowrap table-align-middle w-100">
         <thead style="display: none;">
             <tr>
                 <th>
                 </th>
                 <th></th>
+                <th></th>
+                <th class="d-none"></th>
             </tr>
         </thead>
         <tbody>
+            {% for card in deck.cards %}
             <tr>
                 <td style="padding: 0.5rem 0;"></td>
                 <td style="white-space: normal; padding: 0.5rem 0;">
@@ -321,48 +332,37 @@
                             <div class="row">
                                 <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
                                     style="border-right: 1px solid rgb(189, 189, 189);">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                                    Lorem ipsum, dolor sit amet consectetur.
+                                    {{ card.front }}
                                 </div>
                                 <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
-                                    fugiat totam.
-                                    Rerum
-                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
-                                    harum
-                                    aliquid
-                                    suscipi.
+                                    {{ card.back }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </td>
-            </tr>
-            <tr>
-                <td style="padding: 0.5rem 0;"></td>
-                <td style="white-space: normal; padding: 0.5rem 0">
-                    <div class="card">
-                        <div class="card-body" style="padding: 1rem 1rem;">
-                            <div class="row">
-                                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
-                                    style="border-right: 1px solid rgb(189, 189, 189);">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, itaque!
-                                    Lorem ipsum, dolor sit amet consectetur.
-                                </div>
-                                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quasi magni sit et commodi
-                                    fugiat totam.
-                                    Rerum
-                                    sunt eveniet vel asperiores, ullam doloremque iste temporibus repellendus fugiat
-                                    harum
-                                    aliquid
-                                    suscipi.
-                                </div>
-                            </div>
+                <td class="text-center" style="padding: 0;">
+                    <div class="dropdown custom-dropdown">
+                        <a data-toggle="dropdown"
+                            class="btn btn-sm mr-2 text-decoration-none text-secondary dropdown_hover">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </a>
+                        <div class=" dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item">
+                                <i class="fa fa-edit mr-2"></i> Edit
+                            </a>
+                            <a class="dropdown-item">
+                                <i class="fa fa-ban mr-2"></i> Remove
+                            </a>
+                            <a class="dropdown-item text-danger">
+                                <i class="fa fa-trash mr-2"></i> Delete
+                            </a>
                         </div>
                     </div>
                 </td>
+                <td class="d-none">{{ card.id }}</td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 

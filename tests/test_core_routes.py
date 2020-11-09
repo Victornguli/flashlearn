@@ -7,8 +7,7 @@ class TestRoutes:
     def test_create_card(self, user, decks, login, client):
         login()
         create_card_page = client.get("/card")
-        assert create_card_page.status_code == 200,\
-            "Should retrieve create card page"
+        assert create_card_page.status_code == 200, "Should retrieve create card page"
 
         res = client.post(
             "/card",
@@ -29,10 +28,8 @@ class TestRoutes:
     def test_edit_card(self, user, card, login, client):
         login()
         res = client.post(
-            f"/card/{card.id}/edit",
-            data={
-                "front": "New Front", "state": "solved"
-            })
+            f"/card/{card.id}/edit", data={"front": "New Front", "state": "solved"}
+        )
         assert 200 == res.status_code
         solved_card = Card.query.filter_by(id=card.id).first()
         assert "solved" == solved_card.state
@@ -73,10 +70,7 @@ class TestRoutes:
 
     def test_edit_deck(self, decks, login, client):
         login()
-        res = client.post(
-            f"/deck/{decks[0].id}/edit",
-            data={"name": "Algorythms"}
-        )
+        res = client.post(f"/deck/{decks[0].id}/edit", data={"name": "Algorythms"})
         assert res.status_code == 200
         assert "Algorythms", res.get_data(as_text=True)
 
@@ -96,8 +90,7 @@ class TestRoutes:
     def test_create_study_plan(self, login, client):
         login()
         create_page_res = client.get("/plan")
-        assert 200 == create_page_res.status_code,\
-            "Should retrieve create plan page"
+        assert 200 == create_page_res.status_code, "Should retrieve create plan page"
         res = client.post(
             "/plan",
             data={
@@ -129,13 +122,16 @@ class TestRoutes:
 
     def test_reset_deck(self, card, decks, login, client):
         login()
-        res = client.post(
-            f"/deck/{decks[1].id}/reset",
-            data={"state": "solved"}
-        )
+        res = client.post(f"/deck/{decks[1].id}/reset", data={"state": "solved"})
         assert 200 == res.status_code
         card = Card.query.filter_by(deck_id=decks[1].id).first()
         assert card.state == "solved"
+
+    def test_study_deck(self, card, decks, login, client):
+        login()
+
+        res = client.get(f"/deck/{decks[1].id}/study")
+        assert 200 == res.status_code
 
     def test_get_next_card(self, login, plan, decks, user, client, card):
         login()
@@ -148,3 +144,8 @@ class TestRoutes:
         )
         assert 200 == res.status_code
         assert "Dynamic Programming" in res.get_data(as_text=True)
+
+    def test_add_cards_to_deck(self, decks, login, client):
+        login()
+        res = client.get(f"/deck/{decks[1].id}/add-cards")
+        assert 200 == res.status_code

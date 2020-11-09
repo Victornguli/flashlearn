@@ -41,8 +41,7 @@ def create_app(config=None):
     # Setup logging
     if not app.testing:
         formatter = logging.Formatter(
-            "[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s"
-            "- %(message)s"
+            "[%(asctime)s] - {%(pathname)s:%(lineno)d} %(levelname)s" "- %(message)s"
         )
         handler = RotatingFileHandler(
             app.config.get("LOG_FILE"), maxBytes=10000000, backupCount=1

@@ -19,16 +19,12 @@ def get_card(card_id):
 @bp.route("/card", methods=("GET", "POST"))
 @login_required
 def create_card():
-    if request.method == 'GET':
+    if request.method == "GET":
         decks = Deck.query.filter_by(user_id=g.user.id)
         error = ""
         if decks is None:
             error += "You have not created any deck yet."
-        return render_template(
-            'dashboard/cards/_create.html',
-            decks=decks,
-            error=error
-        )
+        return render_template("dashboard/cards/_create.html", decks=decks, error=error)
     else:
         front = request.form.get("front")
         back = request.form.get("back")
@@ -41,12 +37,7 @@ def create_card():
         if Deck.query.filter_by(id=deck_id, state="active").first() is None:
             error += "\nSelected deck does not exist"
         if not error:
-            new_card = Card(
-                front=front,
-                back=back,
-                deck_id=deck_id,
-                user_id=user.id
-            )
+            new_card = Card(front=front, back=back, deck_id=deck_id, user_id=user.id)
             new_card.save()
             return jsonify("Success")
         return jsonify(error)
@@ -90,16 +81,16 @@ def delete_card(card_id):
 @bp.route("/cards")
 @login_required
 def cards():
-    if request.method == 'GET':
+    if request.method == "GET":
         cards = Card.query.filter_by(user_id=g.user.id)
-        return render_template('dashboard/cards/_cards.html', cards=cards)
+        return render_template("dashboard/cards/_cards.html", cards=cards)
 
 
 @bp.route("/deck", methods=("POST", "GET"))
 @login_required
 def create_deck():
     if request.method == "GET":
-        return render_template('dashboard/decks/_create.html')
+        return render_template("dashboard/decks/_create.html")
     elif request.method == "POST":
         deck = Deck(
             name=request.form.get("name"),
@@ -116,7 +107,7 @@ def create_deck():
 def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
     if request.method == "GET":
-        return render_template('dashboard/decks/_deck.html', deck=deck)
+        return render_template("dashboard/decks/_deck.html", deck=deck)
     else:
         return jsonify(deck.to_json)
 
@@ -181,14 +172,9 @@ def reset_deck(deck_id):
 def study_plans():
     if request.method == "GET":
         study_plans = StudyPlan.query.filter_by(user_id=g.user.id)
-        return render_template(
-            'dashboard/plans/_plans.html',
-            study_plans=study_plans
-        )
+        return render_template("dashboard/plans/_plans.html", study_plans=study_plans)
     else:
-        plans = [plan.to_json for plan in StudyPlan.query.filter_by(
-            user_id=g.user.id
-        )]
+        plans = [plan.to_json for plan in StudyPlan.query.filter_by(user_id=g.user.id)]
         return jsonify(plans)
 
 
@@ -203,7 +189,7 @@ def get_study_plan(plan_id):
 @login_required
 def create_study_plan():
     if request.method == "GET":
-        return render_template('dashboard/plans/_create.html')
+        return render_template("dashboard/plans/_create.html")
     else:
         order = request.form.get("order", None)
         if order is None or not hasattr(OrderTypeEnum, order):
@@ -214,7 +200,7 @@ def create_study_plan():
             description=request.form.get("description", None),
             user_id=g.user.id,
             order=order,
-            see_solved=to_bool(request.form.get("see_solved", False))
+            see_solved=to_bool(request.form.get("see_solved", False)),
         )
         study_plan.save()
         return jsonify("Success")
@@ -226,6 +212,15 @@ def delete_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
     plan.delete()
     return jsonify("OK")
+
+
+@bp.route("deck/<int:deck_id>/study")
+@login_required
+def study_deck(deck_id):
+    """Study a deck"""
+    deck = Deck.query.get_or_404(deck_id)
+    card = Card.query.filter_by(deck_id=deck_id, state="unknown").first()
+    return render_template("dashboard/decks/_study.html", deck=deck, card=card)
 
 
 @bp.route("study_plan/next", methods=("GET", "POST"))
@@ -252,3 +247,15 @@ def get_next_card():
         return jsonify(card.to_json)
     flash("You have studied all cards in this deck")
     return "OK"
+
+
+@bp.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))
+@login_required
+def add_cards(deck_id):
+    """Add cards to a deck"""
+    if request.method == "GET":
+        deck = Deck.query.get_or_404(deck_id)
+        return render_template("dashboard/decks/_add_cards.html", deck=deck)
+    else:
+        # Bulk add cards to the decks
+        return jsonify("OK")

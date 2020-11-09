@@ -30,9 +30,47 @@ h1 {
 }
 
 /* Dropdown Items */
-.dropdown-item {
-    padding: .25rem 1rem;
+.custom-dropdown a.dropdown_hover {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: middle;
+    padding: 0px;
 }
+
+.custom-dropdown a.dropdown_hover:hover{
+    background-color: #eeeeee;
+    color: #0052ea !important;
+}
+
+.custom-dropdown a.dropdown_hover:active, .custom-dropdown a.dropdown_hover:focus{
+    background-color: #eeeeee;
+    color: #0052ea !important;
+}
+
+.custom-dropdown .dropdown-item {
+    padding: .375rem 1.5rem;
+    font-weight: 400;
+    color: #1e2022;
+    font-size: .8125rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.custom-dropdown .dropdown-item:hover {
+    background-color: rgba(189,197,209,.3);
+}
+
+.custom-dropdown .dropdown-item:active {
+    background-color: rgba(189,197,209,.3);
+}
+
+/* .dropdown-item {
+    padding: .25rem 1rem;
+} */
 
 .dropdown-divider {
     margin: .2rem 0;
@@ -150,6 +188,11 @@ h1 {
     font-size: 1rem;
     background-color: rgba(0, 0, 0, .25);
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+a.navbar-brand {
+    text-decoration: none;
+    color: #eeeeee;
 }
 
 .navbar .navbar-toggler {
@@ -323,6 +366,21 @@ h1 {
     box-shadow: none;
 }
 
+
+/* Cards Dt display  */
+
+#cardsDt_wrapper .row:first-of-type {
+    padding: 0;
+    padding-bottom: 0;
+}
+
+#cardsDt_wrapper .row:last-of-type {
+    padding: 0;
+    padding-top: 0;
+}
+
+
+
 /* Dt controls styling*/
 .input-group-merge {
     position: relative;
@@ -363,8 +421,114 @@ h1 {
 /* Datatables end */
 
 
+/* Study Flashcards section */
+#flashcards {
+    width: 80%;
+    margin: auto;
+    margin-top: 3rem;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+#flashcards #flashcard-progress {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #223843;
+    margin-bottom: 0.5rem;
+}
+
+
+#flashcards #card-legend {
+    position: absolute;
+    z-index: 10;
+    right: 10px;
+    top: 6px;
+    transition: transform 0.6s;
+}
+
+
+#flashcards #card-legend #card-legend-text {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    color: #223843;
+    transition: transform 0.6s;
+}
+
+#flashcards #flashcard-controls {
+    margin-top: 1rem;
+}
+
+#flashcards #flashcard-controls .btn {
+    width: 33%;
+}
+
+#flashcards #flashcard-controls .btn i {
+    font-size: 1.5rem;
+}
+
+.flip-card {
+  background-color: transparent;
+  cursor: pointer;
+  height: 300px;
+  perspective: 1000px;
+  text-align: center;
+}
+
+.study-complete {
+    background-color: transparent;
+    cursor: pointer;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    text-align: center;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+
+.flip-card-front, .flip-card-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.flip-card-front {
+  background-color:whitesmoke;
+  color: #223843;
+}
+
+.flip-card-back {
+  background-color: #72b6e4;
+  color: white;
+  transform: rotateY(180deg);
+}
+
+/* Add Deck card formset */
+.remove-card-formset {
+    cursor: pointer;
+}
+
 
 @media screen and (max-width: 767px) {
+
+    #flashcards {
+        width: 100%;
+    }
 
     div.dataTables_wrapper div.dataTables_length,
     div.dataTables_wrapper div.dataTables_filter {
@@ -533,6 +697,48 @@ h1 {
 
 
 /* Media queries */
+@media (max-width: 520px) {
+    #cardsDt_filters_wrapper {
+        flex-wrap: wrap;
+    }
+
+    #cardsDt_filters_wrapper #cardsDt_filters_search {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+    #cardsDt_filters_wrapper #cardsDt_filters_custom {
+        width: 100%;
+        /* flex-wrap: wrap; */
+        /* justify-content: space-between !important; */
+    }
+
+    #cardsDt_filters_wrapper #cardsDt_filters_custom .select2-container {
+        margin-top: 1rem;
+        width: 100%;
+        /* justify-content: space-between !important; */
+    }
+
+    #cardsDt_filters_wrapper #cardsDt_filters_custom .select2-container--default .select2-selection--single {
+        height: 2rem;
+        padding: 0.2rem 0.2rem;
+        overflow: show;
+        /* text-overflow: ellipsis; */
+        white-space: nowrap;
+    }
+
+    #cardsDt_filters_wrapper #cardsDt_filters_custom .select2-selection--single .select2-selection__rendered {
+        text-overflow: clip;
+        padding-right: 45px;
+    }
+
+    #cardsDt_filters_wrapper #cardsDt_filters_custom #selected_count {
+        margin-top: 1rem;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+ }
+
 @media (max-width: 767.98px) {
 
 

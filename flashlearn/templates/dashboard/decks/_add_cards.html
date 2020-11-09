@@ -1,0 +1,95 @@
+{% extends './dashboard/index.html' %}
+
+{% block maincontent %}
+<style>
+    .hover-dropdown .dropdown-toggle::after {
+        display: none;
+    }
+
+    .hover-dropdown .dropdown-menu {
+        margin-top: 0px;
+    }
+
+    .hover-dropdown.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .column-divider-md {
+        border-left: 1px solid #dee2e6
+    }
+
+    @media (max-width: 767.98px) {
+        .card .front {
+            border-right: 0 solid #ffff !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            padding-bottom: 1rem;
+        }
+
+        .card .back {
+            padding-top: 1rem;
+        }
+
+        .column-divider-md {
+            border-left: 0 solid #ffff;
+        }
+    }
+</style>
+<main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div id="deck-header" class="d-flex flex-column">
+            <div class="d-flex align-items-center">
+                <h1 class="mr-1" style="margin-top: 0.5em;">
+                    Add Cards to {{ deck.name }}
+                </h1>
+            </div>
+        </div>
+        <div class="btn-toolbar">
+            <div class="btn-group mr-2">
+                <a href="{{ url_for('core.get_deck', deck_id=deck.id) }}">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-skip-back">
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="19" x2="5" y2="5"></line>
+                        </svg>
+                        Back
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form class="form" id="add-deck-cards-form"
+                onsubmit="handleAjax(event, this, 'deck', 'POST', '/deck', '/decks')">
+                <div class="form-group row">
+                    <div class="col-md-6 mt-2">
+                        <label for="front">Front</label>
+                        <textarea name="front" class="form-control" id="front" rows="2" required></textarea>
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <label for="back">Back</label>
+                        <textarea name="back" class="form-control" id="back" rows="2" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="btn btn-sm btn-block btn-secondary" id="add-deck-card-formset">
+                        <i class="fa fa-plus"></i>
+                        Add Row
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col"></div>
+                    <div class="col-md-4 col-sm-12 col-lg-3">
+                        <input type="submit" id="add-deck" value="Add Cards" class="btn btn-md btn-primary mt-2 w-100">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

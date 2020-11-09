@@ -56,8 +56,7 @@ class TestAuth:
 
     def test_logout(self, logout):
         response = logout()
-        assert response.status_code == 302,\
-            "Should logout and redirect to login"
+        assert response.status_code == 302, "Should logout and redirect to login"
 
     def test_login_required(self, client):
         res = client.get("/cards")

@@ -16,16 +16,14 @@ class BaseConfig:
     """Base config class"""
 
     SECRET_KEY = (
-        os.getenv("secret_key") or
-        "j^lw01bnhbrl2(k+c626l^n^$hi!&+6xx(ns@m(q*5lj-!xj*9"
+        os.getenv("secret_key") or "j^lw01bnhbrl2(k+c626l^n^$hi!&+6xx(ns@m(q*5lj-!xj*9"
     )
     DEBUG = False
     CSRF_ENABLED = True
     FLASK_APP = "flashlearn"
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    LOG_FILE = os.getenv("LOG_FILE") or os.path.join(
-        ROOT_DIR, "flashlearn.log")
+    LOG_FILE = os.getenv("LOG_FILE") or os.path.join(ROOT_DIR, "flashlearn.log")
     LOG_LEVEL = 20
 
 
