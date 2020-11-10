@@ -559,6 +559,10 @@ a.navbar-brand {
 
 /* Select-2 styles */
 
+.select2-container {
+    display: block;
+}
+
 .select2-container--default .select2-selection--single {
     display: block;
     width: 100%;
@@ -567,7 +571,7 @@ a.navbar-brand {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #495057;
+    color: #677788;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
@@ -575,12 +579,22 @@ a.navbar-brand {
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #677788;
+}
+
 .select2-container .select2-selection--single .select2-selection__rendered {
     padding-left: 0;
+    color: #677788;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 36px;
+    color: #677788;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    color: #677788;
 }
 
 .select2-search__field {
