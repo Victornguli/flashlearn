@@ -352,6 +352,25 @@ a.navbar-brand {
     padding-top: 0;
 }
 
+.dataTables_wrapper #cardsDt_filters_custom .select2-container {
+    margin-top: 1rem;
+    width: 100%;
+    /* justify-content: space-between !important; */
+}
+
+.dataTables_wrapper .select2-container--default .select2-selection--single {
+    height: 2rem;
+    padding: 0.2rem 0.2rem;
+    overflow: show;
+    /* text-overflow: ellipsis; */
+    white-space: nowrap;
+}
+
+.dataTables_wrapper #cardsDt_filters_custom .select2-selection--single .select2-selection__rendered {
+    text-overflow: clip;
+    padding-right: 45px;
+}
+
 .dataTables_paginate .pagination .paginate_button {
     margin-right: 0.2rem;
 }
@@ -737,7 +756,7 @@ a.navbar-brand {
         margin: 0;
         padding: 0;
     }
- }
+}
 
 @media (max-width: 767.98px) {
 

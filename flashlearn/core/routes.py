@@ -102,7 +102,7 @@ def create_deck():
         return jsonify("Success")
 
 
-@bp.route("/deck/<int:deck_id>")
+@bp.route("/deck/<int:deck_id>", methods=("POST", "GET"))
 @login_required
 def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
@@ -115,19 +115,13 @@ def get_deck(deck_id):
 @bp.route("/deck/<int:deck_id>/edit", methods=("POST",))
 @login_required
 def edit_deck(deck_id):
-    deck = Deck.query.filter_by(id=deck_id, state="active").first()
-    error = ""
-    if not deck:
-        error = "Deck not found"
-    if not error:
-        deck.update(
-            name=request.form.get("name", deck.name),
-            description=request.form.get("description", deck.description),
-            parent_id=request.form.get("parent_id", deck.parent_id),
-        )
-        deck.save()
-        return jsonify(deck.to_json)
-    return jsonify(error)
+    deck = Deck.query.get_or_404(deck_id)
+    deck.update(
+        name=request.form.get("name", deck.name),
+        description=request.form.get("description", deck.description),
+        parent_id=request.form.get("parent_id", deck.parent_id),
+    )
+    return jsonify("Success")
 
 
 @bp.route("/deck/<int:deck_id>/delete", methods=("POST",))

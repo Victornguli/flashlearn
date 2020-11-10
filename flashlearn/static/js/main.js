@@ -91,9 +91,83 @@ $(document).ready(function () {
     $("#main-content").fadeIn("slow");
 });
 
-// Remove add card formset
+// Remove deck card formset
 function removeFormset(e, formset) {
     $(formset).parent().parent().parent().remove();
+}
+
+// Edit Deck within the deck dt
+function toggleDeckDtModal(deck_id) {
+    $.ajax({
+        type: "POST",
+        url: `/deck/${deck_id}`,
+        data: null,
+        contentType: false,
+        processData: false,
+        success: (data) => {
+            // Populate edit deck form..
+            $("#editDeckDtModal").find("#name").val(data.name);
+            $("#editDeckDtModal").find("#description").val(data.description);
+
+            // Bind the onSubmit event listener of the editmodal form to
+            // editItem() method..
+            $("#editDeckDtFormSubmit").on("click", function () {
+                editItem(
+                    new SubmitEvent($("#editDeckDtForm")),
+                    $("#editDeckDtForm")[0],
+                    "Deck",
+                    "POST",
+                    `/deck/${data.id}/edit`,
+                    "/decks"
+                );
+            });
+
+            $("#editDeckDtModal").modal("show");
+        },
+        error: (data) => {
+            Toast.fire({
+                icon: "error",
+                title: `Failed to retrieve Deck. Try again later`,
+            });
+        },
+    });
+}
+
+// Generic editItem wrapper method
+function editItem(e, form, item, method, target_url, success_url = null) {
+    e.preventDefault();
+    formData = new FormData(form);
+
+    $.ajax({
+        type: method,
+        url: target_url,
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: (data) => {
+            if (data == "Success") {
+                Toast.fire({
+                    icon: "success",
+                    title: `${item} updated successfully`,
+                }).then(() => {
+                    if (success_url !== null) {
+                        location.replace(success_url);
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: "error",
+                    title: `Failed to update ${item}. Try again later`,
+                });
+            }
+        },
+        error: (data) => {
+            Toast.fire({
+                icon: "error",
+                title: `Failed to update ${item}. Try again later`,
+            });
+        },
+    });
 }
 
 // Datatables initializer wrapper
