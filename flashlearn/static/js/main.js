@@ -86,7 +86,7 @@ $(document).ready(function () {
     // Doughnut Charts
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
-    const cardsDt = dtInitWrapper("#cardsDt", "cards");
+    const cardsDt = dtInitWrapper("#allCardsDt", "cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
     $("#main-content").fadeIn("slow");
 });
@@ -489,11 +489,8 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
 }
 
 // Select2 Lookup data initializer
-function select2Lookup(
-    selector,
-    placeholder = "Select an option",
-    empty = "No results found"
-) {
+function select2Lookup(selector, placeholder = "Select an option") {
+    console.log(selector);
     $(selector).select2({
         placeholder: placeholder,
         allowClear: true,

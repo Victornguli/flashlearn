@@ -314,6 +314,13 @@ a.navbar-brand {
     font-weight: 400;
 }
 
+.custom-dt tbody tr td.ellipsis-wrap{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 5rem;
+}
+
 .custom-dt td a.dt-link {
     text-decoration: none;
     color: inherit;
