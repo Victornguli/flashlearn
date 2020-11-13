@@ -550,11 +550,12 @@ a.navbar-brand {
     cursor: pointer;
 }
 
-/* Animate css customizations */
+/* Animate css customizations 
 .animate__animated {
-    animation-duration: .5s;
-    animation-fill-mode: both;
+    animation-duration: .3s;
+    /* animation-fill-mode: both; 
 } 
+*/
 
 
 @media screen and (max-width: 767px) {

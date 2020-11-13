@@ -35,34 +35,40 @@ $(document).ready(function () {
     // Flip card action
     $("#flip-card-btn, .flip-card").click(() => {
         if (face == "front") {
-            // console.log(el);
+            $(inner).removeClass("animate__animated animate__flipInY");
+            $(inner).removeClass("animate__animated animate__flipInX");
             $(front).css({ display: "none" });
             $(back).css({ display: "flex" });
-            $(inner).addClass("animate__animated animate__flipInY");
+            $(inner).addClass(
+                "animate__animated animate__flipInY animate__faster"
+            );
             face = "back";
-            setTimeout(() => {
-                $(inner).removeClass("animate__animated animate__flipInY");
-            }, 500);
-            // $("#card-legend-text").css({ color: "#fff" });
         } else if (face == "back") {
+            $(inner).removeClass("animate__animated animate__flipInX");
+            $(inner).removeClass("animate__animated animate__flipInY");
+
             $(back).css({ display: "none" });
             $(front).css({ display: "flex" });
-            $(inner).addClass("animate__animated animate__flipInY");
+            $(inner).addClass(
+                "animate__animated animate__flipInX animate__faster"
+            );
             face = "front";
-            setTimeout(() => {
-                $(inner).removeClass("animate__animated animate__flipInY");
-            }, 500);
             // $("#card-legend-text").css({ color: "#223843" });
         }
-        // $("#card-legend-text").text(face).fadeIn(0.6);
+        $("#card-legend-text").text(face).fadeIn(0.6);
     });
 
     // Mark Known / Unknown cards
     $("#known-card, #unknown-card").click(() => {
         // Ensure that the next card's front will be displayed
+        $(inner).removeClass("animate__animated animate__flipInX");
+        $(inner).removeClass("animate__animated animate__flipInY");
+        $(inner).removeClass("animate__animated animate__fadeInRight");
+
         $(back).css({ display: "none" });
         $(front).css({ display: "flex" });
         face = "front";
+        $("#card-legend-text").text(face).fadeIn(0.6);
 
         // Fetch next card in the deck
         $(".flip-card-front").text(Math.random().toString(36).substring(7));
@@ -70,9 +76,6 @@ $(document).ready(function () {
 
         // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
         $(inner).addClass("animate__animated animate__fadeInRight");
-        setTimeout(() => {
-            $(inner).removeClass("animate__animated animate__fadeInRight");
-        }, 500);
     });
 
     // Add cards to a deck
@@ -102,6 +105,7 @@ $(document).ready(function () {
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
     const cardsDt = dtInitWrapper("#allCardsDt", "cards");
+    dtInitWrapper("#cardsDt", "Cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
     $("#main-content").fadeIn("slow");
 });
