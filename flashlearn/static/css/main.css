@@ -318,7 +318,7 @@ a.navbar-brand {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 5rem;
+    max-width: 10rem;
 }
 
 .custom-dt td a.dt-link {
@@ -548,6 +548,12 @@ a.navbar-brand {
 .remove-card-formset {
     cursor: pointer;
 }
+
+/* Animate css customizations */
+.animated {
+    animation-duration: .2s;
+    animation-fill-mode: both;
+} 
 
 
 @media screen and (max-width: 767px) {
