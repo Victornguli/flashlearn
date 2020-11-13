@@ -512,7 +512,7 @@ a.navbar-brand {
 }
 
 .flip-card-inner {
-  position: relative;
+  /* position: relative; */
   width: 100%;
   height: 100%;
   text-align: center;
@@ -541,7 +541,8 @@ a.navbar-brand {
 .flip-card-back {
   background-color: #72b6e4;
   color: white;
-  transform: rotateY(180deg);
+  display: none;
+  /* transform: rotateY(180deg); */
 }
 
 /* Add Deck card formset */
@@ -550,8 +551,8 @@ a.navbar-brand {
 }
 
 /* Animate css customizations */
-.animated {
-    animation-duration: .2s;
+.animate__animated {
+    animation-duration: .5s;
     animation-fill-mode: both;
 } 
 

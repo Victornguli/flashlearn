@@ -29,41 +29,56 @@ $(document).ready(function () {
 
     // Current card face; tracks the face to be synchronize flipping front and back faces
     var face = "front";
-
+    var inner = $(".flip-card-inner");
+    var front = $(".flip-card-front");
+    var back = $(".flip-card-back");
     // Flip card action
     $("#flip-card-btn, .flip-card").click(() => {
         if (face == "front") {
-            $(".flip-card-inner").css({ transform: "rotateY(180deg)" });
+            // console.log(el);
+            $(front).css({ display: "none" });
+            $(back).css({ display: "flex" });
+            $(inner).addClass("animate__animated animate__flipInY");
             face = "back";
-            $("#card-legend-text").css({ color: "#fff" });
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
+            // $("#card-legend-text").css({ color: "#fff" });
         } else if (face == "back") {
-            $(".flip-card-inner").css({ transform: "none" });
+            $(back).css({ display: "none" });
+            $(front).css({ display: "flex" });
+            $(inner).addClass("animate__animated animate__flipInY");
             face = "front";
-            $("#card-legend-text").css({ color: "#223843" });
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
+            // $("#card-legend-text").css({ color: "#223843" });
         }
-        $("#card-legend-text").text(face).fadeIn(0.6);
+        // $("#card-legend-text").text(face).fadeIn(0.6);
     });
 
     // Mark Known / Unknown cards
     $("#known-card, #unknown-card").click(() => {
-        // Fetch next card in the deck
+        // Ensure that the next card's front will be displayed
+        $(back).css({ display: "none" });
+        $(front).css({ display: "flex" });
+        face = "front";
 
+        // Fetch next card in the deck
         $(".flip-card-front").text(Math.random().toString(36).substring(7));
         $(".flip-card-back").text(Math.random().toString(36).substring(7));
-        let el = $(".flip-card-inner").addClass(
-            "animate__animated animate__fadeInRight"
-        );
+
+        // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
+        $(inner).addClass("animate__animated animate__fadeInRight");
         setTimeout(() => {
-            el.removeClass("animate__animated animate__fadeInRight");
+            $(inner).removeClass("animate__animated animate__fadeInRight");
         }, 500);
     });
 
     // Add cards to a deck
     var formsetCount = 1;
-    var extra_formsets = 0;
     $("#add-deck-card-formset").click(() => {
         let addFormsetBtn = $("#add-deck-card-formset").parent();
-        extra_formsets += 1;
         let formset = `
         <div class="form-group">
             <hr style="color: #dee2e6; margin: 0;" class="mt-4 mb-2">
