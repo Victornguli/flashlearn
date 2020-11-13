@@ -4,7 +4,7 @@ body {
     /* font-family: "Nunito", sans-serif; */
     font-family: "Open Sans", sans-serif;
     font-size: .875rem;
-    background: #fcfdfd;
+    background: #f1f3f3ad;
     color: #677788;
     font-weight: 400;
 }
@@ -114,6 +114,7 @@ h1 {
     padding-top: .5rem;
     overflow-x: hidden;
     overflow-y: auto;
+    background: #ffffff;
     /* Scrollable contents if viewport is shorter than content. */
 }
 
@@ -128,11 +129,13 @@ h1 {
     font-weight: 500;
     color: #333;
     border-left: 3px solid #ffff;
+    font-size: 1rem;
 }
 
 .sidebar .nav-link .feather {
-    margin-right: 4px;
+    margin-right: 5px;
     color: #999;
+    margin-bottom: 1px;
 }
 
 .sidebar .nav-link.active {
@@ -548,7 +551,7 @@ custom-dt .table thead th {
 }
 
 .flip-card-front {
-  background-color:whitesmoke;
+  background-color:#fff;
   color: #223843;
 }
 

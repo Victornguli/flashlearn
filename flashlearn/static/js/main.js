@@ -35,24 +35,25 @@ $(document).ready(function () {
     // Flip card action
     $("#flip-card-btn, .flip-card").click(() => {
         if (face == "front") {
-            $(inner).removeClass("animate__animated animate__flipInY");
-            $(inner).removeClass("animate__animated animate__flipInX");
             $(front).css({ display: "none" });
             $(back).css({ display: "flex" });
             $(inner).addClass(
                 "animate__animated animate__flipInY animate__faster"
             );
             face = "back";
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
         } else if (face == "back") {
-            $(inner).removeClass("animate__animated animate__flipInX");
-            $(inner).removeClass("animate__animated animate__flipInY");
-
             $(back).css({ display: "none" });
             $(front).css({ display: "flex" });
             $(inner).addClass(
-                "animate__animated animate__flipInX animate__faster"
+                "animate__animated animate__flipInY animate__faster"
             );
             face = "front";
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
             // $("#card-legend-text").css({ color: "#223843" });
         }
         $("#card-legend-text").text(face).fadeIn(0.6);
@@ -61,10 +62,6 @@ $(document).ready(function () {
     // Mark Known / Unknown cards
     $("#known-card, #unknown-card").click(() => {
         // Ensure that the next card's front will be displayed
-        $(inner).removeClass("animate__animated animate__flipInX");
-        $(inner).removeClass("animate__animated animate__flipInY");
-        $(inner).removeClass("animate__animated animate__fadeInRight");
-
         $(back).css({ display: "none" });
         $(front).css({ display: "flex" });
         face = "front";
@@ -76,6 +73,9 @@ $(document).ready(function () {
 
         // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
         $(inner).addClass("animate__animated animate__fadeInRight");
+        setTimeout(() => {
+            $(inner).removeClass("animate__animated animate__fadeInRight");
+        }, 500);
     });
 
     // Add cards to a deck
