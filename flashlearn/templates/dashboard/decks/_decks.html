@@ -97,7 +97,7 @@
                 {% for deck in decks %}
                 <tr data-id="{{deck.id}}">
                     <td class="min-tablet-p pr-0"></td>
-                    <td class="pl-0">
+                    <td class="pl-0 ellipsis-wrap">
                         <a class="dt-link d-flex align-items-center"
                             href="{{ url_for('core.get_deck', deck_id=deck.id) }}">
                             <div>

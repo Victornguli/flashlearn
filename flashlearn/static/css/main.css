@@ -647,10 +647,10 @@ a.navbar-brand {
 }
 
 .custom-switch .custom-control-label::after {
-    top: calc(.3rem + 2px);
-    left: calc(-2.2rem + 2px);
-    width: calc(1.5rem - 4px);
-    height: calc(1.5rem - 4px);
+    /* top: calc(.3rem + 3px);
+    left: calc(-2.2rem + 2px); */
+    width: 1.4rem;
+    height: 1.4rem;
     background-color: #adb5bd;
     border-radius: 1rem;
 }

@@ -4,22 +4,17 @@
 <main id="main-content" role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-5 mt-3 mb-5">
     <div
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h3 class="h3">Create a study plan</h3>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
-                <a href="{{ url_for('core.study_plans') }}">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-skip-back">
-                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
-                            <line x1="5" y1="19" x2="5" y2="5"></line>
-                        </svg>
-                        Back
-                    </button>
-                </a>
+        <h1>Create a study plan</h3>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <a href="{{ url_for('core.study_plans') }}">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-angle-double-left"></i>
+                            Back
+                        </button>
+                    </a>
+                </div>
             </div>
-        </div>
     </div>
 
     <div class="card">
@@ -50,7 +45,9 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        See solved:
+                        See solved <i class="fa fa-info-circle" style="cursor: pointer;" data-toggle="tooltip"
+                            data-placement="top"
+                            title="Toggle between seeing solved cards or not during a study session"></i> :
                         <div class="custom-control custom-switch">
                             <input type="checkbox" name="see_solved" class="custom-control-input form-control"
                                 id="see_solved">
