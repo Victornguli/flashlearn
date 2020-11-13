@@ -295,13 +295,17 @@ a.navbar-brand img {
     overflow-x: auto;
 }
 
-.custom-dt thead {
-    background-color: #f7f2f2;
+
+custom-dt .table thead th {
+    /* background-color: #f7f2f296; */
+    border-top: none;
+    border-bottom: none;
 }
 
 .custom-dt thead th {
     font-size: .75rem;
-    color: #677788;
+    color: #505a64;
+    border-top: none;
     text-transform: uppercase;
 }
 
@@ -347,6 +351,11 @@ a.navbar-brand img {
 
 .custom-dt td .custom-control.custom-checkbox {
     padding-right: 0;
+}
+
+.custom-control {
+    min-height: 1.3rem;
+    padding-left: 1.8rem;
 }
 
 /* div.dataTables_wrapper div.dataTables_info {
