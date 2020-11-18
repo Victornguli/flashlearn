@@ -4,10 +4,8 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from instance.config import app_config
-
 from flashlearn.decorators import login_required
 
-# from flashlearn.database import SQLAlchemyDB
 
 db = SQLAlchemy()
 
@@ -66,14 +64,15 @@ def create_app(config=None):
     from flashlearn.commands import register_commands
 
     register_commands(app)  # Register app cli commands
-
     db.init_app(app)
+    register_blueprints(app)
 
-    from flashlearn.user import bp, routes
-
-    app.register_blueprint(bp)
-
-    from flashlearn.core import bp, routes  # noqa
-
-    app.register_blueprint(bp)
     return app
+
+
+def register_blueprints(app):
+    from flashlearn.user import user, routes
+    from flashlearn.core import core, routes  # noqa
+
+    app.register_blueprint(user)
+    app.register_blueprint(core)

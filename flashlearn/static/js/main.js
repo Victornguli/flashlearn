@@ -29,41 +29,59 @@ $(document).ready(function () {
 
     // Current card face; tracks the face to be synchronize flipping front and back faces
     var face = "front";
-
+    var inner = $(".flip-card-inner");
+    var front = $(".flip-card-front");
+    var back = $(".flip-card-back");
     // Flip card action
     $("#flip-card-btn, .flip-card").click(() => {
         if (face == "front") {
-            $(".flip-card-inner").css({ transform: "rotateY(180deg)" });
+            $(front).css({ display: "none" });
+            $(back).css({ display: "flex" });
+            $(inner).addClass(
+                "animate__animated animate__flipInY animate__faster"
+            );
             face = "back";
-            $("#card-legend-text").css({ color: "#fff" });
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
         } else if (face == "back") {
-            $(".flip-card-inner").css({ transform: "none" });
+            $(back).css({ display: "none" });
+            $(front).css({ display: "flex" });
+            $(inner).addClass(
+                "animate__animated animate__flipInY animate__faster"
+            );
             face = "front";
-            $("#card-legend-text").css({ color: "#223843" });
+            setTimeout(() => {
+                $(inner).removeClass("animate__animated animate__flipInY");
+            }, 500);
+            // $("#card-legend-text").css({ color: "#223843" });
         }
         $("#card-legend-text").text(face).fadeIn(0.6);
     });
 
     // Mark Known / Unknown cards
     $("#known-card, #unknown-card").click(() => {
-        // Fetch next card in the deck
+        // Ensure that the next card's front will be displayed
+        $(back).css({ display: "none" });
+        $(front).css({ display: "flex" });
+        face = "front";
+        $("#card-legend-text").text(face).fadeIn(0.6);
 
+        // Fetch next card in the deck
         $(".flip-card-front").text(Math.random().toString(36).substring(7));
         $(".flip-card-back").text(Math.random().toString(36).substring(7));
-        let el = $(".flip-card-inner").addClass(
-            "animate__animated animate__slideInRight"
-        );
+
+        // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
+        $(inner).addClass("animate__animated animate__fadeInRight");
         setTimeout(() => {
-            el.removeClass("animate__animated animate__slideInRight");
+            $(inner).removeClass("animate__animated animate__fadeInRight");
         }, 500);
     });
 
     // Add cards to a deck
     var formsetCount = 1;
-    var extra_formsets = 0;
     $("#add-deck-card-formset").click(() => {
         let addFormsetBtn = $("#add-deck-card-formset").parent();
-        extra_formsets += 1;
         let formset = `
         <div class="form-group">
             <hr style="color: #dee2e6; margin: 0;" class="mt-4 mb-2">
@@ -86,14 +104,89 @@ $(document).ready(function () {
     // Doughnut Charts
 
     const decksDt = dtInitWrapper("#decksDt", "decks");
-    const cardsDt = dtInitWrapper("#cardsDt", "cards");
+    const cardsDt = dtInitWrapper("#allCardsDt", "cards");
+    dtInitWrapper("#cardsDt", "Cards");
     const plansDt = dtInitWrapper("#plansDt", "study plans");
     $("#main-content").fadeIn("slow");
 });
 
-// Remove add card formset
+// Remove deck card formset
 function removeFormset(e, formset) {
     $(formset).parent().parent().parent().remove();
+}
+
+// Edit Deck within the deck dt
+function toggleDeckDtModal(deck_id) {
+    $.ajax({
+        type: "POST",
+        url: `/deck/${deck_id}`,
+        data: null,
+        contentType: false,
+        processData: false,
+        success: (data) => {
+            // Populate edit deck form..
+            $("#editDeckDtModal").find("#name").val(data.name);
+            $("#editDeckDtModal").find("#description").val(data.description);
+
+            // Bind the onSubmit event listener of the editmodal form to
+            // editItem() method..
+            $("#editDeckDtFormSubmit").on("click", function () {
+                editItem(
+                    new SubmitEvent($("#editDeckDtForm")),
+                    $("#editDeckDtForm")[0],
+                    "Deck",
+                    "POST",
+                    `/deck/${data.id}/edit`,
+                    "/decks"
+                );
+            });
+
+            $("#editDeckDtModal").modal("show");
+        },
+        error: (data) => {
+            Toast.fire({
+                icon: "error",
+                title: `Failed to retrieve Deck. Try again later`,
+            });
+        },
+    });
+}
+
+// Generic editItem wrapper method
+function editItem(e, form, item, method, target_url, success_url = null) {
+    e.preventDefault();
+    formData = new FormData(form);
+
+    $.ajax({
+        type: method,
+        url: target_url,
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: (data) => {
+            if (data == "Success") {
+                Toast.fire({
+                    icon: "success",
+                    title: `${item} updated successfully`,
+                }).then(() => {
+                    if (success_url !== null) {
+                        location.replace(success_url);
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: "error",
+                    title: `Failed to update ${item}. Try again later`,
+                });
+            }
+        },
+        error: (data) => {
+            Toast.fire({
+                icon: "error",
+                title: `Failed to update ${item}. Try again later`,
+            });
+        },
+    });
 }
 
 // Datatables initializer wrapper
@@ -411,5 +504,14 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
                 title: `Failed to create ${item}. Try again later`,
             });
         },
+    });
+}
+
+// Select2 Lookup data initializer
+function select2Lookup(selector, placeholder = "Select an option") {
+    console.log(selector);
+    $(selector).select2({
+        placeholder: placeholder,
+        allowClear: true,
     });
 }

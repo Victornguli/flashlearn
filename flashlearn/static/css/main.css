@@ -4,7 +4,7 @@ body {
     /* font-family: "Nunito", sans-serif; */
     font-family: "Open Sans", sans-serif;
     font-size: .875rem;
-    background: #fcfdfd;
+    background: #f1f3f3ad;
     color: #677788;
     font-weight: 400;
 }
@@ -114,6 +114,7 @@ h1 {
     padding-top: .5rem;
     overflow-x: hidden;
     overflow-y: auto;
+    background: #ffffff;
     /* Scrollable contents if viewport is shorter than content. */
 }
 
@@ -128,11 +129,13 @@ h1 {
     font-weight: 500;
     color: #333;
     border-left: 3px solid #ffff;
+    font-size: 1rem;
 }
 
 .sidebar .nav-link .feather {
-    margin-right: 4px;
+    margin-right: 5px;
     color: #999;
+    margin-bottom: 1px;
 }
 
 .sidebar .nav-link.active {
@@ -183,17 +186,22 @@ h1 {
 }
 
 .navbar-brand {
-    padding-top: .75rem;
-    padding-bottom: .75rem;
+    /* padding-top: .75rem;
+    padding-bottom: .75rem; */
     font-size: 1rem;
-    background-color: rgba(0, 0, 0, .25);
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+    /* background-color: rgba(0, 0, 0, .25);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25); */
 }
 
 a.navbar-brand {
     text-decoration: none;
-    color: #eeeeee;
 }
+
+a.navbar-brand img {
+    height: 1.5rem;
+    /* width: 2rem; */
+}
+
 
 .navbar .navbar-toggler {
     /* top: .25rem; */
@@ -290,13 +298,17 @@ a.navbar-brand {
     overflow-x: auto;
 }
 
-.custom-dt thead {
-    background-color: #f7f2f2;
+
+custom-dt .table thead th {
+    /* background-color: #f7f2f296; */
+    border-top: none;
+    border-bottom: none;
 }
 
 .custom-dt thead th {
     font-size: .75rem;
-    color: #677788;
+    color: #505a64;
+    border-top: none;
     text-transform: uppercase;
 }
 
@@ -312,6 +324,13 @@ a.navbar-brand {
 .custom-dt td {
     color: #677788;
     font-weight: 400;
+}
+
+.custom-dt tbody tr td.ellipsis-wrap{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 10rem;
 }
 
 .custom-dt td a.dt-link {
@@ -337,6 +356,11 @@ a.navbar-brand {
     padding-right: 0;
 }
 
+.custom-control {
+    min-height: 1.3rem;
+    padding-left: 1.8rem;
+}
+
 /* div.dataTables_wrapper div.dataTables_info {
     padding-top: 0.85em;
     white-space: pre-wrap;
@@ -350,6 +374,25 @@ a.navbar-brand {
 .dataTables_wrapper .row:last-of-type {
     padding: 1.3125rem 1.3125rem;
     padding-top: 0;
+}
+
+.dataTables_wrapper #cardsDt_filters_custom .select2-container {
+    margin-top: 1rem;
+    width: 100%;
+    /* justify-content: space-between !important; */
+}
+
+.dataTables_wrapper .select2-container--default .select2-selection--single {
+    height: 2rem;
+    padding: 0.2rem 0.2rem;
+    overflow: show;
+    /* text-overflow: ellipsis; */
+    white-space: nowrap;
+}
+
+.dataTables_wrapper #cardsDt_filters_custom .select2-selection--single .select2-selection__rendered {
+    text-overflow: clip;
+    padding-right: 45px;
 }
 
 .dataTables_paginate .pagination .paginate_button {
@@ -486,7 +529,7 @@ a.navbar-brand {
 }
 
 .flip-card-inner {
-  position: relative;
+  /* position: relative; */
   width: 100%;
   height: 100%;
   text-align: center;
@@ -508,20 +551,28 @@ a.navbar-brand {
 }
 
 .flip-card-front {
-  background-color:whitesmoke;
+  background-color:#fff;
   color: #223843;
 }
 
 .flip-card-back {
   background-color: #72b6e4;
   color: white;
-  transform: rotateY(180deg);
+  display: none;
+  /* transform: rotateY(180deg); */
 }
 
 /* Add Deck card formset */
 .remove-card-formset {
     cursor: pointer;
 }
+
+/* Animate css customizations 
+.animate__animated {
+    animation-duration: .3s;
+    /* animation-fill-mode: both; 
+} 
+*/
 
 
 @media screen and (max-width: 767px) {
@@ -540,6 +591,10 @@ a.navbar-brand {
 
 /* Select-2 styles */
 
+.select2-container {
+    display: block;
+}
+
 .select2-container--default .select2-selection--single {
     display: block;
     width: 100%;
@@ -548,7 +603,7 @@ a.navbar-brand {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #495057;
+    color: #677788;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
@@ -556,12 +611,22 @@ a.navbar-brand {
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #677788;
+}
+
 .select2-container .select2-selection--single .select2-selection__rendered {
     padding-left: 0;
+    color: #677788;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 36px;
+    color: #677788;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    color: #677788;
 }
 
 .select2-search__field {
@@ -607,10 +672,10 @@ a.navbar-brand {
 }
 
 .custom-switch .custom-control-label::after {
-    top: calc(.3rem + 2px);
-    left: calc(-2.2rem + 2px);
-    width: calc(1.5rem - 4px);
-    height: calc(1.5rem - 4px);
+    /* top: calc(.3rem + 3px);
+    left: calc(-2.2rem + 2px); */
+    width: 1.4rem;
+    height: 1.4rem;
     background-color: #adb5bd;
     border-radius: 1rem;
 }
@@ -737,7 +802,7 @@ a.navbar-brand {
         margin: 0;
         padding: 0;
     }
- }
+}
 
 @media (max-width: 767.98px) {
 
@@ -749,11 +814,16 @@ a.navbar-brand {
         padding-right: 15px;
         padding-left: 15px;
     }
+    
+    .nav-link {
+        display: flex;
+        align-items: center;
+    }
 
     .nav-item .nav-link .feather {
         height: 25px;
         width: 25px;
-        margin-right: 0;
+        margin-right: 0.5rem;
     }
 
     #navbar-nav-no-collapse {

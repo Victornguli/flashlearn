@@ -8,12 +8,12 @@ from flask import (
     render_template,
     flash,
 )
-from flashlearn.user import bp
+from flashlearn.user import user
 from flashlearn.models import User
 from flashlearn.decorators import login_required
 
 
-@bp.route("/login", methods=("GET", "POST"))
+@user.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -39,7 +39,7 @@ def login():
     return jsonify("Login Route")
 
 
-@bp.route("/register", methods=("POST", "GET"))
+@user.route("/register", methods=("POST", "GET"))
 def register():
     if request.method == "POST":
         username = request.form.get("username")
@@ -57,7 +57,7 @@ def register():
     return jsonify("Register Route")
 
 
-@bp.before_app_request
+@user.before_app_request
 def load_user():
     """Load authenticated user"""
     user_id = session.get("user_id")
@@ -67,20 +67,20 @@ def load_user():
         g.user = User.query.get_or_404(user_id)
 
 
-@bp.route("/logout", methods=("GET", "POST"))
+@user.route("/logout", methods=("GET", "POST"))
 def logout():
     session.clear()
     return redirect(url_for("user.login"))
 
 
-@bp.route("/list")
+@user.route("/list")
 @login_required
 def list_users():
     users = [user.to_json for user in User.all()]
     return jsonify(users)
 
 
-@bp.route("/<int:user_id>")
+@user.route("/<int:user_id>")
 @login_required
 def get_user(user_id):
     if request.method == "GET":
@@ -91,7 +91,7 @@ def get_user(user_id):
     return jsonify("Invalid request ")
 
 
-@bp.route("/<int:user_id>/delete", methods=("GET", "POST"))
+@user.route("/<int:user_id>/delete", methods=("GET", "POST"))
 @login_required
 def delete_user(user_id):
     user = User.query.filter_by(id=user_id, state="active").first()
@@ -99,7 +99,7 @@ def delete_user(user_id):
     return "deleted"
 
 
-@bp.route("/<int:user_id>/edit", methods=("GET", "POST"))
+@user.route("/<int:user_id>/edit", methods=("GET", "POST"))
 @login_required
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -115,7 +115,7 @@ def edit_user(user_id):
         return jsonify(user.to_json)
 
 
-@bp.route("/reset-password", methods=("POST", "GET"))
+@user.route("/reset-password", methods=("POST", "GET"))
 def reset_password():
     if request.method == "GET":  # pragma:no cover
         return render_template("forgot-password.html")
