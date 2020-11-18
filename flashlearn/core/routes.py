@@ -1,13 +1,13 @@
 from flask import request, jsonify, flash, g, abort, render_template
 from sqlalchemy.sql.expression import func
-from flashlearn.core import bp
+from flashlearn.core import core
 from flashlearn.models import Card, Deck, StudyPlan
 from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 from flashlearn.utils import to_bool
 
 
-@bp.route("/card/<int:card_id>")
+@core.route("/card/<int:card_id>")
 @login_required
 def get_card(card_id):
     target_card = Card.query.filter_by(id=card_id).first()
@@ -16,7 +16,7 @@ def get_card(card_id):
     flash("Failed to retrieve card")
 
 
-@bp.route("/card", methods=("GET", "POST"))
+@core.route("/card", methods=("GET", "POST"))
 @login_required
 def create_card():
     if request.method == "GET":
@@ -43,7 +43,7 @@ def create_card():
         return jsonify(error)
 
 
-@bp.route("/card/<int:card_id>/edit", methods=("POST",))
+@core.route("/card/<int:card_id>/edit", methods=("POST",))
 @login_required
 def edit_card(card_id):
     if request.method == "POST":
@@ -63,7 +63,7 @@ def edit_card(card_id):
     return "Failed to update card"  # Render edit_card template instead...
 
 
-@bp.route("/card/<int:card_id>/delete", methods=("POST",))
+@core.route("/card/<int:card_id>/delete", methods=("POST",))
 @login_required
 def delete_card(card_id):
     if request.method == "POST":
@@ -78,7 +78,7 @@ def delete_card(card_id):
     return "Not Allowed"
 
 
-@bp.route("/cards")
+@core.route("/cards")
 @login_required
 def cards():
     if request.method == "GET":
@@ -86,7 +86,7 @@ def cards():
         return render_template("dashboard/cards/_cards.html", cards=cards)
 
 
-@bp.route("/deck", methods=("POST", "GET"))
+@core.route("/deck", methods=("POST", "GET"))
 @login_required
 def create_deck():
     if request.method == "GET":
@@ -102,7 +102,7 @@ def create_deck():
         return jsonify("Success")
 
 
-@bp.route("/deck/<int:deck_id>", methods=("POST", "GET"))
+@core.route("/deck/<int:deck_id>", methods=("POST", "GET"))
 @login_required
 def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
@@ -112,7 +112,7 @@ def get_deck(deck_id):
         return jsonify(deck.to_json)
 
 
-@bp.route("/deck/<int:deck_id>/edit", methods=("POST",))
+@core.route("/deck/<int:deck_id>/edit", methods=("POST",))
 @login_required
 def edit_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
@@ -124,7 +124,7 @@ def edit_deck(deck_id):
     return jsonify("Success")
 
 
-@bp.route("/deck/<int:deck_id>/delete", methods=("POST",))
+@core.route("/deck/<int:deck_id>/delete", methods=("POST",))
 @login_required
 def delete_deck(deck_id):
     if request.method == "POST":
@@ -133,7 +133,7 @@ def delete_deck(deck_id):
         return jsonify("success")
 
 
-@bp.route("/decks", methods=("GET", "POST"))
+@core.route("/decks", methods=("GET", "POST"))
 @login_required
 def decks():
     decks = Deck.query.filter_by(user_id=g.user.id)
@@ -146,7 +146,7 @@ def decks():
         return jsonify(res)
 
 
-@bp.route("/deck/<int:deck_id>/reset", methods=("GET", "POST"))
+@core.route("/deck/<int:deck_id>/reset", methods=("GET", "POST"))
 @login_required
 def reset_deck(deck_id):
     state = request.form.get("state")
@@ -161,7 +161,7 @@ def reset_deck(deck_id):
     return jsonify("OK")
 
 
-@bp.route("/plans", methods=("GET", "POST"))
+@core.route("/plans", methods=("GET", "POST"))
 @login_required
 def study_plans():
     if request.method == "GET":
@@ -172,14 +172,14 @@ def study_plans():
         return jsonify(plans)
 
 
-@bp.route("/plan/<int:plan_id>")
+@core.route("/plan/<int:plan_id>")
 @login_required
 def get_study_plan(plan_id):
     study_plan = StudyPlan.query.get_or_404(plan_id)
     return jsonify(study_plan.to_json)
 
 
-@bp.route("/plan", methods=("GET", "POST"))
+@core.route("/plan", methods=("GET", "POST"))
 @login_required
 def create_study_plan():
     if request.method == "GET":
@@ -200,7 +200,7 @@ def create_study_plan():
         return jsonify("Success")
 
 
-@bp.route("/plan/<int:plan_id>/delete", methods=["POST", "GET"])
+@core.route("/plan/<int:plan_id>/delete", methods=["POST", "GET"])
 @login_required
 def delete_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
@@ -208,7 +208,7 @@ def delete_plan(plan_id):
     return jsonify("OK")
 
 
-@bp.route("deck/<int:deck_id>/study")
+@core.route("deck/<int:deck_id>/study")
 @login_required
 def study_deck(deck_id):
     """Study a deck"""
@@ -217,7 +217,7 @@ def study_deck(deck_id):
     return render_template("dashboard/decks/_study.html", deck=deck, card=card)
 
 
-@bp.route("study_plan/next", methods=("GET", "POST"))
+@core.route("study_plan/next", methods=("GET", "POST"))
 @login_required
 def get_next_card():
     study_plan_id = request.form.get("study_plan_id")
@@ -243,7 +243,7 @@ def get_next_card():
     return "OK"
 
 
-@bp.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))
+@core.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))
 @login_required
 def add_cards(deck_id):
     """Add cards to a deck"""
