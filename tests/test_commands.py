@@ -6,10 +6,10 @@ class TestCommands:
         res = cli_runner.invoke(args=["init-db"], input="N")
         assert "Cancelled db init" in res.output, "Should cancel db initialization"
 
-    def test_clear_db(self, test_app):
+    def test_drop_tables(self, test_app):
         cli_runner = test_app.test_cli_runner()
-        res = cli_runner.invoke(args=["clear-db"], input="N")
-        assert "Cancelled clear-db" in res.output, "Should cancel drop all command"
+        res = cli_runner.invoke(args=["drop-all"], input="N")
+        assert "Cancelled drop-all" in res.output, "Should cancel drop all command"
 
     def test_create_user(self, test_app):
         with test_app.app_context():

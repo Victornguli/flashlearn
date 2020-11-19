@@ -1,8 +1,8 @@
 import os
 import logging
-from logging.handlers import RotatingFileHandler
-from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, redirect, url_for
+from logging.handlers import RotatingFileHandler
 from instance.config import app_config
 from flashlearn.decorators import login_required
 
@@ -61,18 +61,20 @@ def create_app(config=None):
         # TODO: Add index code
         return redirect(url_for("core.decks"))
 
-    from flashlearn.commands import register_commands
-
-    register_commands(app)  # Register app cli commands
+    # Initialize db with app instance
     db.init_app(app)
-    register_blueprints(app)
+
+    # Commands and Blueprint registration needs to be after db init..
+    register_blueprints_and_commands(app)
 
     return app
 
 
-def register_blueprints(app):
+def register_blueprints_and_commands(app):
     from flashlearn.user import user, routes
     from flashlearn.core import core, routes  # noqa
+    from flashlearn.commands import register_commands
 
+    register_commands(app)
     app.register_blueprint(user)
     app.register_blueprint(core)
