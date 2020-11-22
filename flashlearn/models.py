@@ -261,3 +261,31 @@ class StudyPlan(TimestampedModel):
         db.session.commit()
         if create_default:
             self.create_default_study_plan(user_id=user.id)
+
+
+class StudySession(TimestampedModel):
+    """
+    Represents a study session. Keeps track of deck study progress
+    """
+
+    __tablename__ = "study_sessions"
+
+    deck_id = db.relationship(
+        Deck, backref=backref("study_sessions", cascade="all,delete")
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    known = db.Column(db.Integer, nullable=True)
+    unknown = db.Column(db.Integer, nullable=True)
+
+
+class StudySessionLog(TimestampedModel):
+    """
+    Tracks a study session. Records each card as a study session progresses
+    """
+
+    __tablename__ = "study_session_logs"
+
+    study_session_id = db.relationship(
+        StudySession, backref=backref("study_session_logs", cascade="all,delete")
+    )
+    card_id = db.Column(db.Integer, db.ForeignKey("cards.id"), nullable=False)
