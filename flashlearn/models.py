@@ -134,6 +134,7 @@ class Deck(TimestampedModel):
             user=self.user_id,
             parent=self.parent_id,
             child_count=self.child_count,
+            card_count=self.card_count,
         )
 
     @property
@@ -143,6 +144,10 @@ class Deck(TimestampedModel):
     @property
     def child_count(self):
         return len(self.children)
+
+    @property
+    def card_count(self):
+        return len(self.cards)
 
     @classmethod
     def create_default_deck(cls, user_id):
@@ -270,12 +275,29 @@ class StudySession(TimestampedModel):
 
     __tablename__ = "study_sessions"
 
-    deck_id = db.relationship(
+    deck_id = db.Column(db.Integer, db.ForeignKey("decks.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    known = db.Column(db.Integer, nullable=True, default=0)
+    unknown = db.Column(db.Integer, nullable=True)
+
+    decks = db.relationship(
         Deck, backref=backref("study_sessions", cascade="all,delete")
     )
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    known = db.Column(db.Integer, nullable=True)
-    unknown = db.Column(db.Integer, nullable=True)
+
+    def __init__(self, **kwargs):
+        """Initialize a Study Session"""
+        if 'unknown' not in kwargs.keys():
+            deck = Deck.get_by_id(kwargs['deck_id'])
+            kwargs['unknown'] = deck.card_count
+        super(StudySession, self).__init__(**kwargs)
+
+    def save(self):
+        self.state = "new"
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f"<StudySession: {self.deck.name} - {self.state}>"
 
 
 class StudySessionLog(TimestampedModel):
@@ -285,7 +307,17 @@ class StudySessionLog(TimestampedModel):
 
     __tablename__ = "study_session_logs"
 
-    study_session_id = db.relationship(
-        StudySession, backref=backref("study_session_logs", cascade="all,delete")
+    study_session_id = db.Column(
+        db.Integer, db.ForeignKey("study_sessions.id"), nullable=False
     )
     card_id = db.Column(db.Integer, db.ForeignKey("cards.id"), nullable=False)
+    study_session = db.relationship(
+        StudySession, backref=backref("study_session_logs", cascade="all,delete")
+    )
+
+    def __init__(self, **kwargs):
+        """Initialize a Study Session Log"""
+        super(StudySessionLog, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return f"<StudySessionLog: {self.study_session.deck.name} - {self.state}>"

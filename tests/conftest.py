@@ -1,5 +1,5 @@
 import pytest
-from flashlearn.models import User, Card, Deck, StudyPlan
+from flashlearn.models import User, Card, Deck, StudyPlan, StudySession
 from flashlearn import create_app, db
 
 
@@ -63,6 +63,13 @@ def plan(client, user):
     plan = StudyPlan(name="Grokking Algorithms", user=user)
     plan.save()
     return plan
+
+
+@pytest.fixture
+def study_session(client, user, decks):
+    study_session = StudySession(deck_id=decks[0].id, user_id=user.id)
+    study_session.save()
+    return study_session
 
 
 @pytest.fixture

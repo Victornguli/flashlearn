@@ -1,5 +1,5 @@
 from flask_bcrypt import Bcrypt
-from flashlearn.models import User, Card, Deck, StudyPlan
+from flashlearn.models import User, Card, Deck, StudyPlan, StudySession, StudySessionLog
 
 
 class TestModels:
@@ -61,4 +61,32 @@ class TestModels:
         StudyPlan.query.filter_by(id=plan.id).delete()
         assert (
             StudyPlan.query.filter_by(id=plan.id).first() is None
+        ), "Should be deleted"
+
+    def test_study_session(self, user, decks):
+        study_session = StudySession(deck_id=decks[0].id, user_id=user.id)
+        study_session.save()
+        assert study_session.state == "new", "Should create a new Study Session"
+        assert (
+            study_session.unknown == decks[0].card_count
+        ), "Should create a new Study Session"
+        StudySession.query.filter_by(id=study_session.id).delete()
+        assert (
+            StudySession.query.filter_by(id=study_session.id).first() is None
+        ), "Should delete the study_session"
+
+    def test_study_session_log(self, user, study_session, card):
+        study_session_log = StudySessionLog(
+            study_session_id=study_session.id, card_id=card.id
+        )
+        study_session_log.save()
+        assert (
+            study_session_log.state == "active"
+        ), "Should create a study session log with state active"
+        assert (
+            study_session_log in study_session.study_session_logs
+        ), "Should be accessible from StudySession's logs"
+        StudySessionLog.query.filter_by(id=study_session_log.id).delete()
+        assert (
+            StudySessionLog.query.filter_by(id=study_session_log.id).first() is None
         ), "Should be deleted"
