@@ -49,7 +49,7 @@ class TimestampedModel(db.Model):
     @classmethod
     def get_by_user_or_404(cls, _id, _user_id):
         obj = cls.query.get(_id)
-        if obj.id != _user_id:
+        if obj.user_id != _user_id:
             abort(404)
         return obj
 

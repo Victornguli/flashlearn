@@ -63,7 +63,7 @@ class TestRoutes:
         assert 200 == deck_response.status_code
         assert "BFS", deck_response.get_data(as_text=True)
 
-    def test_get_deck(self, decks, login, client):
+    def test_get_deck(self, client, login, decks):
         login()
         res = client.get(f"deck/{decks[0].id}")
         assert 200 == res.status_code
