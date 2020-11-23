@@ -29,14 +29,12 @@ def login():
             session.clear()
             session["user_id"] = user.id
             flash("You were successfully logged in")
-            print(next_url)
             if next_url:
                 return redirect(next_url)
             return redirect(url_for("index"))
         return render_template("login.html", error=error)
     else:
         return render_template("login.html")
-    return jsonify("Login Route")
 
 
 @user.route("/register", methods=("POST", "GET"))

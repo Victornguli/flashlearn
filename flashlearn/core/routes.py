@@ -105,7 +105,7 @@ def create_deck():
 @core.route("/deck/<int:deck_id>", methods=("POST", "GET"))
 @login_required
 def get_deck(deck_id):
-    deck = Deck.query.get_or_404(deck_id)
+    deck = Deck.get_by_user_or_404(deck_id, g.user.id)
     if request.method == "GET":
         return render_template("dashboard/decks/_deck.html", deck=deck)
     else:

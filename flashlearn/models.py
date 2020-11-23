@@ -1,4 +1,5 @@
 import logging
+from flask import abort
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -44,6 +45,13 @@ class TimestampedModel(db.Model):
     @classmethod
     def get_by_id(cls, _id):
         return cls.query.filter(cls.id == _id).first()
+
+    @classmethod
+    def get_by_user_or_404(cls, _id, _user_id):
+        obj = cls.query.get(_id)
+        if obj.id != _user_id:
+            abort(404)
+        return obj
 
 
 class User(TimestampedModel):
