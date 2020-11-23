@@ -39,20 +39,22 @@ def login():
 
 @user.route("/register", methods=("POST", "GET"))
 def register():
-    if request.method == "POST":
+    if request.method == "GET":
+        return render_template("register.html")
+    elif request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        email = request.form.get("email", None)
-        error = ""
+        password_confirm = request.form.get("password_confirm")
+
         user = User.query.filter_by(username=username).first()
         if user is not None:
-            error = "User already exists"
-        if not error:
-            user = User(username=username, password=password, email=email)
+            flash("Username is taken")
+            return render_template("register.html")
+
+        if password == password_confirm:
+            user = User(username=username, password=password)
             user.save()
             return redirect(url_for("user.login"))
-        return jsonify(error)  # TODO: Replace with flash(message)
-    return jsonify("Register Route")
 
 
 @user.before_app_request

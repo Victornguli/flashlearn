@@ -63,6 +63,7 @@ class User(TimestampedModel):
     password = db.Column(db.String(256), nullable=False)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
+    onboarded = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
     is_superuser = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(256))
