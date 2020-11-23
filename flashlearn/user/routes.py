@@ -28,7 +28,7 @@ def login():
         if not error:
             session.clear()
             session["user_id"] = user.id
-            flash("You were successfully logged in")
+            flash(f"Welcome back {username}")
             if next_url:
                 return redirect(next_url)
             return redirect(url_for("index"))
