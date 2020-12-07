@@ -99,9 +99,9 @@ def delete_user(user_id):
 
 @user.route("/account", methods=("GET", "POST"))
 @login_required
-def account(user_id):
+def account():
     if request.method == "GET":
-        return render_template("dashboard/account.html", user=g.user)
+        return render_template("dashboard/settings.html", user=g.user)
     elif request.method == "POST":
         password = request.form.get("password", None)
         email = request.form.get("email", g.user.email)
