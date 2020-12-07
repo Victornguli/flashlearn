@@ -12,14 +12,14 @@ class TestUserRoutes:
 
     def test_get_user(self, login, client, user):
         login()
-        res = client.get(f"/user/{user.id}")
+        res = client.get("/user/details")
         assert 200 == res.status_code
         assert "alice" in res.get_data(as_text=True)
 
-    def test_get_user_fail(self, login, client):
-        login()
-        res = client.get(f"/user/{10}")
-        assert 404 == res.status_code, "Should return 404 if user is not found"
+    def test_get_user_fail(self, client):
+        res = client.get("/user/details")
+        assert 302 == res.status_code, "Should return redirect to login if user \
+            is not authenticated"
 
     def test_edit_user(self, login, client, user):
         login()

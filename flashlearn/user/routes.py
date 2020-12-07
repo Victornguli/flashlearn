@@ -83,12 +83,11 @@ def list_users():
     return jsonify(users)
 
 
-@user.route("/<int:user_id>")
+@user.route("/details")
 @login_required
-def get_user(user_id):
+def get_user():
     if request.method == "GET":
-        user = User.query.get_or_404(user_id)
-        return jsonify(user.to_json)
+        return jsonify(g.user.to_json)
     return jsonify("Invalid request ")
 
 
