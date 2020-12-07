@@ -84,10 +84,8 @@ def list_users():
 @login_required
 def get_user(user_id):
     if request.method == "GET":
-        user = User.query.get_or_404(user_id)
-        if user is None:  # pragma:no cover
-            return "User not found", 404
-        return jsonify(User.query.get_or_404(user_id).to_json)
+        user = User.query.get_or_404(g.user.id)
+        return jsonify(user.to_json)
     return jsonify("Invalid request ")
 
 
@@ -99,15 +97,14 @@ def delete_user(user_id):
     return "deleted"
 
 
-@user.route("/<int:user_id>/edit", methods=("GET", "POST"))
+@user.route("/account", methods=("GET", "POST"))
 @login_required
-def edit_user(user_id):
-    user = User.query.get_or_404(user_id)
+def account(user_id):
     if request.method == "GET":
-        return render_template("dashboard/settings.html", user=user)
-    else:
+        return render_template("dashboard/account.html", user=g.user)
+    elif request.method == "POST":
         password = request.form.get("password", None)
-        email = request.form.get("email", user.email)
+        email = request.form.get("email", g.user.email)
 
         if password is not None:  # pragma:no-cover
             user.set_password(password)
