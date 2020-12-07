@@ -12,7 +12,7 @@ class TestAuth:
     def test_get_register(self, client):
         res = client.get("user/register")
         assert res.status_code == 200, "Should return 200 status code"
-        assert "Register Route" in res.get_data(
+        assert "Create a flashlearn account" in res.get_data(
             as_text=True
         ), "Should get register page"
 
