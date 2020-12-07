@@ -49,7 +49,7 @@ class TimestampedModel(db.Model):
     @classmethod
     def get_by_user_or_404(cls, _id, _user_id):
         obj = cls.query.get(_id)
-        if obj.user_id != _user_id:
+        if not obj or obj.user_id != _user_id:
             abort(404)
         return obj
 
@@ -293,15 +293,18 @@ class StudySession(TimestampedModel):
     known = db.Column(db.Integer, nullable=True, default=0)
     unknown = db.Column(db.Integer, nullable=True)
 
-    decks = db.relationship(
+    deck = db.relationship(
         Deck, backref=backref("study_sessions", cascade="all,delete")
+    )
+    user = db.relationship(
+        User, backref=backref("study_sessions", cascade="all,delete")
     )
 
     def __init__(self, **kwargs):
         """Initialize a Study Session"""
-        if 'unknown' not in kwargs.keys():
-            deck = Deck.get_by_id(kwargs['deck_id'])
-            kwargs['unknown'] = deck.card_count
+        if "unknown" not in kwargs.keys():
+            deck = Deck.get_by_id(kwargs["deck_id"])
+            kwargs["unknown"] = deck.card_count
         super(StudySession, self).__init__(**kwargs)
 
     def save(self):
