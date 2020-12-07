@@ -10,7 +10,7 @@ from flask import (
 )
 from flashlearn.user import user
 from flashlearn.models import User
-from flashlearn.decorators import login_required
+from flashlearn.decorators import login_required, super_user_required
 
 
 @user.route("/login", methods=("GET", "POST"))
@@ -28,33 +28,36 @@ def login():
         if not error:
             session.clear()
             session["user_id"] = user.id
-            flash("You were successfully logged in")
-            print(next_url)
+            flash(f"Welcome back {username}")
             if next_url:
                 return redirect(next_url)
             return redirect(url_for("index"))
         return render_template("login.html", error=error)
     else:
         return render_template("login.html")
-    return jsonify("Login Route")
 
 
 @user.route("/register", methods=("POST", "GET"))
 def register():
-    if request.method == "POST":
+    if request.method == "GET":
+        return render_template("register.html")
+    elif request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        email = request.form.get("email", None)
-        error = ""
+        password_confirm = request.form.get("password_confirm")
+
         user = User.query.filter_by(username=username).first()
         if user is not None:
-            error = "User already exists"
-        if not error:
-            user = User(username=username, password=password, email=email)
+            flash("Username is taken")
+            return render_template("register.html")
+
+        if password == password_confirm:
+            user = User(username=username, password=password)
             user.save()
             return redirect(url_for("user.login"))
-        return jsonify(error)  # TODO: Replace with flash(message)
-    return jsonify("Register Route")
+        else:
+            flash("Password and password confirm don't match")
+            return render_template("register.html")
 
 
 @user.before_app_request
@@ -75,19 +78,17 @@ def logout():
 
 @user.route("/list")
 @login_required
+@super_user_required
 def list_users():
     users = [user.to_json for user in User.all()]
     return jsonify(users)
 
 
-@user.route("/<int:user_id>")
+@user.route("/details")
 @login_required
-def get_user(user_id):
+def get_user():
     if request.method == "GET":
-        user = User.query.get_or_404(user_id)
-        if user is None:  # pragma:no cover
-            return "User not found", 404
-        return jsonify(User.query.get_or_404(user_id).to_json)
+        return jsonify(g.user.to_json)
     return jsonify("Invalid request ")
 
 
@@ -99,20 +100,19 @@ def delete_user(user_id):
     return "deleted"
 
 
-@user.route("/<int:user_id>/edit", methods=("GET", "POST"))
+@user.route("/account", methods=("GET", "POST"))
 @login_required
-def edit_user(user_id):
-    user = User.query.get_or_404(user_id)
+def account():
     if request.method == "GET":
-        return render_template("dashboard/settings.html", user=user)
-    else:
+        return render_template("dashboard/settings.html", user=g.user)
+    elif request.method == "POST":
         password = request.form.get("password", None)
-        email = request.form.get("email", user.email)
-
+        email = request.form.get("email", g.user.email)
+        logged_in_user = g.user
         if password is not None:  # pragma:no-cover
-            user.set_password(password)
-        user.update(email=email)
-        return jsonify(user.to_json)
+            logged_in_user.set_password(password)
+        logged_in_user.update(email=email)
+        return jsonify(logged_in_user.to_json)
 
 
 @user.route("/reset-password", methods=("POST", "GET"))

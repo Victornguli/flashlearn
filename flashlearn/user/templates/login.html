@@ -17,7 +17,9 @@
                             placeholder="Enter your username" required>
                     </div>
                     <div class="form-group text-left">
-                        <label for="password">Password: </label>
+                        <label class="d-flex justify-content-between" for="password">Password:
+                            <a href="{{ url_for('user.reset_password') }}">Forgot password?</a>
+                        </label>
                         <input type="password" class="form-control" name="password" id="password"
                             placeholder="Enter your password" required>
                     </div>
@@ -27,7 +29,7 @@
                     </div>
                     <hr class="mt-5 mb-2">
                     <div class="text-left">
-                        <a href="{{ url_for('user.reset_password') }}">Forgot password?</a>
+                        Don't have an account? <a href="{{ url_for('user.register') }}">Register now</a>
                     </div>
                 </form>
             </div>

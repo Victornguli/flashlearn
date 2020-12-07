@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li class="nav-item d-md-none">
-                <a href="{{ url_for("user.edit_user", user_id=g.user.id) }}" class="nav-link">
+                <a href="{{ url_for("user.account") }}" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="feather feather-settings">
@@ -77,9 +77,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a {% if request.endpoint == 'user.edit_user' or request.endpoint=='user.edit_user' %}
-                    class='active nav-link' {% endif %} class="nav-link"
-                    href="{{ url_for('user.edit_user', user_id=g.user.id) }}">
+                <a {% if request.endpoint == 'user.account' or request.endpoint=='user.account' %}
+                    class='active nav-link' {% endif %} class="nav-link" href="{{ url_for('user.account') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="feather feather-user">
@@ -89,7 +88,7 @@
                         </circle>
                     </svg>
                     Account
-                    {% if request.endpoint == 'user.edit_user' %}
+                    {% if request.endpoint == 'user.account' %}
                     <span class="sr-only">(current)</span>
                     {% endif %}
                 </a>

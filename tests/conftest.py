@@ -1,5 +1,5 @@
 import pytest
-from flashlearn.models import User, Card, Deck, StudyPlan
+from flashlearn.models import User, Card, Deck, StudyPlan, StudySession
 from flashlearn import create_app, db
 
 
@@ -23,6 +23,15 @@ def user(client) -> User:
     alice.set_password("password")
     alice.save()
     return alice
+
+
+@pytest.fixture
+def super_user(client) -> User:
+    bob = User(username="bob", email="bob@email.com")
+    bob.set_password("password")
+    bob.is_superuser = True
+    bob.save()
+    return bob
 
 
 @pytest.fixture
@@ -66,7 +75,14 @@ def plan(client, user):
 
 
 @pytest.fixture
-def login(client, user):
+def study_session(client, user, decks):
+    study_session = StudySession(deck_id=decks[0].id, user_id=user.id)
+    study_session.save()
+    return study_session
+
+
+@pytest.fixture
+def login(client, user, super_user):
     def inner(username=None, password=None):
         if not (username and password):
             username = user.username

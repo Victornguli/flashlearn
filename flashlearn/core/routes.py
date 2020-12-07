@@ -10,10 +10,8 @@ from flashlearn.utils import to_bool
 @core.route("/card/<int:card_id>")
 @login_required
 def get_card(card_id):
-    target_card = Card.query.filter_by(id=card_id).first()
-    if target_card:
-        return jsonify(target_card.to_json)
-    flash("Failed to retrieve card")
+    target_card = Card.get_by_user_or_404(card_id, g.user.id)
+    return jsonify(target_card.to_json)
 
 
 @core.route("/card", methods=("GET", "POST"))
@@ -50,9 +48,7 @@ def edit_card(card_id):
         state = request.form.get("state")
         if state.lower() not in ("active", "solved"):
             abort(400)
-        card = Card.query.filter_by(id=card_id).first()
-        if not card:
-            abort(404)
+        card = Card.get_by_user_or_404(card_id, g.user.id)
         card.update(
             front=request.form.get("front", card.front),
             back=request.form.get("back", card.back),
@@ -67,14 +63,9 @@ def edit_card(card_id):
 @login_required
 def delete_card(card_id):
     if request.method == "POST":
-        card = Card.query.filter_by(id=card_id)
-        error = None
-        if not card.first():
-            error = "Card not found"
-        if not error:
-            card.first().delete()
-            return jsonify("OK")
-        return jsonify(error)
+        card = Card.get_by_user_or_404(card_id, g.user.id)
+        card.delete()
+        return jsonify("OK")
     return "Not Allowed"
 
 
@@ -105,7 +96,7 @@ def create_deck():
 @core.route("/deck/<int:deck_id>", methods=("POST", "GET"))
 @login_required
 def get_deck(deck_id):
-    deck = Deck.query.get_or_404(deck_id)
+    deck = Deck.get_by_user_or_404(deck_id, g.user.id)
     if request.method == "GET":
         return render_template("dashboard/decks/_deck.html", deck=deck)
     else:
@@ -115,7 +106,7 @@ def get_deck(deck_id):
 @core.route("/deck/<int:deck_id>/edit", methods=("POST",))
 @login_required
 def edit_deck(deck_id):
-    deck = Deck.query.get_or_404(deck_id)
+    deck = Deck.get_by_user_or_404(deck_id, g.user.id)
     deck.update(
         name=request.form.get("name", deck.name),
         description=request.form.get("description", deck.description),
@@ -152,9 +143,7 @@ def reset_deck(deck_id):
     state = request.form.get("state")
     if state not in ("active", "solved"):
         abort(400)
-    deck = Deck.get_by_id(deck_id)
-    if not deck:
-        abort(400)
+    deck = Deck.get_by_user_or_404(deck_id, g.user.id)
     cards = Card.query.filter_by(deck_id=deck.id)
     for card in cards:
         card.update(state=state)
@@ -175,7 +164,7 @@ def study_plans():
 @core.route("/plan/<int:plan_id>")
 @login_required
 def get_study_plan(plan_id):
-    study_plan = StudyPlan.query.get_or_404(plan_id)
+    study_plan = StudyPlan.get_by_user_or_404(plan_id, g.user.id)
     return jsonify(study_plan.to_json)
 
 

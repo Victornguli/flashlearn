@@ -1,4 +1,5 @@
 import logging
+from flask import abort
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -45,6 +46,13 @@ class TimestampedModel(db.Model):
     def get_by_id(cls, _id):
         return cls.query.filter(cls.id == _id).first()
 
+    @classmethod
+    def get_by_user_or_404(cls, _id, _user_id):
+        obj = cls.query.get(_id)
+        if obj.user_id != _user_id:
+            abort(404)
+        return obj
+
 
 class User(TimestampedModel):
     """User model class"""
@@ -53,6 +61,11 @@ class User(TimestampedModel):
 
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    onboarded = db.Column(db.Boolean, default=False)
+    is_verified = db.Column(db.Boolean, default=False)
+    is_superuser = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(256))
 
     def __init__(self, username=username, password=None, email=None):
@@ -134,6 +147,7 @@ class Deck(TimestampedModel):
             user=self.user_id,
             parent=self.parent_id,
             child_count=self.child_count,
+            card_count=self.card_count,
         )
 
     @property
@@ -143,6 +157,10 @@ class Deck(TimestampedModel):
     @property
     def child_count(self):
         return len(self.children)
+
+    @property
+    def card_count(self):
+        return len(self.cards)
 
     @classmethod
     def create_default_deck(cls, user_id):
@@ -261,3 +279,58 @@ class StudyPlan(TimestampedModel):
         db.session.commit()
         if create_default:
             self.create_default_study_plan(user_id=user.id)
+
+
+class StudySession(TimestampedModel):
+    """
+    Represents a study session. Keeps track of deck study progress
+    """
+
+    __tablename__ = "study_sessions"
+
+    deck_id = db.Column(db.Integer, db.ForeignKey("decks.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    known = db.Column(db.Integer, nullable=True, default=0)
+    unknown = db.Column(db.Integer, nullable=True)
+
+    decks = db.relationship(
+        Deck, backref=backref("study_sessions", cascade="all,delete")
+    )
+
+    def __init__(self, **kwargs):
+        """Initialize a Study Session"""
+        if 'unknown' not in kwargs.keys():
+            deck = Deck.get_by_id(kwargs['deck_id'])
+            kwargs['unknown'] = deck.card_count
+        super(StudySession, self).__init__(**kwargs)
+
+    def save(self):
+        self.state = "new"
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f"<StudySession: {self.deck.name} - {self.state}>"
+
+
+class StudySessionLog(TimestampedModel):
+    """
+    Tracks a study session. Records each card as a study session progresses
+    """
+
+    __tablename__ = "study_session_logs"
+
+    study_session_id = db.Column(
+        db.Integer, db.ForeignKey("study_sessions.id"), nullable=False
+    )
+    card_id = db.Column(db.Integer, db.ForeignKey("cards.id"), nullable=False)
+    study_session = db.relationship(
+        StudySession, backref=backref("study_session_logs", cascade="all,delete")
+    )
+
+    def __init__(self, **kwargs):
+        """Initialize a Study Session Log"""
+        super(StudySessionLog, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return f"<StudySessionLog: {self.study_session.deck.name} - {self.state}>"
