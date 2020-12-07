@@ -55,6 +55,9 @@ def register():
             user = User(username=username, password=password)
             user.save()
             return redirect(url_for("user.login"))
+        else:
+            flash("Password and password confirm don't match")
+            return render_template("register.html")
 
 
 @user.before_app_request
@@ -84,7 +87,7 @@ def list_users():
 @login_required
 def get_user(user_id):
     if request.method == "GET":
-        user = User.query.get_or_404(g.user.id)
+        user = User.query.get_or_404(user_id)
         return jsonify(user.to_json)
     return jsonify("Invalid request ")
 
@@ -105,11 +108,11 @@ def account():
     elif request.method == "POST":
         password = request.form.get("password", None)
         email = request.form.get("email", g.user.email)
-
+        logged_in_user = g.user
         if password is not None:  # pragma:no-cover
-            user.set_password(password)
-        user.update(email=email)
-        return jsonify(user.to_json)
+            logged_in_user.set_password(password)
+        logged_in_user.update(email=email)
+        return jsonify(logged_in_user.to_json)
 
 
 @user.route("/reset-password", methods=("POST", "GET"))

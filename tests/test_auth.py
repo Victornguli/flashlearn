@@ -31,6 +31,7 @@ class TestAuth:
             data={
                 "username": "testuser",
                 "password": "pass@134#",
+                "password_confirm": "pass@134#",
                 "email": "mail@example.com",
             },
             follow_redirects=True,
@@ -48,11 +49,15 @@ class TestAuth:
         """
         res = client.post(
             "user/register",
-            data={"username": "alice", "email": "", "password": "password"},
+            data={
+                "username": "alice",
+                "email": "",
+                "password": "password",
+                "password_confirm": "password"},
             follow_redirects=True,
         )
         assert res.status_code == 200
-        assert "User already exists" in res.get_data(as_text=True)
+        assert "Username is taken" in res.get_data(as_text=True)
 
     def test_logout(self, logout):
         response = logout()

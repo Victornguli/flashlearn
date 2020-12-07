@@ -21,12 +21,10 @@ class TestUserRoutes:
         res = client.get(f"/user/{10}")
         assert 404 == res.status_code, "Should return 404 if user is not found"
 
-    def test_edit_user(self, login, client):
+    def test_edit_user(self, login, client, user):
         login()
-        user = User(username="test", email="test@mail.com", password="test")
-        user.save()
         res = client.post(
-            f"/user/{user.id}/edit",
+            "/user/account",
             data={"password": "test", "email": "new_mail@test.com"},
         )
         assert 200 == res.status_code
