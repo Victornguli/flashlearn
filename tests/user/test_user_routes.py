@@ -4,11 +4,11 @@ from flashlearn.models import User
 class TestUserRoutes:
     """Flashlearn user routes test class"""
 
-    def test_get_users(self, login, client):
-        login()
+    def test_get_users(self, login, client, super_user):
+        login(super_user.username, 'password')
         res = client.get("/user/list")
         assert 200 == res.status_code
-        assert "alice" in res.get_data(as_text=True)
+        assert "bob" in res.get_data(as_text=True)
 
     def test_get_user(self, login, client, user):
         login()

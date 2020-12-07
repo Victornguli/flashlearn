@@ -26,6 +26,15 @@ def user(client) -> User:
 
 
 @pytest.fixture
+def super_user(client) -> User:
+    bob = User(username="bob", email="bob@email.com")
+    bob.set_password("password")
+    bob.is_superuser = True
+    bob.save()
+    return bob
+
+
+@pytest.fixture
 def decks(client, user):
     algos = Deck(
         name="Algorithms",
@@ -73,7 +82,7 @@ def study_session(client, user, decks):
 
 
 @pytest.fixture
-def login(client, user):
+def login(client, user, super_user):
     def inner(username=None, password=None):
         if not (username and password):
             username = user.username

@@ -10,7 +10,7 @@ from flask import (
 )
 from flashlearn.user import user
 from flashlearn.models import User
-from flashlearn.decorators import login_required
+from flashlearn.decorators import login_required, super_user_required
 
 
 @user.route("/login", methods=("GET", "POST"))
@@ -78,6 +78,7 @@ def logout():
 
 @user.route("/list")
 @login_required
+@super_user_required
 def list_users():
     users = [user.to_json for user in User.all()]
     return jsonify(users)
