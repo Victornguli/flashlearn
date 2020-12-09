@@ -219,37 +219,21 @@ def study_deck(deck_id):
             user_id=g.user.id, deck_id=deck.id, known=0, unknown=cards.count()
         )
         session.save()
-    first_card = Card.get_next_card(session.id)
+    first_card = Card.get_next_card(session.id, deck_id)
     return render_template(
         "dashboard/decks/_study.html", deck=deck, session=session, first_card=first_card
     )
 
 
-@core.route(
-    "deck/<int:deck_id>/study/<int:study_session_id>/next", methods=("GET", "POST")
-)
+@core.route("deck/<int:deck_id>/study/<int:study_session_id>/next", methods=["POST"])
 @login_required
 def get_next_study_card(deck_id, study_session_id):
     if request.method == "POST":
-        study_session = StudySession.query.filter(
-            StudySession.deck_id == deck_id,
-            StudySession.user_id == g.user.id,
-            or_(StudySession.state == "new", StudySession.state == "ongoing"),
-        ).first()
-        if not study_session:
-            abort(404)
-        next_card = Card.get_next_card(study_session.id)
-        return jsonify("OK")
-    elif request.method == "GET":
-        study_session = StudySession.query.filter(
-            StudySession.deck_id == deck_id,
-            StudySession.user_id == g.user.id,
-            or_(StudySession.state == "new", StudySession.state == "ongoing"),
-        ).first()
-        if not study_session:
-            abort(404)
-        next_card = Card.get_next_card(study_session.id)
-        return jsonify(next_card.to_json)
+        next_card = Card.get_next_card(study_session_id, deck_id)
+        if next_card:
+            return jsonify(next_card.to_json)
+        else:
+            return jsonify({})
 
 
 @core.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))

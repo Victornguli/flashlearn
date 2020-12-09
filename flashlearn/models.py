@@ -221,8 +221,12 @@ class Card(TimestampedModel):
         )
 
     @classmethod
-    def get_next_card(cls, study_session_id):
-        session = StudySession.get_by_user_or_404(study_session_id, g.user.id)
+    def get_next_card(cls, study_session_id, deck_id):
+        session = StudySession.query.filter_by(
+            id=study_session_id, user_id=g.user.id, deck_id=deck_id
+        ).first()
+        if session is None:
+            abort(404)
         study_logs = db.session.query(StudySessionLog.id).filter_by(
             study_session_id=session.id
         )
