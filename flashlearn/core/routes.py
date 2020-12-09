@@ -47,10 +47,10 @@ def create_card():
 @login_required
 def edit_card(card_id):
     if request.method == "POST":
-        state = request.form.get("state")
-        if state.lower() not in ("active", "solved"):
-            abort(400)
         card = Card.get_by_user_or_404(card_id, g.user.id)
+        state = request.form.get("state", card.state)
+        if state.lower() not in ("active", "disabled"):
+            abort(400)
         card.update(
             front=request.form.get("front", card.front),
             back=request.form.get("back", card.back),
