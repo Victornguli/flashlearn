@@ -133,17 +133,14 @@ class TestRoutes:
         res = client.get(f"/deck/{decks[1].id}/study")
         assert 200 == res.status_code
 
-    def test_get_next_card(self, login, plan, decks, user, client, card):
+    def test_get_next_card(self, login, card, plan, decks, study_session, client):
         login()
-        study_plan = StudyPlan.get_by_id(plan.id)
-        card2 = Card(front="test", back="test", deck=decks[0], user=user)
-        card2.save()
         res = client.post(
-            "/study_plan/next",
-            data={"study_plan_id": study_plan.id, "deck_id": decks[1].id},
+            f"deck/{decks[0].id}/study/{study_session.id}/next",
         )
+
         assert 200 == res.status_code
-        assert "Dynamic Programming" in res.get_data(as_text=True)
+
 
     def test_add_cards_to_deck(self, decks, login, client):
         login()

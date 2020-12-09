@@ -1,5 +1,5 @@
 import pytest
-from flashlearn.models import User, Card, Deck, StudyPlan, StudySession
+from flashlearn.models import User, Card, Deck, StudyPlan, StudySession, StudySessionLog
 from flashlearn import create_app, db
 
 
@@ -79,6 +79,15 @@ def study_session(client, user, decks):
     study_session = StudySession(deck_id=decks[0].id, user_id=user.id)
     study_session.save()
     return study_session
+
+
+@pytest.fixture
+def study_session_log(client, card, study_session):
+    study_session_log = StudySessionLog(
+        study_session_id=study_session.id, card_id=card.id
+    )
+    study_session_log.save()
+    return study_session_log
 
 
 @pytest.fixture
