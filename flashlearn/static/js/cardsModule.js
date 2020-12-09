@@ -104,10 +104,7 @@ var cardsModule = (function () {
             });
         });
     }
-
-    // Handle Edit Modal Load
-    function handleEditModal(card_id) {}
-
+    
     function init() {
         bindEvents();
     }
