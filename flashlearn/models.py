@@ -1,5 +1,5 @@
 import logging
-from flask import abort
+from flask import abort, g
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -219,6 +219,23 @@ class Card(TimestampedModel):
             short_front=self.short_front,
             user=self.user.to_json,
         )
+
+    @classmethod
+    def get_next_card(cls, study_session_id):
+        study_logs = db.session.query(StudySessionLog.card_id).filter(
+            study_session_id == study_session_id
+        )
+        study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
+        ordering = func.random()
+        if study_plan.order.value == "latest":
+            ordering = Card.date_created.desc()
+        elif study_plan.order.value == "oldest":
+            ordering = Card.date_created.asc()
+        card = db.session.query(Card).filter(
+            Card.state == "active", ~(Card.id.in_(study_logs))
+        ).order_by(ordering).first()
+
+        return card
 
 
 class StudyPlan(TimestampedModel):
