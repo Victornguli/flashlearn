@@ -222,8 +222,9 @@ class Card(TimestampedModel):
 
     @classmethod
     def get_next_card(cls, study_session_id):
-        study_logs = db.session.query(StudySessionLog.card_id).filter(
-            study_session_id == study_session_id
+        session = StudySession.get_by_user_or_404(study_session_id, g.user.id)
+        study_logs = db.session.query(StudySessionLog.id).filter_by(
+            study_session_id=session.id
         )
         study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
         ordering = func.random()
@@ -231,9 +232,17 @@ class Card(TimestampedModel):
             ordering = Card.date_created.desc()
         elif study_plan.order.value == "oldest":
             ordering = Card.date_created.asc()
-        card = db.session.query(Card).filter(
-            Card.state == "active", ~(Card.id.in_(study_logs))
-        ).order_by(ordering).first()
+        card = (
+            db.session.query(Card)
+            .filter(
+                Card.state == "active",
+                Card.user_id == g.user.id,
+                Card.deck_id == session.deck_id,
+                Card.deck_id == ~(Card.id.in_(study_logs)),
+            )
+            .order_by(ordering)
+            .first()
+        )
 
         return card
 
