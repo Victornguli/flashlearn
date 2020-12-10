@@ -101,6 +101,21 @@ class TestRoutes:
         )
         assert 200 == res.status_code
 
+    # def test_edit_study_plan(self, login, client, plan):
+    #     login()
+    #     create_page_res = client.get("/plan")
+    #     assert 200 == create_page_res.status_code, "Should retrieve create plan page"
+    #     res = client.post(
+    #         f"/plan/{plan.id}/edit",
+    #         data={
+    #             "name": "New Study Plan",
+    #             "description": "Random Study Plan",
+    #             "order": "random",
+    #         },
+    #     )
+    #     assert 200 == res.status_code
+    #     assert StudyPlan.query.get(plan.id).name == "New Study Plan"
+
     def test_get_study_plan(self, plan, login, client):
         login()
         res = client.get(f"/plan/{plan.id}")
