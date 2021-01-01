@@ -67,8 +67,7 @@ def delete_card(card_id):
     if request.method == "POST":
         card = Card.get_by_user_or_404(card_id, g.user.id)
         card.delete()
-        return jsonify("OK")
-    return "Not Allowed"
+        return jsonify({"status": 1, "message": "Card deleted successfully"})
 
 
 @core.route("/cards")
