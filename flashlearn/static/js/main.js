@@ -103,10 +103,10 @@ $(document).ready(function () {
 
     // Doughnut Charts
 
-    const decksDt = dtInitWrapper("#decksDt", "decks");
-    const cardsDt = dtInitWrapper("#allCardsDt", "cards");
+    const decksDt = dtInitWrapper("#decksDt", "deck");
+    const cardsDt = dtInitWrapper("#allCardsDt", "card");
     dtInitWrapper("#cardsDt", "Cards");
-    const plansDt = dtInitWrapper("#plansDt", "study plans");
+    const plansDt = dtInitWrapper("#plansDt", "plan");
     $("#main-content").fadeIn("slow");
 });
 
@@ -282,6 +282,7 @@ function dtInitWrapper(id, name) {
         }
     });
 
+    // Listen to select and deselect of datatable rows
     dt.on("select deselect", function (e, dt, type, indexes) {
         const selected = dt.rows({
             selected: true,
@@ -298,13 +299,14 @@ function dtInitWrapper(id, name) {
             selected[0].forEach(function (r) {
                 let data = dt.row(r).data();
                 if (data) {
-                    ids.push(Number(data[data.length - 1]));
+                    ids.push(parseInt(data[data.length - 1]));
                 }
             });
+
             $("#selected_count").html(
                 `
                 <span class="mr-2">${selected.count()} Selected</span>
-                <a href="#" id="delete_selected">
+                <a href="#" id="delete_selected" onclick="bulkDelete('${name}', null, null, ${ids})">
                 <button class="btn btn-sm btn-outline-danger delete-selected-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -315,18 +317,6 @@ function dtInitWrapper(id, name) {
                 </a>
                 `
             );
-
-            $("#delete_selected").click(function () {
-                Swal.fire({
-                    title: "Confirm Decks deletion!",
-                    text: `${selected.count()} deck(s) will be deleted permanently.`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonColor: "#d33",
-                    confirmButtonText: "Delete them",
-                });
-            });
         } else if (selected.count() == 0) {
             $("#selected_count").html(``);
         }
@@ -415,11 +405,10 @@ function deleteDeck(deck_id) {
  * @return {void} Returns nothing(Either redirects or re-loads the target window)
  */
 function deleteItem(entity, item_id, target_url = null, success_url = null) {
-    // Capitalize for better display..
     if (target_url === null) {
         target_url = `${entity.toLowerCase()}/${item_id}/delete`;
     }
-    // File a Sweet Alert modal to confirm entity deletion..
+    // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
         title: `Confirm ${entity} deletion!`,
         text: `This ${entity} will be deleted permanently.`,
@@ -442,8 +431,8 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                         Toast.fire({
                             icon: "success",
                             title: `${
-                                entity.charAt(0).toUpperCase + entity.slice(1)
-                            } created successfully`,
+                                entity.charAt(0).toUpperCase() + entity.slice(1)
+                            } deleted successfully`,
                         }).then(() => {
                             if (success_url !== null) {
                                 location.replace(success_url);
@@ -453,7 +442,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                         Toast.fire({
                             icon: "error",
                             title: `Failed to delete ${
-                                entity.charAt(0).toUpperCase + entity.slice(1)
+                                entity.charAt(0).toUpperCase() + entity.slice(1)
                             }: ${res["message"]}`,
                         });
                     }
@@ -461,8 +450,8 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                 error: (err) => {
                     Toast.fire({
                         icon: "error",
-                        title: `Failed to create ${
-                            entity.charAt(0).toUpperCase + entity.slice(1)
+                        title: `Failed to delete ${
+                            entity.charAt(0).toUpperCase() + entity.slice(1)
                         }. Try again later`,
                     });
                 },
@@ -472,7 +461,80 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
 }
 
 /**
- * Simple Wrapper to ease the handling of form submissions via using Ajax
+ * Bulk delete selected items within a datatable
+ * @param {string} entity The name of the entity being deleted e.g Deck or Card
+ * @param {array} ids An array of ids to be deleted
+ * @param {string} target_url The url to send the delete request to
+ * @param {string} success_url The url to redirect to on success
+ */
+function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
+    // Default to /entity/bulk/delete route if target url is not set
+    if (target_url === null) {
+        target_url = `${entity.toLowerCase()}/bulk/delete`;
+    }
+    var pluralized = entity;
+    if (ids.length > 1) {
+        pluralized = entity + "s";
+    }
+    console.log(pluralized, target_url);
+    console.log(ids);
+    // Fire a Sweet Alert modal to confirm entity deletion..
+    Swal.fire({
+        title: `Confirm ${entity} deletion!`,
+        text: `The ${pluralized} will be deleted permanently`,
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonColor: "#3085d6",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Delete",
+    }).then(function (res) {
+        if (res.value) {
+            $.ajax({
+                type: "POST",
+                url: target_url,
+                data: { data: ids },
+                contentType: false,
+                processData: false,
+
+                success: (res) => {
+                    if (res["status"]) {
+                        Toast.fire({
+                            icon: "success",
+                            title: `${
+                                pluralized.charAt(0).toUpperCase() +
+                                pluralized.slice(1)
+                            } deleted successfully`,
+                        }).then(() => {
+                            if (success_url !== null) {
+                                location.replace(success_url);
+                            }
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: `Failed to delete ${
+                                pluralized.charAt(0).toUpperCase() +
+                                pluralized.slice(1)
+                            }: ${res["message"]}`,
+                        });
+                    }
+                },
+                error: (err) => {
+                    Toast.fire({
+                        icon: "error",
+                        title: `Failed to delete ${
+                            pluralized.charAt(0).toUpperCase() +
+                            pluralized.slice(1)
+                        }. Try again later`,
+                    });
+                },
+            });
+        }
+    });
+}
+
+/**
+ * Wrapper function to ease the handling of form submissions via Ajax
  * @param {Event} e The Form submit event
  * @param {HTMLElement} form The form element being handled
  * @param {string} item The name of the relevant entity e.g deck/card
