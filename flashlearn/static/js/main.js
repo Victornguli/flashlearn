@@ -476,8 +476,6 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
     if (ids.length > 1) {
         pluralized = entity + "s";
     }
-    console.log(pluralized, target_url);
-    console.log(ids);
     // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
         title: `Confirm ${entity} deletion!`,
