@@ -194,31 +194,6 @@ function dtInitWrapper(id, name) {
     let dt = $(id).DataTable({
         dom:
             '<"div custom-dt" rt> <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
-        // "responsive": {
-        //     "details": {
-        //         renderer: function (api, rowIdx, columns) {
-        //             var data = $.map(columns, function (col, i) {
-
-        //                 // Hacky way of hiding the index column completely for now
-        //                 // The index value seems not to be evaluated when responsive dt is rendered..
-        //                 if (col.columnIndex == 0) {
-        //                     return ''
-        //                 }
-        //                 return col.hidden ?
-        //                     `<li data-dtr-index="${i}" data-dt-row="${col.rowIndex}" data-dt-column="${col.columnIndex}">
-        //                         <span class="dtr-title">${col.title}</span>
-        //                         <span class="dtr-data">${col.data}</span>
-        //                     </li>` : '';
-        //             }).join('');
-
-        //             data = `
-        //             <ul class="dtr-details" data-dtr-index="${rowIdx}">
-        //             ${data}
-        //             </ul>`;
-        //             return data ? $('<table/>').append(data) : false;
-        //         }
-        //     }
-        // },
         columnDefs: [
             {
                 orderable: false,
@@ -227,14 +202,17 @@ function dtInitWrapper(id, name) {
                 className: "dtr-control",
                 render: function (data, type, full, meta) {
                     return `
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="dataCheck${
-                        meta.row
-                    }" name="id[]" value="${$("<div/>").text(meta.row).html()}">
-                    <label class="custom-control-label" for="dataCheck${
-                        meta.row
-                    }"></label>
-                </div> `;
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="dataCheck${
+                                meta.row
+                            }" name="id[]" value="${$("<div/>")
+                        .text(meta.row)
+                        .html()}">
+                            <label class="custom-control-label" for="dataCheck${
+                                meta.row
+                            }"></label>
+                        </div> 
+                    `;
                 },
             },
         ],
@@ -352,10 +330,6 @@ function dtInitWrapper(id, name) {
         } else if (selected.count() == 0) {
             $("#selected_count").html(``);
         }
-        // , function (r) {
-        //     ids.push(r[-1]);
-        // })
-        // console.log(dt.row(selected[0]).data());
     });
 
     // Custom search input.
@@ -432,17 +406,89 @@ function deleteDeck(deck_id) {
     });
 }
 
-// Basic Wrapper to ease the handling of simple Ajax requests
+/**
+ * Wrapper function to handle item deletions
+ * @param {string} entity Name of the entity being deleted e.g Deck or Card
+ * @param {string} item_id The id of the item to be deleted
+ * @param {string} target_url The url to send the delete request to
+ * @param {string} success_url The url to redirect to on success
+ * @return {void} Returns nothing(Either redirects or re-loads the target window)
+ */
+function deleteItem(entity, item_id, target_url = null, success_url = null) {
+    // Capitalize for better display..
+    if (target_url === null) {
+        target_url = `${entity.toLowerCase()}/${item_id}/delete`;
+    }
+    // File a Sweet Alert modal to confirm entity deletion..
+    Swal.fire({
+        title: `Confirm ${entity} deletion!`,
+        text: `This ${entity} will be deleted permanently.`,
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonColor: "#3085d6",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Delete it",
+    }).then(function (res) {
+        if (res.value) {
+            $.ajax({
+                type: "POST",
+                url: target_url,
+                data: { id: item_id },
+                contentType: false,
+                processData: false,
+
+                success: (res) => {
+                    res = JSON.parse("res");
+                    if (res["status"]) {
+                        Toast.fire({
+                            icon: "success",
+                            title: `${
+                                item.charAt(0).toUpperCase + item.slice(1)
+                            } created successfully`,
+                        }).then(() => {
+                            if (success_url !== null) {
+                                location.replace(success_url);
+                            }
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: `Failed to delete ${
+                                item.charAt(0).toUpperCase + item.slice(1)
+                            }: ${data}`,
+                        });
+                    }
+                },
+                error: (err) => {
+                    Toast.fire({
+                        icon: "error",
+                        title: `Failed to create ${
+                            item.charAt(0).toUpperCase + item.slice(1)
+                        }. Try again later`,
+                    });
+                },
+            });
+        }
+    });
+}
+
+/**
+ * Simple Wrapper to ease the handling of form submissions via using Ajax
+ * @param {Event} e The Form submit event
+ * @param {HTMLElement} form The form element being handled
+ * @param {string} item The name of the relevant entity e.g deck/card
+ * @param {string} method The Http method to be used
+ * @param {string} target_url The uri to send the ajax request to(relative to flashlearn root)
+ * @param {string} success_url The url to redirect to on success.
+ * @return {void} Returns nothing
+ */
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
     var formData = new FormData(form);
 
-    // Handle Deck cards formsets
-    // Loop through each textarea, and construct a card object with
-    // its front and back by simply checking which is first i.e the front
-    // value will always be in an index divisible by 2, so the next textarea automatically is back
-    // Consecutively check each 'prevCard' object for front and back value, append this to cards array
-    // and empty it else continue to the next textarea.
+    // Loop through each textarea, and construct a card object with its front and back by simply checking which is first.
+    // The front value will always be in an index divisible by 2, so the next textarea automatically is back
+    // Then proceed to confirm if both back and front are set for the card then push it to cards end empty it
     if ($(form).attr("id") == "add-deck-cards-form") {
         var cards = [];
         prevCard = {};
@@ -509,7 +555,6 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
 
 // Select2 Lookup data initializer
 function select2Lookup(selector, placeholder = "Select an option") {
-    console.log(selector);
     $(selector).select2({
         placeholder: placeholder,
         allowClear: true,

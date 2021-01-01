@@ -41,40 +41,40 @@ var cardsModule = (function () {
         });
 
         // Delete Card click handler
-        $(".delete-card").click(function () {
-            const cardId = $(this).attr("card-id");
-            Swal.fire({
-                title: "Confirm Card deletion!",
-                text: "This card will be deleted permanently.",
-                icon: "warning",
-                showCancelButton: true,
-                cancelButtonColor: "#3085d6",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "Delete it",
-            }).then(function (result) {
-                if (result.value) {
-                    $.ajax({
-                        method: "POST",
-                        url: `/card/${cardId}/delete`,
-                        success: function (res) {
-                            Swal.fire({
-                                text: "Success: Card deleted succesfully",
-                                icon: "success",
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function (err) {
-                            Toast.fire({
-                                icon: "error",
-                                title:
-                                    "Error: Failed to delete card. Try again later",
-                            });
-                        },
-                    });
-                }
-            });
-        });
+        // $(".delete-card").click(function () {
+        //     const cardId = $(this).attr("card-id");
+        //     Swal.fire({
+        //         title: "Confirm Card deletion!",
+        //         text: "This card will be deleted permanently.",
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         cancelButtonColor: "#3085d6",
+        //         confirmButtonColor: "#d33",
+        //         confirmButtonText: "Delete it",
+        //     }).then(function (result) {
+        //         if (result.value) {
+        //             $.ajax({
+        //                 method: "POST",
+        //                 url: `/card/${cardId}/delete`,
+        //                 success: function (res) {
+        //                     Swal.fire({
+        //                         text: "Success: Card deleted succesfully",
+        //                         icon: "success",
+        //                     }).then(() => {
+        //                         location.reload();
+        //                     });
+        //                 },
+        //                 error: function (err) {
+        //                     Toast.fire({
+        //                         icon: "error",
+        //                         title:
+        //                             "Error: Failed to delete card. Try again later",
+        //                     });
+        //                 },
+        //             });
+        //         }
+        //     });
+        // });
 
         // Handle Edit Modal open
         $("#edit-card-modal").on("show.bs.modal", function (e) {
