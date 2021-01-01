@@ -438,12 +438,11 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                 processData: false,
 
                 success: (res) => {
-                    res = JSON.parse("res");
                     if (res["status"]) {
                         Toast.fire({
                             icon: "success",
                             title: `${
-                                item.charAt(0).toUpperCase + item.slice(1)
+                                entity.charAt(0).toUpperCase + entity.slice(1)
                             } created successfully`,
                         }).then(() => {
                             if (success_url !== null) {
@@ -454,8 +453,8 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                         Toast.fire({
                             icon: "error",
                             title: `Failed to delete ${
-                                item.charAt(0).toUpperCase + item.slice(1)
-                            }: ${data}`,
+                                entity.charAt(0).toUpperCase + entity.slice(1)
+                            }: ${res["message"]}`,
                         });
                     }
                 },
@@ -463,7 +462,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                     Toast.fire({
                         icon: "error",
                         title: `Failed to create ${
-                            item.charAt(0).toUpperCase + item.slice(1)
+                            entity.charAt(0).toUpperCase + entity.slice(1)
                         }. Try again later`,
                     });
                 },
