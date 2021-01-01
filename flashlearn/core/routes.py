@@ -122,7 +122,7 @@ def delete_deck(deck_id):
     if request.method == "POST":
         deck = Deck.query.get_or_404(deck_id)
         deck.delete()
-        return jsonify("success")
+        return jsonify({"status": 1, "message": "Deck deleted succesfully"})
 
 
 @core.route("/decks", methods=("GET", "POST"))
@@ -195,7 +195,7 @@ def create_study_plan():
 def delete_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
     plan.delete()
-    return jsonify("OK")
+    return jsonify({'status': 1, 'message': 'Study Plan deleted successfully'})
 
 
 @core.route("deck/<int:deck_id>/study")
