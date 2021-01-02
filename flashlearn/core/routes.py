@@ -137,6 +137,18 @@ def delete_deck(deck_id):
         return jsonify({"status": 1, "message": "Deck deleted succesfully"})
 
 
+@core.route("/deck/bulk/delete", methods=("POST",))
+@login_required
+def bulk_delete_decks():
+    """Bulk delete decks"""
+    if request.method == "POST":
+        data = request.get_json().get("data", [])
+        for deck_id in data:
+            deck = Deck.get_by_user_or_404(deck_id, g.user.id)
+            deck.delete()
+        return jsonify({"status": 1, "message": "Decks deleted succesfully"})
+
+
 @core.route("/decks", methods=("GET", "POST"))
 @login_required
 def decks():

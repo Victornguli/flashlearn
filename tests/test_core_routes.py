@@ -99,6 +99,17 @@ class TestRoutes:
         assert 200 == res.status_code
         assert Deck.query.filter_by(id=decks[0].id).first() is None
 
+    def test_bulk_delete_decks(self, decks, login, client):
+        login()
+        res = client.post(
+            "/deck/bulk/delete",
+            data=json.dumps({"data": [decks[0].id, decks[1].id]}),
+            content_type="application/json",
+        )
+        assert 200 == res.status_code, "Should return 200 status code"
+        assert Deck.query.filter_by(id=decks[0].id).first() is None
+        assert Deck.query.filter_by(id=decks[1].id).first() is None
+
     def test_get_decks(self, login, decks, client):
         login()
         decks_page = client.get("/decks")
