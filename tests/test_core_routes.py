@@ -1,3 +1,4 @@
+import json
 from flashlearn.models import Card, Deck, StudyPlan
 
 
@@ -40,6 +41,24 @@ class TestRoutes:
         res = client.post(f"/card/{card.id}/delete")
         assert 200 == res.status_code
         assert Card.query.filter_by(id=card.id).first() is None
+
+    def test_bulk_delete_cards(self, card, login, client):
+        login()
+        card_2 = Card(
+            front="Test Front",
+            back="Test back",
+            user_id=card.user_id,
+            deck_id=card.deck_id,
+        )
+        card_2.save()
+        res = client.post(
+            "/card/bulk/delete",
+            data=json.dumps({"data": [card.id, card_2.id]}),
+            content_type="application/json",
+        )
+        assert 200 == res.status_code, "Should return a 200 status code"
+        assert Card.query.filter_by(id=card.id).first() is None
+        assert Card.query.filter_by(id=card_2.id).first() is None
 
     def test_get_cards(self, card, login, client):
         login()

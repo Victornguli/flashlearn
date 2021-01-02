@@ -202,8 +202,7 @@ class Card(TimestampedModel):
 
     @property
     def short_front(self):
-        if len(self.front) > 50:
-            return self.front[:50]
+        return self.front[:50] if len(self.front) > 50 else self.front
 
     def __repr__(self):
         return (

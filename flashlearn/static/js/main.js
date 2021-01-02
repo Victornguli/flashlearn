@@ -491,9 +491,8 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
                 type: "POST",
                 url: target_url,
                 data: { data: ids },
-                contentType: false,
-                processData: false,
-
+                contentType: "text/json",
+                processData: true,
                 success: (res) => {
                     if (res["status"]) {
                         Toast.fire({

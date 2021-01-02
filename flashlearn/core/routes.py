@@ -70,6 +70,18 @@ def delete_card(card_id):
         return jsonify({"status": 1, "message": "Card deleted successfully"})
 
 
+@core.route("/card/bulk/delete", methods=("POST",))
+@login_required
+def bulk_delete_cards():
+    """Bulk delete cards"""
+    if request.method == "POST":
+        data = request.get_json().get("data", [])
+        for card_id in data:
+            card = Card.get_by_user_or_404(card_id, g.user.id)
+            card.delete()
+        return jsonify({"status": 1, "message": "Cards deleted successfully"})
+
+
 @core.route("/cards")
 @login_required
 def cards():
@@ -195,7 +207,7 @@ def create_study_plan():
 def delete_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
     plan.delete()
-    return jsonify({'status': 1, 'message': 'Study Plan deleted successfully'})
+    return jsonify({"status": 1, "message": "Study Plan deleted successfully"})
 
 
 @core.route("deck/<int:deck_id>/study")
