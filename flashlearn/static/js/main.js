@@ -490,9 +490,9 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
             $.ajax({
                 type: "POST",
                 url: target_url,
-                data: { data: ids },
-                contentType: "text/json",
-                processData: true,
+                data: JSON.stringify({ data: ids }),
+                contentType: "application/json",
+                dataType: "json",
                 success: (res) => {
                     if (res["status"]) {
                         Toast.fire({
@@ -504,6 +504,8 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
                         }).then(() => {
                             if (success_url !== null) {
                                 location.replace(success_url);
+                            } else {
+                                location.reload();
                             }
                         });
                     } else {
