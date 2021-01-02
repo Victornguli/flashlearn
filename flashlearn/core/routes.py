@@ -1,10 +1,12 @@
-from flask import request, jsonify, flash, g, abort, render_template
-from sqlalchemy.sql.expression import func
+from flask import request, jsonify, g, abort, render_template
+from sqlalchemy import or_
 from flashlearn.core import core
-from flashlearn.models import Card, Deck, StudyPlan
+from flashlearn.models import Card, Deck, StudyPlan, StudySession
 from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 from flashlearn.utils import to_bool
+
+from flashlearn import db
 
 
 @core.route("/card/<int:card_id>")
@@ -45,10 +47,10 @@ def create_card():
 @login_required
 def edit_card(card_id):
     if request.method == "POST":
-        state = request.form.get("state")
-        if state.lower() not in ("active", "solved"):
-            abort(400)
         card = Card.get_by_user_or_404(card_id, g.user.id)
+        state = request.form.get("state", card.state)
+        if state.lower() not in ("active", "disabled"):
+            abort(400)
         card.update(
             front=request.form.get("front", card.front),
             back=request.form.get("back", card.back),
@@ -65,8 +67,19 @@ def delete_card(card_id):
     if request.method == "POST":
         card = Card.get_by_user_or_404(card_id, g.user.id)
         card.delete()
-        return jsonify("OK")
-    return "Not Allowed"
+        return jsonify({"status": 1, "message": "Card deleted successfully"})
+
+
+@core.route("/card/bulk/delete", methods=("POST",))
+@login_required
+def bulk_delete_cards():
+    """Bulk delete cards"""
+    if request.method == "POST":
+        data = request.get_json().get("data", [])
+        for card_id in data:
+            card = Card.get_by_user_or_404(card_id, g.user.id)
+            card.delete()
+        return jsonify({"status": 1, "message": "Cards deleted successfully"})
 
 
 @core.route("/cards")
@@ -121,7 +134,19 @@ def delete_deck(deck_id):
     if request.method == "POST":
         deck = Deck.query.get_or_404(deck_id)
         deck.delete()
-        return jsonify("success")
+        return jsonify({"status": 1, "message": "Deck deleted succesfully"})
+
+
+@core.route("/deck/bulk/delete", methods=("POST",))
+@login_required
+def bulk_delete_decks():
+    """Bulk delete decks"""
+    if request.method == "POST":
+        data = request.get_json().get("data", [])
+        for deck_id in data:
+            deck = Deck.get_by_user_or_404(deck_id, g.user.id)
+            deck.delete()
+        return jsonify({"status": 1, "message": "Decks deleted succesfully"})
 
 
 @core.route("/decks", methods=("GET", "POST"))
@@ -194,42 +219,44 @@ def create_study_plan():
 def delete_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
     plan.delete()
-    return jsonify("OK")
+    return jsonify({"status": 1, "message": "Study Plan deleted successfully"})
 
 
 @core.route("deck/<int:deck_id>/study")
 @login_required
 def study_deck(deck_id):
     """Study a deck"""
-    deck = Deck.query.get_or_404(deck_id)
-    card = Card.query.filter_by(deck_id=deck_id, state="unknown").first()
-    return render_template("dashboard/decks/_study.html", deck=deck, card=card)
+    deck = Deck.get_by_user_or_404(deck_id, g.user.id)
+    cards = Card.query.filter_by(deck_id=deck_id, state="active")
+    session = (
+        db.session.query(StudySession)
+        .filter(
+            StudySession.deck_id == deck.id,
+            StudySession.user_id == g.user.id,
+            or_(StudySession.state == "new", StudySession.state == "ongoing"),
+        )
+        .first()
+    )
+    if session is None:
+        session = StudySession(
+            user_id=g.user.id, deck_id=deck.id, known=0, unknown=cards.count()
+        )
+        session.save()
+    first_card = Card.get_next_card(session.id, deck_id)
+    return render_template(
+        "dashboard/decks/_study.html", deck=deck, session=session, first_card=first_card
+    )
 
 
-@core.route("study_plan/next", methods=("GET", "POST"))
+@core.route("deck/<int:deck_id>/study/<int:study_session_id>/next", methods=["POST"])
 @login_required
-def get_next_card():
-    study_plan_id = request.form.get("study_plan_id")
-    deck_id = request.form.get("deck_id")
-    deck = Deck.get_by_id(deck_id)
-    study_plan = StudyPlan.get_by_id(study_plan_id)
-
-    if not (study_plan and deck):
-        abort(404)
-    order = study_plan.order.value
-    cards = Card.query.filter_by(deck_id=deck_id)
-    if order == "latest":
-        order_by = Card.id.desc()
-    elif order == "oldest":
-        order_by = Card.date_created.asc()
-    else:
-        order_by = func.random()
-
-    card = cards.order_by(order_by).first()
-    if card is not None:
-        return jsonify(card.to_json)
-    flash("You have studied all cards in this deck")
-    return "OK"
+def get_next_study_card(deck_id, study_session_id):
+    if request.method == "POST":
+        next_card = Card.get_next_card(study_session_id, deck_id)
+        if next_card:
+            return jsonify(next_card.to_json)
+        else:
+            return jsonify({})
 
 
 @core.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))

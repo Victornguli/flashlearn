@@ -1,5 +1,5 @@
 import logging
-from flask import abort
+from flask import abort, g
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -49,7 +49,7 @@ class TimestampedModel(db.Model):
     @classmethod
     def get_by_user_or_404(cls, _id, _user_id):
         obj = cls.query.get(_id)
-        if obj.user_id != _user_id:
+        if not obj or obj.user_id != _user_id:
             abort(404)
         return obj
 
@@ -202,8 +202,7 @@ class Card(TimestampedModel):
 
     @property
     def short_front(self):
-        if len(self.front) > 50:
-            return self.front[:50]
+        return self.front[:50] if len(self.front) > 50 else self.front
 
     def __repr__(self):
         return (
@@ -219,6 +218,36 @@ class Card(TimestampedModel):
             short_front=self.short_front,
             user=self.user.to_json,
         )
+
+    @classmethod
+    def get_next_card(cls, study_session_id, deck_id):
+        session = StudySession.query.filter_by(
+            id=study_session_id, user_id=g.user.id, deck_id=deck_id
+        ).first()
+        if session is None:
+            abort(404)
+        study_logs = db.session.query(StudySessionLog.id).filter_by(
+            study_session_id=session.id
+        )
+        study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
+        ordering = func.random()
+        if study_plan.order.value == "latest":
+            ordering = Card.date_created.desc()
+        elif study_plan.order.value == "oldest":
+            ordering = Card.date_created.asc()
+        card = (
+            db.session.query(Card)
+            .filter(
+                Card.state == "active",
+                Card.user_id == g.user.id,
+                Card.deck_id == session.deck_id,
+                Card.deck_id == ~(Card.id.in_(study_logs)),
+            )
+            .order_by(ordering)
+            .first()
+        )
+
+        return card
 
 
 class StudyPlan(TimestampedModel):
@@ -293,15 +322,18 @@ class StudySession(TimestampedModel):
     known = db.Column(db.Integer, nullable=True, default=0)
     unknown = db.Column(db.Integer, nullable=True)
 
-    decks = db.relationship(
+    deck = db.relationship(
         Deck, backref=backref("study_sessions", cascade="all,delete")
+    )
+    user = db.relationship(
+        User, backref=backref("study_sessions", cascade="all,delete")
     )
 
     def __init__(self, **kwargs):
         """Initialize a Study Session"""
-        if 'unknown' not in kwargs.keys():
-            deck = Deck.get_by_id(kwargs['deck_id'])
-            kwargs['unknown'] = deck.card_count
+        if "unknown" not in kwargs.keys():
+            deck = Deck.get_by_id(kwargs["deck_id"])
+            kwargs["unknown"] = deck.card_count
         super(StudySession, self).__init__(**kwargs)
 
     def save(self):

@@ -91,6 +91,7 @@
                     <th>Progress</th>
                     <th>Added On</th>
                     <th>#</th>
+                    <th class="d-none"></th>
                 </tr>
             </thead>
             <tbody>
@@ -150,13 +151,14 @@
                                 <a class="dropdown-item" href="{{ url_for('core.get_deck', deck_id=deck.id) }}">
                                     <i class="fa fa-eye mr-2"></i> View
                                 </a>
-                                <a class="dropdown-item text-danger" onclick="deleteDeck('{{deck.id}}')"
+                                <a class="dropdown-item text-danger" onclick="deleteItem('Deck', '{{deck.id}}')"
                                     data-id="{{deck.id}}">
                                     <i class="fa fa-trash mr-2"></i> Delete
                                 </a>
                             </div>
                         </div>
                     </td>
+                    <td class="d-none">{{ deck.id }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

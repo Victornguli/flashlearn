@@ -1,3 +1,4 @@
+import json
 from flashlearn.models import Card, Deck, StudyPlan
 
 
@@ -28,11 +29,11 @@ class TestRoutes:
     def test_edit_card(self, user, card, login, client):
         login()
         res = client.post(
-            f"/card/{card.id}/edit", data={"front": "New Front", "state": "solved"}
+            f"/card/{card.id}/edit", data={"front": "New Front", "state": "disabled"}
         )
         assert 200 == res.status_code
         solved_card = Card.query.filter_by(id=card.id).first()
-        assert "solved" == solved_card.state
+        assert "disabled" == solved_card.state
         assert "New Front" == solved_card.front
 
     def test_delete_card(self, card, login, client):
@@ -40,6 +41,24 @@ class TestRoutes:
         res = client.post(f"/card/{card.id}/delete")
         assert 200 == res.status_code
         assert Card.query.filter_by(id=card.id).first() is None
+
+    def test_bulk_delete_cards(self, card, login, client):
+        login()
+        card_2 = Card(
+            front="Test Front",
+            back="Test back",
+            user_id=card.user_id,
+            deck_id=card.deck_id,
+        )
+        card_2.save()
+        res = client.post(
+            "/card/bulk/delete",
+            data=json.dumps({"data": [card.id, card_2.id]}),
+            content_type="application/json",
+        )
+        assert 200 == res.status_code, "Should return a 200 status code"
+        assert Card.query.filter_by(id=card.id).first() is None
+        assert Card.query.filter_by(id=card_2.id).first() is None
 
     def test_get_cards(self, card, login, client):
         login()
@@ -80,6 +99,25 @@ class TestRoutes:
         assert 200 == res.status_code
         assert Deck.query.filter_by(id=decks[0].id).first() is None
 
+    def test_bulk_delete_decks(self, user, login, client):
+        login()
+        deck_1 = Deck(
+            name="Test Deck 1", description="Test Deck 1 Description", user_id=user.id
+        )
+        deck_2 = Deck(
+            name="Test Deck", description="Test Deck Description", user_id=user.id
+        )
+        deck_1.save()
+        deck_2.save()
+        res = client.post(
+            "/deck/bulk/delete",
+            data=json.dumps({"data": [deck_1.id, deck_2.id]}),
+            content_type="application/json",
+        )
+        assert 200 == res.status_code, "Should return 200 status code"
+        assert Deck.query.filter_by(id=deck_1.id).first() is None
+        assert Deck.query.filter_by(id=deck_2.id).first() is None
+
     def test_get_decks(self, login, decks, client):
         login()
         decks_page = client.get("/decks")
@@ -100,6 +138,21 @@ class TestRoutes:
             },
         )
         assert 200 == res.status_code
+
+    # def test_edit_study_plan(self, login, client, plan):
+    #     login()
+    #     create_page_res = client.get("/plan")
+    #     assert 200 == create_page_res.status_code, "Should retrieve create plan page"
+    #     res = client.post(
+    #         f"/plan/{plan.id}/edit",
+    #         data={
+    #             "name": "New Study Plan",
+    #             "description": "Random Study Plan",
+    #             "order": "random",
+    #         },
+    #     )
+    #     assert 200 == res.status_code
+    #     assert StudyPlan.query.get(plan.id).name == "New Study Plan"
 
     def test_get_study_plan(self, plan, login, client):
         login()
@@ -133,17 +186,13 @@ class TestRoutes:
         res = client.get(f"/deck/{decks[1].id}/study")
         assert 200 == res.status_code
 
-    def test_get_next_card(self, login, plan, decks, user, client, card):
+    def test_get_next_card(self, login, card, plan, decks, study_session, client):
         login()
-        study_plan = StudyPlan.get_by_id(plan.id)
-        card2 = Card(front="test", back="test", deck=decks[0], user=user)
-        card2.save()
         res = client.post(
-            "/study_plan/next",
-            data={"study_plan_id": study_plan.id, "deck_id": decks[1].id},
+            f"deck/{decks[0].id}/study/{study_session.id}/next",
         )
+
         assert 200 == res.status_code
-        assert "Dynamic Programming" in res.get_data(as_text=True)
 
     def test_add_cards_to_deck(self, decks, login, client):
         login()
