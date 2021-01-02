@@ -7,6 +7,7 @@ from flask import (
     redirect,
     render_template,
     flash,
+    abort,
 )
 from flashlearn.user import user
 from flashlearn.models import User
@@ -106,13 +107,31 @@ def account():
     if request.method == "GET":
         return render_template("dashboard/settings.html", user=g.user)
     elif request.method == "POST":
-        password = request.form.get("password", None)
         email = request.form.get("email", g.user.email)
-        logged_in_user = g.user
-        if password is not None:  # pragma:no-cover
-            logged_in_user.set_password(password)
-        logged_in_user.update(email=email)
-        return jsonify(logged_in_user.to_json)
+        g.user.update(email=email)
+        return jsonify(g.user.to_json)
+
+
+@user.route("/account/change_password", methods=("POST",))
+@login_required
+def change_password():
+    if request.method == "POST":
+        user = User.query.get_or_404(g.user.id)
+        old_password = request.form.get("old_password", None)
+        password = request.form.get("password", None)
+        confirm_password = request.form.get("confirm_password", None)
+        if not (old_password and password and confirm_password):  # pragma:no-cover
+            abort(400)
+        if password != confirm_password:  # pragma:no-cover
+            return jsonify(
+                {"status": 0, "message": "New password and confirmation don't match"}
+            )
+        if not user.password_is_valid(old_password):  # pragma:no-cover
+            return jsonify({"status": 0, "message": "Old password is incorrect"})
+        # Proceed to set new password
+        g.user.set_password(password)
+        g.user.save()
+        return jsonify({"status": 1, "message": "Password changed successfully"})
 
 
 @user.route("/reset-password", methods=("POST", "GET"))
