@@ -51,15 +51,17 @@
                     <div class="card settings-card">
                         <div class="card-body">
                             <h3 class="h6 mb-3">Change your username or email</h3>
-                            <form class="form" action="">
+                            <form class="form" method="POST" action="/user/account/change_details">
                                 <div class="form-group">
                                     <label for="username">Username:</label>
-                                    <input type="text" name="username" id="username" class="form-control">
+                                    <input type="text" name="username" value="{{ user.username }}" id="username"
+                                        class="form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="email">Email:</label>
-                                    <input type="text" name="email" id="username" class="form-control">
+                                    <input type="text" name="email" id="email" value="{{ user.email }}"
+                                        class="form-control">
                                 </div>
 
                                 <div class="form-group d-flex justify-content-end">
@@ -88,25 +90,47 @@
                     <div class="card settings-card">
                         <div class="card-body">
                             <h3 class="h6 mb-3">Confirm your old password first before changing your password</h3>
-                            <form class="form" action="">
+                            <div id="change-password__feedback"></div>
+                            <form class="form" id="change-password-form" method="POST">
                                 <div class="form-group">
                                     <label for="old_password">Old password:</label>
-                                    <input type="password" id="old_password" name="old_password" class="form-control">
+                                    <input type="password" id="old_password" style="width: 90%; display: inline-block;"
+                                        name="old_password" class="form-control">
+                                    <span style="margin-left: -30px;
+                                    cursor: pointer;" toggle="#password-field"
+                                        class="fa fa-fw fa-eye field_icon toggle-password"
+                                        passwordElement="old_password"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="password">New password:</label>
-                                    <input type="password" id="password" name="password" class="form-control">
+                                    <input style="width: 90%; display: inline-block;" type="password" id="password"
+                                        name="password" class="form-control">
+                                    <span style="margin-left: -30px;
+                                        cursor: pointer;" toggle="#password-field"
+                                        class="fa fa-fw fa-eye field_icon toggle-password"
+                                        passwordElement="password"></span>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="password_confirm">Confirm password:</label>
-                                    <input type="password" id="password_confirm" name="password_confirm"
-                                        class="form-control">
+                                    <label for="confirm_password">Confirm password:</label>
+                                    <input style="width: 90%; display: inline-block;" type="password"
+                                        id="confirm_password" name="confirm_password" class="form-control">
+                                    <span style="margin-left: -30px;
+                                        cursor: pointer;" toggle="#password-field"
+                                        class="fa fa-fw fa-eye field_icon toggle-password"
+                                        passwordElement="confirm_password"></span>
                                 </div>
 
                                 <div class="form-group d-flex justify-content-end">
-                                    <input type="submit" class="btn btn-primary pl-5 pr-5 mt-3" value="Confirm">
+                                    <button type="submit" id="change-password__submit-button"
+                                        class="btn btn-primary pl-5 pr-5 mt-3">
+                                        <div id="change-password__submit-loader"
+                                            style="height: 1rem; width: 1rem; margin-bottom: 0.2rem;"
+                                            class="spinner-border text-light d-none" role="status">
+                                            <span class="sr-only">Loading</span>
+                                        </div> <span id="change-password__submit-text">Confirm</span>
+                                    </button>
                                 </div>
                             </form>
                         </div>
