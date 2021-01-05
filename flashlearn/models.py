@@ -1,4 +1,5 @@
 import logging
+import re
 from flask import abort, g
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
@@ -104,6 +105,30 @@ class User(TimestampedModel):
         db.session.commit()
         Deck.create_default_deck(user_id=self.id)
         StudyPlan.create_default_study_plan(user_id=self.id)
+
+    @classmethod
+    def check_username(cls, username, user_id=None):
+        if len(username) <= 3:
+            return {"status": 0, "message": "Username is too short"}
+        if user_id is not None:
+            existing = cls.query.filter(User.username == username, User.id != user_id)
+        else:
+            existing = cls.query.filter(User.username == username)
+        if existing is not None and existing.count() > 0:
+            return {"status": 0, "message": "Username is not available"}
+        return {"status": 1, "message": "Username ok"}
+
+    @classmethod
+    def check_email(cls, email, user_id=None):
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return {"status": 0, "message": "Email is invalid"}
+        if user_id is not None:
+            existing = cls.query.filter(cls.email == email, cls.id != user_id)
+        else:
+            existing = cls.query.filter(cls.email == email)
+        if existing is not None and existing.count() > 0:
+            return {"status": 0, "message": "Email is not available"}
+        return {"status": 1, "message": "Email ok"}
 
     def __repr__(self):
         return f"<User: {self.username} - {self.state}>"

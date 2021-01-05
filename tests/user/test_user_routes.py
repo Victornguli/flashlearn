@@ -47,7 +47,7 @@ class TestUserRoutes:
     def test_change_password(self, user, login, client):
         login()
         res = client.post(
-            "/user/account/change_password",
+            "/user/account/password",
             data={
                 "old_password": "password",
                 "password": "new_password",
@@ -63,4 +63,28 @@ class TestUserRoutes:
                 "password": "new_password",
             },
         )
-        assert 302 == login_res.status_code, "Should return 200 status"
+        assert 302 == login_res.status_code, "Should redirect after login"
+
+    def test_change_username(self, user, login, client):
+        login()
+        res = client.post(
+            "/user/account/username",
+            data={
+                "username": "username",
+            },
+        )
+        assert 200 == res.status_code, "Should return 200 status"
+        user = User.query.get(user.id)
+        assert user.username == "username"
+
+    def test_change_email(self, user, login, client):
+        login()
+        res = client.post(
+            "/user/account/email",
+            data={
+                "email": "user@testmail.co",
+            },
+        )
+        assert 200 == res.status_code, "Should return 200 status"
+        user = User.query.get(user.id)
+        assert user.email == "user@testmail.co"
