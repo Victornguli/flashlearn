@@ -59,14 +59,14 @@ class User(TimestampedModel):
 
     __tablename__ = "users"
 
-    username = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     onboarded = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
     is_superuser = db.Column(db.Boolean, default=False)
-    email = db.Column(db.String(256))
+    email = db.Column(db.String(256), unique=True)
 
     def __init__(self, username=username, password=None, email=None):
         """Initialize new user model"""
