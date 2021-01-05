@@ -112,7 +112,46 @@ def account():
         return jsonify(g.user.to_json)
 
 
-@user.route("/account/change_password", methods=("POST",))
+@user.route("account/username", methods=("POST",))
+@login_required
+def change_username():
+    username = request.form.get("username", None)
+    if not username:
+        abort(400)
+    username_check = User.check_username(username, g.user.id)
+    if username_check["status"] == 1:
+        if username != g.user.username:
+            g.user.username = username
+            g.user.save()
+        username_check["message"] = "Username changed successfully"
+    return render_template(
+        "dashboard/settings.html",
+        username_response=username_check,
+        user=g.user,
+    )
+
+
+@user.route("account/email", methods=("POST",))
+@login_required
+def change_email():
+    email = request.form.get("email", None)
+    if not email:
+        abort(400)
+    check_email = User.check_email(email, g.user.id)
+    if check_email["status"] == 1:
+        if email != g.user.email:
+            g.user.email = email
+            g.user.is_verified = False
+            g.user.save()
+        check_email["message"] = "Email changed successfully"
+    return render_template(
+        "dashboard/settings.html",
+        email_response=check_email,
+        user=g.user,
+    )
+
+
+@user.route("/account/password", methods=("POST",))
 @login_required
 def change_password():
     if request.method == "POST":
