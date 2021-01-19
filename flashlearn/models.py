@@ -108,6 +108,7 @@ class User(TimestampedModel):
 
     @classmethod
     def check_username(cls, username, user_id=None):
+        """Checks if a username is being used by another user"""
         if len(username) <= 3:
             return {"status": 0, "message": "Username is too short"}
         if user_id is not None:
@@ -120,6 +121,7 @@ class User(TimestampedModel):
 
     @classmethod
     def check_email(cls, email, user_id=None):
+        """Checks if email is in use by another user"""
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return {"status": 0, "message": "Email is invalid"}
         if user_id is not None:
