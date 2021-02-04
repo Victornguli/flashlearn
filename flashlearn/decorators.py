@@ -7,7 +7,9 @@ def login_required(view):
     def wrapped_view(*args, **kwargs):
         if g.user is None:
             next_url = request.endpoint if request.endpoint != "index" else "core.decks"
-            return redirect(url_for("user.login", next=url_for(next_url)))
+            return redirect(
+                url_for("user.login", next=url_for(next_url, *args, **kwargs))
+            )
         return view(*args, **kwargs)
 
     return wrapped_view

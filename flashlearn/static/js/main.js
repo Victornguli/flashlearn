@@ -42,8 +42,10 @@ $(document).ready(function () {
             );
             face = "back";
             setTimeout(() => {
-                $(inner).removeClass("animate__animated animate__flipInY");
-            }, 500);
+                $(inner).removeClass(
+                    "animate__animated animate__flipInY animate__faster"
+                );
+            }, 300);
         } else if (face == "back") {
             $(back).css({ display: "none" });
             $(front).css({ display: "flex" });
@@ -52,8 +54,10 @@ $(document).ready(function () {
             );
             face = "front";
             setTimeout(() => {
-                $(inner).removeClass("animate__animated animate__flipInY");
-            }, 500);
+                $(inner).removeClass(
+                    "animate__animated animate__flipInY animate__faster"
+                );
+            }, 300);
             // $("#card-legend-text").css({ color: "#223843" });
         }
         $("#card-legend-text").text(face).fadeIn(0.6);
@@ -71,11 +75,16 @@ $(document).ready(function () {
         $(".flip-card-front").text(Math.random().toString(36).substring(7));
         $(".flip-card-back").text(Math.random().toString(36).substring(7));
 
+        // TODO: Add custom css slide animation to prevent issues in firefox when using animate.css
         // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
-        $(inner).addClass("animate__animated animate__fadeInRight");
+        $(inner).addClass(
+            "animate__animated animate__slideInRight animate__faster"
+        );
         setTimeout(() => {
-            $(inner).removeClass("animate__animated animate__fadeInRight");
-        }, 500);
+            $(inner).removeClass(
+                "animate__animated animate__slideInRight animate__faster"
+            );
+        }, 300);
     });
 
     // Add cards to a deck
