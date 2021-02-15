@@ -21,6 +21,21 @@ class TestRoutes:
         )
         assert 200 == res.status_code, "Should create card"
 
+    def test_bulk_create_cards(self, user, decks, login, client):
+        login()
+        data = [
+            {"front": "Test Card One Front", "back": "Test Card One Back"},
+            {"front": "Test Card Two Front", "back": "Test Card Two Back"},
+        ]
+        res = client.post(
+            f"/card/bulk/add/{decks[0].id}",
+            data=json.dumps({"data": data}),
+            content_type="application/json",
+        )
+        assert res.status_code == 200, "Should return 200 status code"
+        deck = Deck.query.filter_by(id=decks[0].id).first()
+        assert deck.card_count == 2, "The deck should now have two cards"
+
     def test_get_card(self, client, card, login):
         login()
         res = client.get(f"/card/{card.id}")

@@ -43,6 +43,25 @@ def create_card():
         return jsonify(error)
 
 
+@core.route("/card/bulk/add/<int:deck_id>", methods=("POST",))
+@login_required
+def bulk_add_cards(deck_id):
+    data = request.get_json().get("data", [])
+    cards = []
+    for card in data:
+        cards.append(
+            Card(
+                front=card["front"],
+                back=card["back"],
+                deck_id=deck_id,
+                user_id=g.user.id,
+            )
+        )
+    db.session.bulk_save_objects(cards)
+    db.session.commit()
+    return jsonify({"status": 1, "message": "Cards added successfully"})
+
+
 @core.route("/card/<int:card_id>/edit", methods=("POST",))
 @login_required
 def edit_card(card_id):
