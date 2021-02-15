@@ -354,7 +354,8 @@
                             <a class="dropdown-item">
                                 <i class="fa fa-ban mr-2"></i> Remove
                             </a>
-                            <a class="dropdown-item text-danger">
+                            <a class="dropdown-item text-danger delete-card" onclick="deleteItem('Card', {{card.id}})"
+                                card-id="{{card.id}}">
                                 <i class="fa fa-trash mr-2"></i> Delete
                             </a>
                         </div>

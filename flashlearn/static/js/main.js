@@ -415,7 +415,7 @@ function deleteDeck(deck_id) {
  */
 function deleteItem(entity, item_id, target_url = null, success_url = null) {
     if (target_url === null) {
-        target_url = `${entity.toLowerCase()}/${item_id}/delete`;
+        target_url = `/${entity.toLowerCase()}/${item_id}/delete`;
     }
     // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
@@ -446,6 +446,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                             if (success_url !== null) {
                                 location.replace(success_url);
                             }
+                            location.reload();
                         });
                     } else {
                         Toast.fire({
@@ -554,6 +555,7 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
     var formData = new FormData(form);
+    is_json = false;
 
     // Loop through each textarea, and construct a card object with its front and back by simply checking which is first.
     // The front value will always be in an index divisible by 2, so the next textarea automatically is back
@@ -578,7 +580,8 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
             // console.log($(cardFormSets[i]).val());
         }
         // The current formData will be JSON serialized cards array..
-        formData = JSON.stringify(cards);
+        formData = JSON.stringify({ data: cards });
+        is_json = true;
     }
 
     // Override see_solved check-box to post boolean values
@@ -594,13 +597,16 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
         type: method,
         url: target_url,
         data: formData,
-        contentType: false,
-        processData: false,
+        contentType: is_json ? "application/json;charset=UTF-8" : false,
+        processData: is_json ? true : false,
+        dataType: is_json ? "json" : false,
         success: (data) => {
-            if (data == "Success") {
+            if (data == "Success" || data["status"] === 1) {
                 Toast.fire({
                     icon: "success",
-                    title: `${item} created successfully`,
+                    title: data["message"]
+                        ? data["message"]
+                        : `${item} created successfully`,
                 }).then(() => {
                     if (success_url !== null) {
                         location.replace(success_url);

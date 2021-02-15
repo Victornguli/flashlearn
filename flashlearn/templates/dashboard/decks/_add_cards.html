@@ -59,7 +59,7 @@
     <div class="card">
         <div class="card-body">
             <form class="form" id="add-deck-cards-form"
-                onsubmit="handleAjax(event, this, 'deck', 'POST', '/deck', '/decks')">
+                onsubmit="handleAjax(event, this, 'deck', 'POST', '/card/bulk/add/{{ deck.id }}', '/deck/{{ deck.id }}')">
                 <div class="form-group row">
                     <div class="col-md-6 mt-2">
                         <label for="front">Front</label>

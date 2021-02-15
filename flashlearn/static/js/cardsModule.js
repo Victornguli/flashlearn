@@ -34,7 +34,7 @@ var cardsModule = (function () {
             });
         });
 
-        // Add Card For Handler
+        // Add Card Form Handler
         $("#add-card-form").submit(function (e) {
             e.preventDefault();
             console.log(this);
