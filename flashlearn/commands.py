@@ -67,7 +67,7 @@ def register_commands(app):
     Registers custom CLI commands via click withing the app context..
     """
     # Setup Alembic Migrations
-    Migrate(app, db)
+    Migrate(app, db, render_as_batch=True)
     app.cli.add_command(MigrateCommand, name="db")
 
     app.cli.add_command(init_db_command)

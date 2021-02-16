@@ -44,11 +44,11 @@ class TestRoutes:
     def test_edit_card(self, user, card, login, client):
         login()
         res = client.post(
-            f"/card/{card.id}/edit", data={"front": "New Front", "state": "disabled"}
+            f"/card/{card.id}/edit", data={"front": "New Front", "state": "Disabled"}
         )
         assert 200 == res.status_code
         solved_card = Card.query.filter_by(id=card.id).first()
-        assert "disabled" == solved_card.state
+        assert "Disabled" == solved_card.state
         assert "New Front" == solved_card.front
 
     def test_delete_card(self, card, login, client):

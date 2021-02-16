@@ -21,7 +21,7 @@ class TimestampedModel(db.Model):
     date_updated = db.Column(
         db.DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    state = db.Column(db.String, default="active")
+    state = db.Column(db.String, default="Active")
 
     def save(self):
         """
@@ -41,7 +41,7 @@ class TimestampedModel(db.Model):
 
     @classmethod
     def all(cls):
-        return cls.query.filter(cls.state == "active")
+        return cls.query.filter(cls.state == "Active")
 
     @classmethod
     def get_by_id(cls, _id):

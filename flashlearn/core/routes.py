@@ -34,10 +34,16 @@ def create_card():
 
         if not front or not back or not deck_id:
             error += "front back and deck_id fields are required."
-        if Deck.query.filter_by(id=deck_id, state="active").first() is None:
+        if Deck.query.filter_by(id=deck_id).first() is None:
             error += "\nSelected deck does not exist"
         if not error:
-            new_card = Card(front=front, back=back, deck_id=deck_id, user_id=user.id)
+            new_card = Card(
+                front=front,
+                back=back,
+                deck_id=deck_id,
+                user_id=user.id,
+                state="Unknown",
+            )
             new_card.save()
             return jsonify("Success")
         return jsonify(error)
@@ -68,13 +74,13 @@ def edit_card(card_id):
     if request.method == "POST":
         card = Card.get_by_user_or_404(card_id, g.user.id)
         state = request.form.get("state", card.state)
-        if state.lower() not in ("active", "disabled"):
+        if state not in ("Unknown", "Known", "Skipped", "Disabled"):
             abort(400)
         card.update(
             front=request.form.get("front", card.front),
             back=request.form.get("back", card.back),
             deck_id=request.form.get("deck_id", card.deck_id),
-            state=state.lower(),
+            state=state,
         )
         return jsonify("OK")
     return "Failed to update card"  # Render edit_card template instead...
