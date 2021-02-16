@@ -114,7 +114,7 @@ $(document).ready(function () {
 
     const decksDt = dtInitWrapper("#decksDt", "deck");
     const cardsDt = dtInitWrapper("#allCardsDt", "card");
-    dtInitWrapper("#cardsDt", "Cards");
+    dtInitWrapper("#cardsDt", "card");
     const plansDt = dtInitWrapper("#plansDt", "plan");
     $("#main-content").fadeIn("slow");
 });
@@ -229,14 +229,14 @@ function dtInitWrapper(id, name) {
         language: {
             emptyTable: `<div class="text-center">
                 <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
+                <p class="text-muted">No ${name}s to show</p>
             </div>`,
             zeroRecords: `<div class="text-center">
                 <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
+                <p class="text-muted">No ${name}s to show</p>
             </div>`,
-            info: `Showing _END_ of _TOTAL_ ${name}`,
-            infoEmpty: `Showing 0 of 0 ${name}`,
+            info: `Showing _END_ of _TOTAL_ ${name}s`,
+            infoEmpty: `Showing 0 of 0 ${name}s`,
             infoFiltered: ``,
             lengthMenu: `Show _MENU_ ${name}`,
             loadingRecords: "Loading...",
@@ -267,7 +267,6 @@ function dtInitWrapper(id, name) {
             } else {
                 dt.row(target).deselect();
             }
-            // getSelectedChekboxes(dt);
         }
     );
 
@@ -343,8 +342,18 @@ function dtInitWrapper(id, name) {
     //     dt.column(targetColumnIndex).search(elVal).draw();
     // });
     $("#deck_name").on("change", function () {
-        var $this = $(this),
-            elVal = $this.val();
+        var $this = $(this);
+        elVal = $this.val();
+        if (elVal == null) {
+            dt.column(3).search("").draw();
+        } else {
+            dt.column(3).search(elVal).draw();
+        }
+    });
+
+    $("#cards_filter").on("change", function () {
+        var $this = $(this);
+        elVal = $this.val();
         if (elVal == null) {
             dt.column(3).search("").draw();
         } else {
@@ -480,7 +489,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
 function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
     // Default to /entity/bulk/delete route if target url is not set
     if (target_url === null) {
-        target_url = `${entity.toLowerCase()}/bulk/delete`;
+        target_url = `/${entity.toLowerCase()}/bulk/delete`;
     }
     var pluralized = entity;
     if (ids.length > 1) {
