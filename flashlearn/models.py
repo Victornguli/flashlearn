@@ -197,12 +197,13 @@ class Deck(TimestampedModel):
             study_session = StudySession.query.filter_by(
                 deck_id=self.id, state="Ongoing", user_id=g.user.id
             ).first()
-            stats["known"] = study_session["known"]
-            stats["unknown"] = study_session["unknown"]
-            stats["last_studied"] = study_session["date_modified"]
-            stats["progress"] = round(
-                (stats["known"] + stats["unknown"] / self.card_count) * 100
-            )
+            if study_session:
+                stats["known"] = study_session["known"]
+                stats["unknown"] = study_session["unknown"]
+                stats["last_studied"] = study_session["date_modified"]
+                stats["progress"] = round(
+                    (stats["known"] + stats["unknown"] / self.card_count) * 100, 2
+                )
         return stats
 
     @classmethod

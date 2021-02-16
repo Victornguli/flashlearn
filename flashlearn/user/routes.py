@@ -96,7 +96,7 @@ def get_user():
 @user.route("/<int:user_id>/delete", methods=("GET", "POST"))
 @login_required
 def delete_user(user_id):
-    user = User.query.filter_by(id=user_id, state="active").first()
+    user = User.query.filter_by(id=user_id, state="Active").first()
     user.delete()
     return "deleted"
 

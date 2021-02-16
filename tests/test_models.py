@@ -10,7 +10,7 @@ class TestModels:
         u = User(username="admin", password="12345", email="admin@mail.com")
         u.save()
         assert u.password != "12345"
-        assert u.state == "active"
+        assert u.state == "Active"
         u.password = Bcrypt().generate_password_hash("TheShrubbery@007").decode()
         u.save()
         assert u.password_is_valid("TheShrubbery@007"), "Should confirm password change"
@@ -44,7 +44,7 @@ class TestModels:
             deck_id=decks[1].id,
         )
         test_card.save()
-        assert test_card.state == "active", "Should be saved with an active state"
+        assert test_card.state == "Active", "Should be saved with an Active state"
         test_card.update(state="Solved")
         assert test_card.state == "Solved", "State should be Solved"
         Card.query.filter_by(back="African or European?").first().delete()
@@ -56,7 +56,7 @@ class TestModels:
     def test_study_plan_model(self, user):
         plan = StudyPlan(name="Grokking CS Algorithms", user=user)
         plan.save()
-        assert plan.state == "active", "Should create a plan with state active"
+        assert plan.state == "Active", "Should create a plan with state Active"
         assert plan in user.study_plans, "Should be accessible from Alice's study plans"
         StudyPlan.query.filter_by(id=plan.id).delete()
         assert (
@@ -81,8 +81,8 @@ class TestModels:
         )
         study_session_log.save()
         assert (
-            study_session_log.state == "active"
-        ), "Should create a study session log with state active"
+            study_session_log.state == "Active"
+        ), "Should create a study session log with state Active"
         assert (
             study_session_log in study_session.study_session_logs
         ), "Should be accessible from StudySession's logs"
