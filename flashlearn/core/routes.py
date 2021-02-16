@@ -126,6 +126,7 @@ def create_deck():
             description=request.form.get("description"),
             user_id=g.user.id,
             parent_id=request.form.get("parent_id", None),
+            state="New",
         )
         deck.save()
         return jsonify("Success")
@@ -252,19 +253,23 @@ def delete_plan(plan_id):
 def study_deck(deck_id):
     """Study a deck"""
     deck = Deck.get_by_user_or_404(deck_id, g.user.id)
-    cards = Card.query.filter_by(deck_id=deck_id, state="active")
+    cards = Card.query.filter_by(deck_id=deck_id)
     session = (
         db.session.query(StudySession)
         .filter(
             StudySession.deck_id == deck.id,
             StudySession.user_id == g.user.id,
-            or_(StudySession.state == "new", StudySession.state == "ongoing"),
+            or_(StudySession.state == "Ongoing"),
         )
         .first()
     )
     if session is None:
         session = StudySession(
-            user_id=g.user.id, deck_id=deck.id, known=0, unknown=cards.count()
+            user_id=g.user.id,
+            deck_id=deck.id,
+            known=0,
+            unknown=cards.count(),
+            state="Ongoing",
         )
         session.save()
     first_card = Card.get_next_card(session.id, deck_id)
@@ -284,13 +289,10 @@ def get_next_study_card(deck_id, study_session_id):
             return jsonify({})
 
 
-@core.route("deck/<int:deck_id>/add-cards", methods=("GET", "POST"))
+@core.route("deck/<int:deck_id>/add-cards", methods=("GET",))
 @login_required
 def add_cards(deck_id):
     """Add cards to a deck"""
     if request.method == "GET":
         deck = Deck.query.get_or_404(deck_id)
         return render_template("dashboard/decks/_add_cards.html", deck=deck)
-    else:
-        # Bulk add cards to the decks
-        return jsonify("OK")

@@ -175,6 +175,7 @@ class Deck(TimestampedModel):
             parent=self.parent_id,
             child_count=self.child_count,
             card_count=self.card_count,
+            stats=self.quick_stats,
         )
 
     @property
@@ -189,10 +190,27 @@ class Deck(TimestampedModel):
     def card_count(self):
         return len(self.cards)
 
+    @property
+    def quick_stats(self):
+        stats = {"progress": 0, "known": 0, "unknown": 0, "last_studied": ""}
+        if self.state != "New":
+            study_session = StudySession.query.filter_by(
+                deck_id=self.id, state="Ongoing", user_id=g.user.id
+            ).first()
+            stats["known"] = study_session["known"]
+            stats["unknown"] = study_session["unknown"]
+            stats["last_studied"] = study_session["date_modified"]
+            stats["progress"] = round(
+                (stats["known"] + stats["unknown"] / self.card_count) * 100
+            )
+        return stats
+
     @classmethod
     def create_default_deck(cls, user_id):
         user = User.query.get_or_404(user_id)
-        default_deck = Deck(name="Default", description="Default Deck", user=user)
+        default_deck = Deck(
+            name="Default", description="Default Deck", user=user, state="New"
+        )
         default_deck.save()
         return default_deck
 
@@ -240,6 +258,7 @@ class Card(TimestampedModel):
     def to_json(self):
         return dict(
             id=self.id,
+            state=self.state,
             front=self.front,
             back=self.back,
             short_front=self.short_front,

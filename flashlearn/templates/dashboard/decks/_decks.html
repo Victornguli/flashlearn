@@ -104,36 +104,42 @@
                             <div>
                                 <span class="d-block h5 text-hover-primary">{{deck.name}}</span>
                                 <span class="d-block text-no-hover" style="font-size: 0.78rem;">
-                                    Studied 3 hours ago
+                                    {% if deck.to_json.stats.last_studied %}
+                                    Last studied: {{deck.to_json.stats.last_studied}}
+                                    {% else %}
+                                    Last Studied: N/A
+                                    {% endif %}
                                 </span>
                             </div>
                         </a>
                     </td>
-                    <td>{{ deck.id }}</td>
+                    <td>{{ deck.card_count }}</td>
                     <td>
-                        {% if deck.id % 2 == 0 %}
+                        {% if deck.state == "Complete" %}
                         <span class="bg-success mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        Complete
-                        {% elif deck.id %3 == 0 %}
+                        {{ deck.state }}
+                        {% elif deck.state == "In Progress" %}
                         <span class="bg-primary mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        Studying
-                        {% else %}
+                        {{ deck.state }}
+                        {% elif deck.state == "New" %}
                         <span class="bg-secondary mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        New
+                        {{ deck.state }}
                         {% endif %}
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <span class="text-small mr-2">{{ deck.id }}%</span>
+                            <span class="text-small mr-2">{{ deck.to_json.stats.progress }}%</span>
                             <div class="progress" style="height: 0.25rem; flex-grow: 1; min-width: 3rem;">
-                                <div class="progress-bar" role="progressbar" style="width: {{ deck.id }}%;"
-                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar"
+                                    style="width: {{deck.to_json.stats.progress}}%;"
+                                    aria-valuenow="{{deck.to_json.stats.progress}}" aria-valuemin="0"
+                                    aria-valuemax="100"></div>
                             </div>
                         </div>
                     </td>
