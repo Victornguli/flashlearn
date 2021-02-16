@@ -170,12 +170,15 @@ class Deck(TimestampedModel):
         return dict(
             id=self.id,
             name=self.name,
+            state=self.state,
             description=self.description,
             user=self.user_id,
             parent=self.parent_id,
             child_count=self.child_count,
             card_count=self.card_count,
             stats=self.quick_stats,
+            date_created=self.date_created,
+            date_updated=self.date_updated,
         )
 
     @property
@@ -192,18 +195,27 @@ class Deck(TimestampedModel):
 
     @property
     def quick_stats(self):
-        stats = {"progress": 0, "known": 0, "unknown": 0, "last_studied": ""}
+        stats = {
+            "progress": 0,
+            "known": 0,
+            "unknown": 0,
+            "remaining": self.card_count,
+            "last_studied": "",
+        }
         if self.state != "New":
             study_session = StudySession.query.filter_by(
-                deck_id=self.id, state="Ongoing", user_id=g.user.id
+                deck_id=self.id, state="In Progress", user_id=g.user.id
             ).first()
             if study_session:
-                stats["known"] = study_session["known"]
-                stats["unknown"] = study_session["unknown"]
-                stats["last_studied"] = study_session["date_modified"]
-                stats["progress"] = round(
-                    (stats["known"] + stats["unknown"] / self.card_count) * 100, 2
-                )
+                known, unknown = study_session.known, study_session.unknown
+                stats["known"] = known
+                stats["unknown"] = unknown
+                stats["remaining"] = self.card_count - (known + unknown)
+                stats["last_studied"] = study_session.date_updated
+                if known + unknown > 0:
+                    stats["progress"] = round(
+                        ((known + unknown) / self.card_count) * 100, 2
+                    )
         return stats
 
     @classmethod
@@ -378,13 +390,9 @@ class StudySession(TimestampedModel):
 
     def __init__(self, **kwargs):
         """Initialize a Study Session"""
-        if "unknown" not in kwargs.keys():
-            deck = Deck.get_by_id(kwargs["deck_id"])
-            kwargs["unknown"] = deck.card_count
         super(StudySession, self).__init__(**kwargs)
 
     def save(self):
-        self.state = "new"
         db.session.add(self)
         db.session.commit()
 

@@ -42,7 +42,7 @@ def create_card():
                 back=back,
                 deck_id=deck_id,
                 user_id=user.id,
-                state="Unknown",
+                state="Active",
             )
             new_card.save()
             return jsonify("Success")
@@ -74,7 +74,7 @@ def edit_card(card_id):
     if request.method == "POST":
         card = Card.get_by_user_or_404(card_id, g.user.id)
         state = request.form.get("state", card.state)
-        if state not in ("Unknown", "Known", "Skipped", "Disabled"):
+        if state not in ("Active", "Disabled"):
             abort(400)
         card.update(
             front=request.form.get("front", card.front),
@@ -83,7 +83,6 @@ def edit_card(card_id):
             state=state,
         )
         return jsonify("OK")
-    return "Failed to update card"  # Render edit_card template instead...
 
 
 @core.route("/card/<int:card_id>/delete", methods=("POST",))
@@ -253,13 +252,12 @@ def delete_plan(plan_id):
 def study_deck(deck_id):
     """Study a deck"""
     deck = Deck.get_by_user_or_404(deck_id, g.user.id)
-    cards = Card.query.filter_by(deck_id=deck_id)
     session = (
         db.session.query(StudySession)
         .filter(
             StudySession.deck_id == deck.id,
             StudySession.user_id == g.user.id,
-            or_(StudySession.state == "Ongoing"),
+            or_(StudySession.state == "In Progress"),
         )
         .first()
     )
@@ -268,13 +266,18 @@ def study_deck(deck_id):
             user_id=g.user.id,
             deck_id=deck.id,
             known=0,
-            unknown=cards.count(),
-            state="Ongoing",
+            unknown=0,
+            state="In Progress",
         )
         session.save()
+        deck.state = "In Progress"
+        deck.save()
     first_card = Card.get_next_card(session.id, deck_id)
     return render_template(
-        "dashboard/decks/_study.html", deck=deck, session=session, first_card=first_card
+        "dashboard/decks/_study.html",
+        deck=deck.to_json,
+        session=session,
+        first_card=first_card,
     )
 
 

@@ -98,7 +98,11 @@
                     <td class="pl-0 ellipsis-wrap">{{ card.front }}</td>
                     <td class="ellipsis-wrap">{{ card.back }}</td>
                     <td>{{ card.state }}</td>
-                    <td>{{ card.date_created }}</td>
+                    <td>
+                        <script>
+                            document.write(moment.utc("{{ card.date_created }}").local().format("LLL"));
+                        </script>
+                    </td>
                     <td>
                         <div class="dropdown custom-dropdown">
                             <a data-toggle="dropdown"

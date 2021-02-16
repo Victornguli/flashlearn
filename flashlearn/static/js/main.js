@@ -17,6 +17,11 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    // Convert moment relative dates
+    $(".moment__relative_date").text(
+        moment.utc($(".moment__relative_date").attr("date")).local().fromNow()
+    );
+
     // Toggle modal manually: When edit button also suports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {

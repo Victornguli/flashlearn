@@ -96,6 +96,7 @@
             </thead>
             <tbody>
                 {% for deck in decks %}
+                {% set deck=deck.to_json %}
                 <tr data-id="{{deck.id}}">
                     <td class="min-tablet-p pr-0"></td>
                     <td class="pl-0 ellipsis-wrap">
@@ -104,8 +105,9 @@
                             <div>
                                 <span class="d-block h5 text-hover-primary">{{deck.name}}</span>
                                 <span class="d-block text-no-hover" style="font-size: 0.78rem;">
-                                    {% if deck.to_json.stats.last_studied %}
-                                    Last studied: {{deck.to_json.stats.last_studied}}
+                                    {% if deck.stats.last_studied %}
+                                    Last studied: <span class="moment__relative_date"
+                                        date="{{deck.stats.last_studied }}"></span>
                                     {% else %}
                                     Last Studied: N/A
                                     {% endif %}
@@ -134,16 +136,18 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <span class="text-small mr-2">{{ deck.to_json.stats.progress }}%</span>
+                            <span class="text-small mr-2">{{ deck.stats.progress }}%</span>
                             <div class="progress" style="height: 0.25rem; flex-grow: 1; min-width: 3rem;">
-                                <div class="progress-bar" role="progressbar"
-                                    style="width: {{deck.to_json.stats.progress}}%;"
-                                    aria-valuenow="{{deck.to_json.stats.progress}}" aria-valuemin="0"
-                                    aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" style="width: {{deck.stats.progress}}%;"
+                                    aria-valuenow="{{deck.stats.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </td>
-                    <td>{{ deck.date_created }}</td>
+                    <td>
+                        <script>
+                            document.write(moment.utc("{{ deck.date_created }}").local().format("LLL"));
+                        </script>
+                    </td>
                     <td>
                         <div class="dropdown custom-dropdown">
                             <a data-toggle="dropdown"
