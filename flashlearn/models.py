@@ -379,7 +379,7 @@ class StudySession(TimestampedModel):
     deck_id = db.Column(db.Integer, db.ForeignKey("decks.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     known = db.Column(db.Integer, nullable=True, default=0)
-    unknown = db.Column(db.Integer, nullable=True)
+    unknown = db.Column(db.Integer, nullable=True, default=0)
 
     deck = db.relationship(
         Deck, backref=backref("study_sessions", cascade="all,delete")
