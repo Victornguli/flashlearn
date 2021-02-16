@@ -69,27 +69,43 @@ $(document).ready(function () {
     });
 
     // Mark Known / Unknown cards
-    $("#known-card, #unknown-card").click(() => {
+    $("#known-card, #unknown-card").click((e) => {
         // Ensure that the next card's front will be displayed
         $(back).css({ display: "none" });
         $(front).css({ display: "flex" });
-        face = "front";
-        $("#card-legend-text").text(face).fadeIn(0.6);
+        let deck_id = $(e.target).attr("deck_id");
+        let session_id = $(e.target).attr("study_session_id");
 
         // Fetch next card in the deck
-        $(".flip-card-front").text(Math.random().toString(36).substring(7));
-        $(".flip-card-back").text(Math.random().toString(36).substring(7));
-
-        // TODO: Add custom css slide animation to prevent issues in firefox when using animate.css
-        // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
-        $(inner).addClass(
-            "animate__animated animate__slideInRight animate__faster"
-        );
-        setTimeout(() => {
-            $(inner).removeClass(
-                "animate__animated animate__slideInRight animate__faster"
-            );
-        }, 300);
+        $.ajax({
+            method: "POST",
+            url: `/deck/${deck_id}/study/${session_id}/next`,
+        })
+            .done(function (res) {
+                console.log(res);
+                if (res["status"]) {
+                    let card = res["data"];
+                    face = "front";
+                    $(".flip-card-front").text(card["front"]);
+                    $(".flip-card-back").text(card["back"]);
+                    $("#card-legend-text").text(face).fadeIn(0.6);
+                    // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
+                    $(inner).addClass(
+                        "animate__animated animate__slideInRight animate__faster"
+                    );
+                    setTimeout(() => {
+                        $(inner).removeClass(
+                            "animate__animated animate__slideInRight animate__faster"
+                        );
+                    }, 300);
+                }
+            })
+            .fail(() => {
+                Toast.fire({
+                    icon: "error",
+                    title: "Error. Could not fetch next card.",
+                });
+            });
     });
 
     // Add cards to a deck

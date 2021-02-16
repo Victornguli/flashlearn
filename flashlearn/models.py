@@ -290,22 +290,22 @@ class Card(TimestampedModel):
         )
         study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
         ordering = func.random()
-        if study_plan.order.value == "latest":
-            ordering = Card.date_created.desc()
-        elif study_plan.order.value == "oldest":
-            ordering = Card.date_created.asc()
+        if study_plan:
+            if study_plan.order.value == "latest":
+                ordering = Card.date_created.desc()
+            elif study_plan.order.value == "oldest":
+                ordering = Card.date_created.asc()
         card = (
             db.session.query(Card)
             .filter(
-                Card.state == "active",
+                Card.state == "Active",
                 Card.user_id == g.user.id,
                 Card.deck_id == session.deck_id,
-                Card.deck_id == ~(Card.id.in_(study_logs)),
+                ~(Card.id.in_(study_logs)),
             )
             .order_by(ordering)
             .first()
         )
-
         return card
 
 

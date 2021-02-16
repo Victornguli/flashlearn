@@ -110,7 +110,7 @@
 
     <div id="flashcards">
         <div class="text-center" id="flashcard-progress">
-            Studied 12/20 cards
+            Studied {{ study_session['unknown'] + study_session['known'] }}/{{ deck.card_count }} cards
         </div>
         <div class="flip-card-wrapper mt-1 mb-1 mb-lg-2">
             <div class="flip-card">
@@ -120,14 +120,10 @@
                 </div>
                 <div class="flip-card-inner">
                     <div class="flip-card-front">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi quod quos, distinctio in
-                        commodi
-                        possimus?
+                        {{ first_card.front }}
                     </div>
                     <div class="flip-card-back">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi quod quos, distinctio in
-                        commodi
-                        possimus?
+                        {{ first_card.back }}
                     </div>
                 </div>
             </div>
@@ -141,15 +137,15 @@
         </div>
         <div id="flashcard-controls" class="d-flex justify-content-between">
             <div id="unknown-card" class="btn btn-danger pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
-                title="Mark Card as UnKnown">
+                title="Mark card as Unknown" study_session_id="{{ study_session.id }}" deck_id="{{ deck.id }}">
                 <i class="fa fa-times"></i>
             </div>
             <div id="flip-card-btn" class="btn btn-info pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
-                title="Flip FlashCard">
+                title="Flip Flashcard">
                 <i class="fa fa-random"></i>
             </div>
             <div id="known-card" class="btn btn-success pl-5 pr-5" data-toggle="tooltip" data-placement="bottom"
-                title="Mark Card as Known">
+                title="Mark card as Known" study_session_id="{{ study_session.id }}" deck_id="{{ deck.id }}">
                 <i class="fa fa-check"></i>
             </div>
         </div>

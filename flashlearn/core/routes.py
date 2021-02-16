@@ -276,7 +276,7 @@ def study_deck(deck_id):
     return render_template(
         "dashboard/decks/_study.html",
         deck=deck.to_json,
-        session=session,
+        study_session=session,
         first_card=first_card,
     )
 
@@ -286,10 +286,14 @@ def study_deck(deck_id):
 def get_next_study_card(deck_id, study_session_id):
     if request.method == "POST":
         next_card = Card.get_next_card(study_session_id, deck_id)
+        status = 0
+        message = "Study Session Complete"
+        data = None
         if next_card:
-            return jsonify(next_card.to_json)
-        else:
-            return jsonify({})
+            data = next_card.to_json
+            status = 1
+            message = "Next Card"
+        return jsonify({"status": status, "message": message, "data": data})
 
 
 @core.route("deck/<int:deck_id>/add-cards", methods=("GET",))
