@@ -96,6 +96,7 @@
             </thead>
             <tbody>
                 {% for deck in decks %}
+                {% set deck=deck.to_json %}
                 <tr data-id="{{deck.id}}">
                     <td class="min-tablet-p pr-0"></td>
                     <td class="pl-0 ellipsis-wrap">
@@ -104,40 +105,53 @@
                             <div>
                                 <span class="d-block h5 text-hover-primary">{{deck.name}}</span>
                                 <span class="d-block text-no-hover" style="font-size: 0.78rem;">
-                                    Studied 3 hours ago
+                                    {% if deck.stats.last_studied %}
+                                    Last studied:
+                                    <script>
+                                        document.write(
+                                            moment.utc("{{deck.stats.last_studied }}").local()
+                                            .fromNow())
+                                    </script>
+                                    {% else %}
+                                    Last Studied: N/A
+                                    {% endif %}
                                 </span>
                             </div>
                         </a>
                     </td>
-                    <td>{{ deck.id }}</td>
+                    <td>{{ deck.card_count }}</td>
                     <td>
-                        {% if deck.id % 2 == 0 %}
+                        {% if deck.state == "Complete" %}
                         <span class="bg-success mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        Complete
-                        {% elif deck.id %3 == 0 %}
+                        {{ deck.state }}
+                        {% elif deck.state == "Studying" %}
                         <span class="bg-primary mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        Studying
-                        {% else %}
+                        {{ deck.state }}
+                        {% elif deck.state == "New" %}
                         <span class="bg-secondary mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
-                        New
+                        {{ deck.state }}
                         {% endif %}
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <span class="text-small mr-2">{{ deck.id }}%</span>
+                            <span class="text-small mr-2">{{ deck.stats.progress }}%</span>
                             <div class="progress" style="height: 0.25rem; flex-grow: 1; min-width: 3rem;">
-                                <div class="progress-bar" role="progressbar" style="width: {{ deck.id }}%;"
-                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" style="width: {{deck.stats.progress}}%;"
+                                    aria-valuenow="{{deck.stats.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </td>
-                    <td>{{ deck.date_created }}</td>
+                    <td>
+                        <script>
+                            document.write(moment.utc("{{ deck.date_created }}").local().format("LLL"));
+                        </script>
+                    </td>
                     <td>
                         <div class="dropdown custom-dropdown">
                             <a data-toggle="dropdown"
@@ -170,7 +184,7 @@
         Edit deck modal start 
         For some reason, when placed inside the datatable this modal will not toggle..
     -->
-    <div class="modal fade" id="editDeckDtModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="editDeckDtModal" data-keyboard="false" tabindex="-1"
         aria-labelledby="editDeckDtModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

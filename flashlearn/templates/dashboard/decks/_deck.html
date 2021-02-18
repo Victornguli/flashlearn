@@ -46,12 +46,32 @@
                 </svg>
                 <h1 class="mr-1" style="margin-top: 0.5em;">
                     {{ deck.name }}
+                    {% if deck.state == "Complete" %}
                     <span class="badge badge-success pl-2 pr-2"
                         style="font-size: 0.75rem!important; vertical-align: middle;">{{ deck.state }}</span>
+                    {% elif deck.state == "Studying" %}
+                    <span class="badge badge-primary pl-2 pr-2"
+                        style="font-size: 0.75rem!important; vertical-align: middle;">{{ deck.state }}</span>
+                    {% elif deck.state == "New" %}
+                    <span class="badge badge-secondary pl-2 pr-2"
+                        style="font-size: 0.75rem!important; vertical-align: middle;">{{ deck.state }}</span>
+                    {% endif %}
                 </h1>
             </div>
             <div class="deck-description">
                 {{ deck.description }}
+            </div>
+            <div>
+                {% if deck.to_json.stats.last_studied %}
+                Last studied:
+                <script>
+                    document.write(
+                        moment.utc("{{deck.to_json.stats.last_studied }}").local()
+                        .fromNow())
+                </script>
+                {% else %}
+                Last Studied: N/A
+                {% endif %}
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 mt-3 mt-md-0">
@@ -121,8 +141,8 @@
         </div>
 
         <!--Edit deck modal start-->
-        <div class="modal fade" id="editDeckModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
-            aria-labelledby="editDeckModal" aria-hidden="true">
+        <div class="modal fade" id="editDeckModal" data-keyboard="false" tabindex="-1" aria-labelledby="editDeckModal"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -132,22 +152,22 @@
                             </button>
                     </div>
                     <div class="modal-body">
-                        <form action="">
+                        <form action="" id="editDeckForm">
                             <div class="form-group">
-                                <label for="deck-name">Deck Name</label>
-                                <input type="text" name="deck-name" id="deck-name" class="form-control"
-                                    value="{{ deck.name }}">
+                                <label for="name">Deck Name</label>
+                                <input type="text" name="name" id="name" class="form-control" value="{{ deck.name }}">
                             </div>
                             <div class="form-group">
-                                <label for="deck-description">Description</label>
-                                <textarea type="deck-description" name="deck-description"
+                                <label for="description">Description</label>
+                                <textarea type="text" name="description"
                                     class="form-control">{{ deck.description }}</textarea>
                             </div>
+                            <input class="d-none" value="{{deck.id}}" name="deck_id" id="deck_id">
                         </form>
                     </div>
                     <div class="modal-footer">
                         <div class="form-group">
-                            <input type="submit" value="Update" class="btn btn-sm btn-primary">
+                            <input type="submit" id="editDeckFormSubmit" value="Update" class="btn btn-sm btn-primary">
                         </div>
                         <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
                     </div>
@@ -168,7 +188,7 @@
                         <div class="col-md px-md-4">
                             <span class="d-block">Total cards</span>
                             <span class="badge badge-info badge-pill p-1">
-                                -2 late in due
+                                {{ deck.to_json.stats.remaining }} cards unstudied
                             </span>
                         </div>
 
@@ -177,25 +197,30 @@
                             <div class="row justify-content-start mb-2">
                                 <div class="col-auto">
                                     <span class="legend-indicator bg-primary"></span>
-                                    Unknown (10)
+                                    Unknown ({{ deck.to_json.stats.unknown }})
                                 </div>
                                 <div class="col-auto">
                                     <span class="legend-indicator bg-success"></span>
-                                    Known (8)
-                                </div>
-                                <div class="col-auto">
-                                    <span class="legend-indicator"></span>
-                                    Skipped (6)
+                                    Known ({{ deck.to_json.stats.known }})
                                 </div>
                             </div>
                             <!-- End Legend Indicators -->
 
                             <!-- Progress -->
                             <div class="progress rounded-pill">
-                                <div class="progress-bar" role="progressbar" style="width: 40%" aria-valuenow="40"
+                                {% if deck.to_json.stats.known + deck.to_json.stats.unknown > 0 %}
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                    style="width: {{  (deck.to_json.stats.unknown / (deck.to_json.stats.known + deck.to_json.stats.unknown) * 100) }}%"
+                                    aria-valuenow="{{  (deck.to_json.stats.unknown / (deck.to_json.stats.known + deck.to_json.stats.unknown) * 100) }}"
                                     aria-valuemin="0" aria-valuemax="100"></div>
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 30%"
-                                    aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar bg-success" role="progressbar"
+                                    style="width: {{  (deck.to_json.stats.known / (deck.to_json.stats.known + deck.to_json.stats.unknown) * 100) }}%"
+                                    aria-valuenow="{{  (deck.to_json.stats.known / (deck.to_json.stats.known + deck.to_json.stats.unknown) * 100) }}"
+                                    aria-valuemin="0" aria-valuemax="100"></div>
+                                {% else %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%"
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% endif %}
                             </div>
                             <!-- End Progress -->
                         </div>
@@ -304,11 +329,13 @@
             <!-- Selected items count -->
             <div id="selected_count" class="mr-2">
             </div>
-            <select class="form-control select2_deck_cards" id="cards_filter" name="cards_filter">
+
+            <!-- <select class="form-control select2_deck_cards" id="cards_filter" name="cards_filter">
                 <option></option>
                 <option value="Complete">Known</option>
                 <option value="Studying">Unknown</option>
-            </select>
+                <option value="Active">Active</option>
+            </select> -->
         </div>
     </div>
 
@@ -319,6 +346,7 @@
                 </th>
                 <th></th>
                 <th></th>
+                <th class="d-none"></th>
                 <th class="d-none"></th>
             </tr>
         </thead>
@@ -348,23 +376,55 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </a>
                         <div class=" dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item">
+                            <a class="dropdown-item" data-toggle="modal" href="#edit-card-modal" card-id="{{card.id}}">
                                 <i class="fa fa-edit mr-2"></i> Edit
                             </a>
-                            <a class="dropdown-item">
-                                <i class="fa fa-ban mr-2"></i> Remove
-                            </a>
-                            <a class="dropdown-item text-danger">
+                            <a class="dropdown-item text-danger delete-card" onclick="deleteItem('Card', {{card.id}})"
+                                card-id="{{card.id}}">
                                 <i class="fa fa-trash mr-2"></i> Delete
                             </a>
                         </div>
                     </div>
                 </td>
+                <td class="d-none">{{ card.state }}</td>
                 <td class="d-none">{{ card.id }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
+    <!-- Edit card modal start -->
+    <div class="modal fade" id="edit-card-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="edit-card-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="edit-card-modal">Edit Card</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <form id="edit-card-form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="edit-card-front">Front</label>
+                            <textarea id="edit-card-front" name="front" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-card-back">Back</label>
+                            <textarea id="edit-card-back" name="back" class="form-control" required></textarea>
+                        </div>
+                        <input type="text" id="edit-card-id" hidden>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-secondary font-weight-bold mr-3" style="cursor: pointer;"
+                            data-dismiss="modal">Close</span>
+                        <input type="submit" value="Update Card" class="btn btn-sm btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Card modal end -->
 </main>
 {% endblock %}

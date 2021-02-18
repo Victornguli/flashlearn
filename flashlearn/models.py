@@ -21,7 +21,7 @@ class TimestampedModel(db.Model):
     date_updated = db.Column(
         db.DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    state = db.Column(db.String, default="active")
+    state = db.Column(db.String, default="Active")
 
     def save(self):
         """
@@ -41,7 +41,7 @@ class TimestampedModel(db.Model):
 
     @classmethod
     def all(cls):
-        return cls.query.filter(cls.state == "active")
+        return cls.query.filter(cls.state == "Active")
 
     @classmethod
     def get_by_id(cls, _id):
@@ -170,11 +170,15 @@ class Deck(TimestampedModel):
         return dict(
             id=self.id,
             name=self.name,
+            state=self.state,
             description=self.description,
             user=self.user_id,
             parent=self.parent_id,
             child_count=self.child_count,
             card_count=self.card_count,
+            stats=self.quick_stats,
+            date_created=self.date_created,
+            date_updated=self.date_updated,
         )
 
     @property
@@ -189,10 +193,37 @@ class Deck(TimestampedModel):
     def card_count(self):
         return len(self.cards)
 
+    @property
+    def quick_stats(self):
+        stats = {
+            "progress": 0,
+            "known": 0,
+            "unknown": 0,
+            "remaining": self.card_count,
+            "last_studied": "",
+        }
+        if self.state != "New":
+            study_session = (
+                StudySession.query.filter_by(deck_id=self.id, user_id=g.user.id)
+                .order_by(StudySession.date_updated.desc())
+                .first()
+            )
+            if study_session:
+                known, unknown = study_session.known, study_session.unknown
+                stats["known"] = known
+                stats["unknown"] = unknown
+                stats["remaining"] = self.card_count - (known + unknown)
+                stats["last_studied"] = study_session.date_updated
+                if all([known + unknown > 0, self.card_count > 0]):
+                    stats["progress"] = int(((known + unknown) / self.card_count) * 100)
+        return stats
+
     @classmethod
     def create_default_deck(cls, user_id):
         user = User.query.get_or_404(user_id)
-        default_deck = Deck(name="Default", description="Default Deck", user=user)
+        default_deck = Deck(
+            name="Default", description="Default Deck", user=user, state="New"
+        )
         default_deck.save()
         return default_deck
 
@@ -240,6 +271,7 @@ class Card(TimestampedModel):
     def to_json(self):
         return dict(
             id=self.id,
+            state=self.state,
             front=self.front,
             back=self.back,
             short_front=self.short_front,
@@ -249,31 +281,31 @@ class Card(TimestampedModel):
     @classmethod
     def get_next_card(cls, study_session_id, deck_id):
         session = StudySession.query.filter_by(
-            id=study_session_id, user_id=g.user.id, deck_id=deck_id
+            id=study_session_id, user_id=g.user.id, deck_id=deck_id, state="Studying"
         ).first()
         if session is None:
             abort(404)
-        study_logs = db.session.query(StudySessionLog.id).filter_by(
+        study_logs = db.session.query(StudySessionLog.card_id).filter_by(
             study_session_id=session.id
         )
         study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
         ordering = func.random()
-        if study_plan.order.value == "latest":
-            ordering = Card.date_created.desc()
-        elif study_plan.order.value == "oldest":
-            ordering = Card.date_created.asc()
+        if study_plan:
+            if study_plan.order.value == "latest":
+                ordering = Card.date_created.desc()
+            elif study_plan.order.value == "oldest":
+                ordering = Card.date_created.asc()
         card = (
             db.session.query(Card)
             .filter(
-                Card.state == "active",
+                Card.state == "Active",
                 Card.user_id == g.user.id,
                 Card.deck_id == session.deck_id,
-                Card.deck_id == ~(Card.id.in_(study_logs)),
+                ~(Card.id.in_(study_logs)),
             )
             .order_by(ordering)
             .first()
         )
-
         return card
 
 
@@ -347,7 +379,7 @@ class StudySession(TimestampedModel):
     deck_id = db.Column(db.Integer, db.ForeignKey("decks.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     known = db.Column(db.Integer, nullable=True, default=0)
-    unknown = db.Column(db.Integer, nullable=True)
+    unknown = db.Column(db.Integer, nullable=True, default=0)
 
     deck = db.relationship(
         Deck, backref=backref("study_sessions", cascade="all,delete")
@@ -358,15 +390,22 @@ class StudySession(TimestampedModel):
 
     def __init__(self, **kwargs):
         """Initialize a Study Session"""
-        if "unknown" not in kwargs.keys():
-            deck = Deck.get_by_id(kwargs["deck_id"])
-            kwargs["unknown"] = deck.card_count
         super(StudySession, self).__init__(**kwargs)
 
     def save(self):
-        self.state = "new"
         db.session.add(self)
         db.session.commit()
+
+    @property
+    def to_json(self):
+        return dict(
+            id=self.id,
+            state=self.state,
+            deck_id=self.deck_id,
+            user_id=self.user_id,
+            known=self.known,
+            unknown=self.unknown,
+        )
 
     def __repr__(self):
         return f"<StudySession: {self.deck.name} - {self.state}>"

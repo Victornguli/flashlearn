@@ -20,11 +20,74 @@ $(document).ready(function () {
     // Toggle modal manually: When edit button also suports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {
+        $("#editDeckFormSubmit").on("click", function () {
+            var deck_id = $("#editDeckForm #deck_id").val();
+            editItem(
+                new SubmitEvent($("#editDeckForm")),
+                $("#editDeckForm")[0],
+                "Deck",
+                "POST",
+                `/deck/${deck_id}/edit`,
+                `/deck/${deck_id}`
+            );
+        });
         $("#editDeckModal").modal("show");
     });
 
     $("#configure-studyplan-toggle").click(() => {
-        $("#configureStudyPlan").modal("show");
+        $.ajax({
+            type: "GET",
+            url: $("#configure-studyplan-toggle").attr("data-url"),
+            success: function (res) {
+                $("#configureStudyPlan .render").html(res["markup"]);
+                $("#configureStudyPlan").modal("show");
+
+                $("#edit_study_plan").submit((e) => {
+                    e.preventDefault();
+                    console.log("Submitted");
+                    $.ajax({
+                        type: "POST",
+                        url: $("#configure-studyplan-toggle").attr("data-url"),
+                        data: $("#edit_study_plan").serialize(),
+                        success: function (res) {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Success: Study plan has been updated.",
+                                timerProgressBar: false,
+                            });
+                            $("#configureStudyPlan").modal("hide");
+                        },
+                        error: function (err) {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Error: Could not update study plan.",
+                                timerProgressBar: false,
+                            });
+                        },
+                    });
+                });
+            },
+            error: function (err) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Oops: Something went wrong.",
+                    timerProgressBar: false,
+                });
+            },
+        });
+    });
+
+    $("#edit_study_plan").submit((e) => {
+        e.preventDefault();
+        console.log("Submitted");
+        $.ajax({
+            type: "POST",
+            url: $("#configure-studyplan-toggle").attr("data-url"),
+            success: function (res) {
+                $("#configureStudyPlan .modal-body").html(res["markup"]);
+                $("#configureStudyPlan").modal("show");
+            },
+        });
     });
 
     // Current card face; tracks the face to be synchronize flipping front and back faces
@@ -64,27 +127,64 @@ $(document).ready(function () {
     });
 
     // Mark Known / Unknown cards
-    $("#known-card, #unknown-card").click(() => {
-        // Ensure that the next card's front will be displayed
-        $(back).css({ display: "none" });
-        $(front).css({ display: "flex" });
-        face = "front";
-        $("#card-legend-text").text(face).fadeIn(0.6);
+    $("#known-card, #unknown-card").click((e) => {
+        var source = e.target;
+        var state = "Known";
+        if (source.id == "unknown-card") {
+            state = "Unknown";
+        }
 
         // Fetch next card in the deck
-        $(".flip-card-front").text(Math.random().toString(36).substring(7));
-        $(".flip-card-back").text(Math.random().toString(36).substring(7));
-
-        // TODO: Add custom css slide animation to prevent issues in firefox when using animate.css
-        // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
-        $(inner).addClass(
-            "animate__animated animate__slideInRight animate__faster"
-        );
-        setTimeout(() => {
-            $(inner).removeClass(
-                "animate__animated animate__slideInRight animate__faster"
-            );
-        }, 300);
+        $.ajax({
+            method: "POST",
+            url: `/deck/${active_deck}/study/${active_study_session}/next`,
+            data: { card_id: active_card, state: state },
+            beforeSend: () =>
+                $("#known-card, #unknown-card").prop("disabled", true),
+        })
+            .done(function (res) {
+                let deck = res["data"]["active_deck"] ?? [];
+                let session = res["data"]["active_study_session"] ?? [];
+                if (res["status"]) {
+                    let card = res["data"]["active_card"];
+                    active_card = card["id"];
+                    $(back).css({ display: "none" });
+                    $(front).css({ display: "flex" });
+                    face = "front";
+                    $(".flip-card-front").text(card["front"]);
+                    $(".flip-card-back").text(card["back"]);
+                    $("#card-legend-text").text(face).fadeIn(0.6);
+                    // Add the fadeInRight animation and remove it to ensure subsequent cards will be animated too
+                    $(inner).addClass(
+                        "animate__animated animate__slideInRight animate__faster"
+                    );
+                    setTimeout(() => {
+                        $(inner).removeClass(
+                            "animate__animated animate__slideInRight animate__faster"
+                        );
+                    }, 300);
+                } else if (res["markup"]) {
+                    $("#flashcards").css({ display: "none" });
+                    $("#studySessionComplete .modal-body").html(res["markup"]);
+                    $("#studySessionComplete").modal("show");
+                }
+                if (deck && session) {
+                    $("#study_session_total").text(deck["card_count"]);
+                    $("#study_session_studied").text(
+                        parseInt(session["known"]) +
+                            parseInt(session["unknown"])
+                    );
+                }
+            })
+            .fail(() => {
+                Toast.fire({
+                    icon: "error",
+                    title: "Error. Could not fetch next card.",
+                });
+            })
+            .always(() => {
+                $("#known-card, #unknown-card").prop("disabled", false);
+            });
     });
 
     // Add cards to a deck
@@ -114,9 +214,8 @@ $(document).ready(function () {
 
     const decksDt = dtInitWrapper("#decksDt", "deck");
     const cardsDt = dtInitWrapper("#allCardsDt", "card");
-    dtInitWrapper("#cardsDt", "Cards");
+    dtInitWrapper("#cardsDt", "card");
     const plansDt = dtInitWrapper("#plansDt", "plan");
-    $("#main-content").fadeIn("slow");
 });
 
 // Remove deck card formset
@@ -229,14 +328,14 @@ function dtInitWrapper(id, name) {
         language: {
             emptyTable: `<div class="text-center">
                 <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
+                <p class="text-muted">No ${name}s to show</p>
             </div>`,
             zeroRecords: `<div class="text-center">
                 <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no ${name} to show">
-                <p class="text-muted">No ${name} to show</p>
+                <p class="text-muted">No ${name}s to show</p>
             </div>`,
-            info: `Showing _END_ of _TOTAL_ ${name}`,
-            infoEmpty: `Showing 0 of 0 ${name}`,
+            info: `Showing _END_ of _TOTAL_ ${name}s`,
+            infoEmpty: `Showing 0 of 0 ${name}s`,
             infoFiltered: ``,
             lengthMenu: `Show _MENU_ ${name}`,
             loadingRecords: "Loading...",
@@ -267,7 +366,6 @@ function dtInitWrapper(id, name) {
             } else {
                 dt.row(target).deselect();
             }
-            // getSelectedChekboxes(dt);
         }
     );
 
@@ -343,8 +441,18 @@ function dtInitWrapper(id, name) {
     //     dt.column(targetColumnIndex).search(elVal).draw();
     // });
     $("#deck_name").on("change", function () {
-        var $this = $(this),
-            elVal = $this.val();
+        var $this = $(this);
+        elVal = $this.val();
+        if (elVal == null) {
+            dt.column(3).search("").draw();
+        } else {
+            dt.column(3).search(elVal).draw();
+        }
+    });
+
+    $("#cards_filter").on("change", function () {
+        var $this = $(this);
+        elVal = $this.val();
         if (elVal == null) {
             dt.column(3).search("").draw();
         } else {
@@ -415,7 +523,7 @@ function deleteDeck(deck_id) {
  */
 function deleteItem(entity, item_id, target_url = null, success_url = null) {
     if (target_url === null) {
-        target_url = `${entity.toLowerCase()}/${item_id}/delete`;
+        target_url = `/${entity.toLowerCase()}/${item_id}/delete`;
     }
     // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
@@ -446,6 +554,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                             if (success_url !== null) {
                                 location.replace(success_url);
                             }
+                            location.reload();
                         });
                     } else {
                         Toast.fire({
@@ -479,7 +588,7 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
 function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
     // Default to /entity/bulk/delete route if target url is not set
     if (target_url === null) {
-        target_url = `${entity.toLowerCase()}/bulk/delete`;
+        target_url = `/${entity.toLowerCase()}/bulk/delete`;
     }
     var pluralized = entity;
     if (ids.length > 1) {
@@ -554,6 +663,7 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
     var formData = new FormData(form);
+    is_json = false;
 
     // Loop through each textarea, and construct a card object with its front and back by simply checking which is first.
     // The front value will always be in an index divisible by 2, so the next textarea automatically is back
@@ -578,7 +688,8 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
             // console.log($(cardFormSets[i]).val());
         }
         // The current formData will be JSON serialized cards array..
-        formData = JSON.stringify(cards);
+        formData = JSON.stringify({ data: cards });
+        is_json = true;
     }
 
     // Override see_solved check-box to post boolean values
@@ -594,13 +705,16 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
         type: method,
         url: target_url,
         data: formData,
-        contentType: false,
-        processData: false,
+        contentType: is_json ? "application/json;charset=UTF-8" : false,
+        processData: is_json ? true : false,
+        dataType: is_json ? "json" : false,
         success: (data) => {
-            if (data == "Success") {
+            if (data == "Success" || data["status"] === 1) {
                 Toast.fire({
                     icon: "success",
-                    title: `${item} created successfully`,
+                    title: data["message"]
+                        ? data["message"]
+                        : `${item} created successfully`,
                 }).then(() => {
                     if (success_url !== null) {
                         location.replace(success_url);
@@ -628,4 +742,8 @@ function select2Lookup(selector, placeholder = "Select an option") {
         placeholder: placeholder,
         allowClear: true,
     });
+}
+
+function launchStatsModal() {
+    $("#studySessionComplete").modal("show");
 }

@@ -53,9 +53,7 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
     TESTING = False
     db_path = os.path.join(BASE_DIR, "dev_db.sqlite3")
-    SQLALCHEMY_DATABASE_URI = (
-        f"{[prefix]}{db_path}"  # Replace with production database..
-    )
+    SQLALCHEMY_DATABASE_URI = f"{prefix}{db_path}"  # Replace with production database..
 
 
 app_config = {

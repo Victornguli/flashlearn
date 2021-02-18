@@ -7,7 +7,7 @@ var cardsModule = (function () {
             e.preventDefault();
             const cardId = $(this).find("#edit-card-id").val();
             $.ajax({
-                url: `card/${cardId}/edit`,
+                url: `/card/${cardId}/edit`,
                 method: "POST",
                 data: {
                     front: $(this).find("#edit-card-front").val(),
@@ -34,7 +34,7 @@ var cardsModule = (function () {
             });
         });
 
-        // Add Card For Handler
+        // Add Card Form Handler
         $("#add-card-form").submit(function (e) {
             e.preventDefault();
             console.log(this);
@@ -80,7 +80,7 @@ var cardsModule = (function () {
         $("#edit-card-modal").on("show.bs.modal", function (e) {
             const cardId = $(e.relatedTarget).attr("card-id");
             $.ajax({
-                url: `card/${cardId}`,
+                url: `/card/${cardId}`,
                 method: "GET",
                 data: {},
                 async: false,
@@ -104,7 +104,7 @@ var cardsModule = (function () {
             });
         });
     }
-    
+
     function init() {
         bindEvents();
     }

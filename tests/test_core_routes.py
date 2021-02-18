@@ -21,6 +21,21 @@ class TestRoutes:
         )
         assert 200 == res.status_code, "Should create card"
 
+    def test_bulk_create_cards(self, user, decks, login, client):
+        login()
+        data = [
+            {"front": "Test Card One Front", "back": "Test Card One Back"},
+            {"front": "Test Card Two Front", "back": "Test Card Two Back"},
+        ]
+        res = client.post(
+            f"/card/bulk/add/{decks[0].id}",
+            data=json.dumps({"data": data}),
+            content_type="application/json",
+        )
+        assert res.status_code == 200, "Should return 200 status code"
+        deck = Deck.query.filter_by(id=decks[0].id).first()
+        assert deck.card_count == 2, "The deck should now have two cards"
+
     def test_get_card(self, client, card, login):
         login()
         res = client.get(f"/card/{card.id}")
@@ -29,11 +44,11 @@ class TestRoutes:
     def test_edit_card(self, user, card, login, client):
         login()
         res = client.post(
-            f"/card/{card.id}/edit", data={"front": "New Front", "state": "disabled"}
+            f"/card/{card.id}/edit", data={"front": "New Front", "state": "Disabled"}
         )
         assert 200 == res.status_code
         solved_card = Card.query.filter_by(id=card.id).first()
-        assert "disabled" == solved_card.state
+        assert "Disabled" == solved_card.state
         assert "New Front" == solved_card.front
 
     def test_delete_card(self, card, login, client):
@@ -139,20 +154,18 @@ class TestRoutes:
         )
         assert 200 == res.status_code
 
-    # def test_edit_study_plan(self, login, client, plan):
-    #     login()
-    #     create_page_res = client.get("/plan")
-    #     assert 200 == create_page_res.status_code, "Should retrieve create plan page"
-    #     res = client.post(
-    #         f"/plan/{plan.id}/edit",
-    #         data={
-    #             "name": "New Study Plan",
-    #             "description": "Random Study Plan",
-    #             "order": "random",
-    #         },
-    #     )
-    #     assert 200 == res.status_code
-    #     assert StudyPlan.query.get(plan.id).name == "New Study Plan"
+    def test_edit_study_plan(self, login, client, plan):
+        login()
+        get_edit_plan = client.get(f"/plan/{plan.id}/edit")
+        assert get_edit_plan.status_code == 200, "Should retrieve edit plan template"
+        edit_plan = client.post(f"/plan/{plan.id}/edit", data={"order": "random"})
+        assert 200 == edit_plan.status_code, "Edit study plan should return 200 code"
+        assert (
+            edit_plan.get_json()["status"] == 1
+        ), "Should successfully update study plan"
+        assert (
+            StudyPlan.query.get(plan.id).order.value == "random"
+        ), "Should update plan order to random"
 
     def test_get_study_plan(self, plan, login, client):
         login()
@@ -188,11 +201,27 @@ class TestRoutes:
 
     def test_get_next_card(self, login, card, plan, decks, study_session, client):
         login()
+        study_session.update(state="Studying")
         res = client.post(
             f"deck/{decks[0].id}/study/{study_session.id}/next",
+            data={"card_id": card.id, "state": "Known"},
         )
-
         assert 200 == res.status_code
+        study_session.update(state="Studying")
+        second_card = Card(
+            front="test front",
+            back="test back",
+            user_id=card.user_id,
+            deck_id=decks[0].id,
+        )
+        second_card.save()
+        res = client.post(
+            f"deck/{decks[0].id}/study/{study_session.id}/next",
+            data={"card_id": card.id, "state": "Known"},
+        )
+        assert 200 == res.status_code
+        res_data = res.get_json()
+        assert res_data["status"] == 1, "Should return a valid next card"
 
     def test_add_cards_to_deck(self, decks, login, client):
         login()
