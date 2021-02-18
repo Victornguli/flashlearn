@@ -17,11 +17,6 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Convert moment relative dates
-    $(".moment__relative_date").text(
-        moment.utc($(".moment__relative_date").attr("date")).local().fromNow()
-    );
-
     // Toggle modal manually: When edit button also suports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {
@@ -70,21 +65,28 @@ $(document).ready(function () {
 
     // Mark Known / Unknown cards
     $("#known-card, #unknown-card").click((e) => {
-        // Ensure that the next card's front will be displayed
-        $(back).css({ display: "none" });
-        $(front).css({ display: "flex" });
-        let deck_id = $(e.target).attr("deck_id");
-        let session_id = $(e.target).attr("study_session_id");
+        var source = e.target;
+        var state = "Known";
+        if (source.id == "unknown-card") {
+            state = "Unknown";
+        }
 
         // Fetch next card in the deck
         $.ajax({
             method: "POST",
-            url: `/deck/${deck_id}/study/${session_id}/next`,
+            url: `/deck/${active_deck}/study/${active_study_session}/next`,
+            data: { card_id: active_card, state: state },
+            beforeSend: () =>
+                $("#known-card, #unknown-card").prop("disabled", true),
         })
             .done(function (res) {
-                console.log(res);
+                let deck = res["data"]["active_deck"] ?? [];
+                let session = res["data"]["active_study_session"] ?? [];
                 if (res["status"]) {
-                    let card = res["data"];
+                    let card = res["data"]["active_card"];
+                    active_card = card["id"];
+                    $(back).css({ display: "none" });
+                    $(front).css({ display: "flex" });
                     face = "front";
                     $(".flip-card-front").text(card["front"]);
                     $(".flip-card-back").text(card["back"]);
@@ -98,6 +100,17 @@ $(document).ready(function () {
                             "animate__animated animate__slideInRight animate__faster"
                         );
                     }, 300);
+                } else if (res["markup"]) {
+                    $("#flashcards").css({ display: "none" });
+                    $("#studySessionComplete .modal-body").html(res["markup"]);
+                    $("#studySessionComplete").modal("show");
+                }
+                if (deck && session) {
+                    $("#study_session_total").text(deck["card_count"]);
+                    $("#study_session_studied").text(
+                        parseInt(session["known"]) +
+                            parseInt(session["unknown"])
+                    );
                 }
             })
             .fail(() => {
@@ -105,6 +118,9 @@ $(document).ready(function () {
                     icon: "error",
                     title: "Error. Could not fetch next card.",
                 });
+            })
+            .always(() => {
+                $("#known-card, #unknown-card").prop("disabled", false);
             });
     });
 
@@ -137,7 +153,6 @@ $(document).ready(function () {
     const cardsDt = dtInitWrapper("#allCardsDt", "card");
     dtInitWrapper("#cardsDt", "card");
     const plansDt = dtInitWrapper("#plansDt", "plan");
-    $("#main-content").fadeIn("slow");
 });
 
 // Remove deck card formset
@@ -664,4 +679,8 @@ function select2Lookup(selector, placeholder = "Select an option") {
         placeholder: placeholder,
         allowClear: true,
     });
+}
+
+function launchStatsModal() {
+    $("#studySessionComplete").modal("show");
 }

@@ -1,0 +1,40 @@
+{% if previous_study_session %}
+<canvas style="position: relative" id="cardsBreakDown" width="400" height="200"></canvas>
+
+<script>
+    var myPieChart = new Chart(document.getElementById("cardsBreakDown"), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{previous_study_session.known}}, {{previous_study_session.unknown}}],
+                backgroundColor: [
+                    "#28a745",
+                    "#007bff"
+                ],
+                borderWidth: [0, 0]
+            }],
+            labels: [
+                'Known',
+                'Unknown'
+            ],
+        },
+        options: {
+            title: {
+                display: true,
+                position: "top",
+                text: "Latest Study Session Breakdown",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            }
+        }
+    });
+</script>
+{% endif %}

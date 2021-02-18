@@ -106,8 +106,12 @@
                                 <span class="d-block h5 text-hover-primary">{{deck.name}}</span>
                                 <span class="d-block text-no-hover" style="font-size: 0.78rem;">
                                     {% if deck.stats.last_studied %}
-                                    Last studied: <span class="moment__relative_date"
-                                        date="{{deck.stats.last_studied }}"></span>
+                                    Last studied:
+                                    <script>
+                                        document.write(
+                                            moment.utc("{{deck.stats.last_studied }}").local()
+                                            .fromNow())
+                                    </script>
                                     {% else %}
                                     Last Studied: N/A
                                     {% endif %}
@@ -122,7 +126,7 @@
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>
                         {{ deck.state }}
-                        {% elif deck.state == "In Progress" %}
+                        {% elif deck.state == "Studying" %}
                         <span class="bg-primary mr-2"
                             style="height: .5rem; width: .5rem; border-radius: 50%; display: inline-block;">
                         </span>

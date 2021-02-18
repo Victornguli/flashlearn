@@ -1,7 +1,7 @@
-from flask import request, jsonify, g, abort, render_template
+from flask import request, jsonify, g, abort, render_template, session
 from sqlalchemy import or_
 from flashlearn.core import core
-from flashlearn.models import Card, Deck, StudyPlan, StudySession
+from flashlearn.models import Card, Deck, StudyPlan, StudySession, StudySessionLog
 from flashlearn.decorators import login_required
 from flashlearn.enums import OrderTypeEnum
 from flashlearn.utils import to_bool
@@ -252,31 +252,35 @@ def delete_plan(plan_id):
 def study_deck(deck_id):
     """Study a deck"""
     deck = Deck.get_by_user_or_404(deck_id, g.user.id)
-    session = (
+    study_session = (
         db.session.query(StudySession)
         .filter(
             StudySession.deck_id == deck.id,
             StudySession.user_id == g.user.id,
-            or_(StudySession.state == "In Progress"),
+            or_(StudySession.state == "Studying"),
         )
         .first()
     )
-    if session is None:
-        session = StudySession(
+    if study_session is None:
+        study_session = StudySession(
             user_id=g.user.id,
             deck_id=deck.id,
             known=0,
             unknown=0,
-            state="In Progress",
+            state="Studying",
         )
-        session.save()
-        deck.state = "In Progress"
+        study_session.save()
+        deck.state = "Studying"
         deck.save()
-    first_card = Card.get_next_card(session.id, deck_id)
+    first_card = Card.get_next_card(study_session.id, deck_id)
+    session["active_study_session"] = study_session.to_json
+    session["active_deck"] = deck.to_json
+    if first_card:
+        session["active_card"] = first_card.to_json
     return render_template(
         "dashboard/decks/_study.html",
         deck=deck.to_json,
-        study_session=session,
+        study_session=study_session,
         first_card=first_card,
     )
 
@@ -285,15 +289,50 @@ def study_deck(deck_id):
 @login_required
 def get_next_study_card(deck_id, study_session_id):
     if request.method == "POST":
+        study_session = StudySession.get_by_user_or_404(study_session_id, g.user.id)
+        if study_session.state != "Studying":
+            abort(400)
+        deck = Deck.get_by_user_or_404(deck_id, g.user.id)
+        card_state = request.form.get("state", "")
+        card_id = request.form.get("card_id", None)
+        if card_state not in ("Known", "Unknown") or not card_id:
+            abort(400)
+        # Create a study session log and update the study_session
+        log = StudySessionLog(
+            study_session_id=study_session_id, card_id=card_id, state=card_state
+        )
+        log.save()
+        if card_state == "Known":
+            study_session.update(known=study_session.known + 1)
+        else:
+            study_session.update(unknown=study_session.unknown + 1)
+        session["active_deck"] = deck.to_json
+        session["active_study_session"] = study_session.to_json
         next_card = Card.get_next_card(study_session_id, deck_id)
-        status = 0
-        message = "Study Session Complete"
-        data = None
-        if next_card:
-            data = next_card.to_json
+        status, data = 0, {
+            "active_deck": deck.to_json,
+            "active_study_session": study_session.to_json,
+            "active_card": None,
+        }
+        markup = None
+        if next_card is not None:
+            data["active_card"] = next_card.to_json
             status = 1
-            message = "Next Card"
-        return jsonify({"status": status, "message": message, "data": data})
+            message = "Study Session Studying"
+            session["active_card"] = next_card.to_json
+            session["previous_study_session"] = None
+        else:
+            deck.update(state="Complete")
+            study_session.update(state="Complete")
+            session["active_card"] = None
+            message = "Study Session Complete"
+            markup = render_template(
+                "dashboard/decks/partials/session_stats.html",
+                previous_study_session=study_session,
+            )
+        return jsonify(
+            {"status": status, "message": message, "data": data, "markup": markup}
+        )
 
 
 @core.route("deck/<int:deck_id>/add-cards", methods=("GET",))

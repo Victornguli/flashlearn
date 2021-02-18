@@ -203,19 +203,19 @@ class Deck(TimestampedModel):
             "last_studied": "",
         }
         if self.state != "New":
-            study_session = StudySession.query.filter_by(
-                deck_id=self.id, state="In Progress", user_id=g.user.id
-            ).first()
+            study_session = (
+                StudySession.query.filter_by(deck_id=self.id, user_id=g.user.id)
+                .order_by(StudySession.date_updated.desc())
+                .first()
+            )
             if study_session:
                 known, unknown = study_session.known, study_session.unknown
                 stats["known"] = known
                 stats["unknown"] = unknown
                 stats["remaining"] = self.card_count - (known + unknown)
                 stats["last_studied"] = study_session.date_updated
-                if known + unknown > 0:
-                    stats["progress"] = round(
-                        ((known + unknown) / self.card_count) * 100, 2
-                    )
+                if all([known + unknown > 0, self.card_count > 0]):
+                    stats["progress"] = int(((known + unknown) / self.card_count) * 100)
         return stats
 
     @classmethod
@@ -281,11 +281,11 @@ class Card(TimestampedModel):
     @classmethod
     def get_next_card(cls, study_session_id, deck_id):
         session = StudySession.query.filter_by(
-            id=study_session_id, user_id=g.user.id, deck_id=deck_id
+            id=study_session_id, user_id=g.user.id, deck_id=deck_id, state="Studying"
         ).first()
         if session is None:
             abort(404)
-        study_logs = db.session.query(StudySessionLog.id).filter_by(
+        study_logs = db.session.query(StudySessionLog.card_id).filter_by(
             study_session_id=session.id
         )
         study_plan = db.session.query(StudyPlan).filter_by(user_id=g.user.id).first()
@@ -395,6 +395,17 @@ class StudySession(TimestampedModel):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    @property
+    def to_json(self):
+        return dict(
+            id=self.id,
+            state=self.state,
+            deck_id=self.deck_id,
+            user_id=self.user_id,
+            known=self.known,
+            unknown=self.unknown,
+        )
 
     def __repr__(self):
         return f"<StudySession: {self.deck.name} - {self.state}>"

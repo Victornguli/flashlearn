@@ -29,6 +29,13 @@ h1 {
     font-weight: 600;
 }
 
+
+canvas {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+  }
+
 /* Dropdown Items */
 .custom-dropdown a.dropdown_hover {
     cursor: pointer;
@@ -756,9 +763,9 @@ custom-dt .table thead th {
 
 
 /* Main content container */
-#main-content {
+/* #main-content {
     display: none;
-}
+} */
 
 
 /* Media queries */

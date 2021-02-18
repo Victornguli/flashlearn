@@ -203,11 +203,27 @@ class TestRoutes:
 
     def test_get_next_card(self, login, card, plan, decks, study_session, client):
         login()
+        study_session.update(state="Studying")
         res = client.post(
             f"deck/{decks[0].id}/study/{study_session.id}/next",
+            data={"card_id": card.id, "state": "Known"},
         )
-
         assert 200 == res.status_code
+        study_session.update(state="Studying")
+        second_card = Card(
+            front="test front",
+            back="test back",
+            user_id=card.user_id,
+            deck_id=decks[0].id,
+        )
+        second_card.save()
+        res = client.post(
+            f"deck/{decks[0].id}/study/{study_session.id}/next",
+            data={"card_id": card.id, "state": "Known"},
+        )
+        assert 200 == res.status_code
+        res_data = res.get_json()
+        assert res_data["status"] == 1, "Should return a valid next card"
 
     def test_add_cards_to_deck(self, decks, login, client):
         login()
