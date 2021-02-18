@@ -1,0 +1,28 @@
+{% if study_plan %}
+<form action="" id="edit_study_plan">
+    <div class="modal-body">
+        <div class="alert alert-info">Change the order in which the cards are to appear.</div>
+        <select class="form-control order_select2" id="order" name="order" required>
+            <option></option>
+            <option value="latest" {% if study_plan.order.value == 'latest' %}selected{% endif %}>Latest</option>
+            <option value="oldest" {% if study_plan.order.value == 'oldest' %}selected{% endif %}>Oldest</option>
+            <option value="random" {% if study_plan.order.value == 'random' %}selected{% endif %}>Random</option>
+        </select>
+        <input type="text" class="d-none" hidden value="{{study_plan.id}}" name="study_plan_id" id="study_plan_id">
+        <script>
+            $(".order_select2").select2({
+                placeholder: "Select order",
+                allowClear: true,
+            });
+        </script>
+    </div>
+    <div class="modal-footer">
+        <div class="form-group">
+            <input type="submit" value="Update" class="btn btn-sm btn-primary">
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+    </div>
+</form>
+{% else %}
+<div class="alert alert-warning">Ooops. Something unexpected happened.</div>
+{% endif %}

@@ -247,6 +247,24 @@ def delete_plan(plan_id):
     return jsonify({"status": 1, "message": "Study Plan deleted successfully"})
 
 
+@core.route("/plan/<int:plan_id>/edit", methods=["POST", "GET"])
+@login_required
+def edit_plan(plan_id):
+    plan = StudyPlan.query.get_or_404(plan_id)
+    if request.method == "GET":
+        return jsonify({
+                "markup": render_template(
+                    "dashboard/plans/partials/edit_study_plan.html", study_plan=plan
+                )
+            })
+    else:
+        order = request.form.get("order", None)
+        if order is None or not hasattr(OrderTypeEnum, order):
+            abort(400)
+        plan.update(order=order)
+        return jsonify({"status": 1, "message": "Study Plan updated successfully"})
+
+
 @core.route("deck/<int:deck_id>/study")
 @login_required
 def study_deck(deck_id):
@@ -272,6 +290,11 @@ def study_deck(deck_id):
         study_session.save()
         deck.state = "Studying"
         deck.save()
+    study_plan = (
+        StudyPlan.query.filter_by(user_id=g.user.id, state="Active")
+        .order_by(StudyPlan.date_created.desc())
+        .first()
+    )
     first_card = Card.get_next_card(study_session.id, deck_id)
     session["active_study_session"] = study_session.to_json
     session["active_deck"] = deck.to_json
@@ -281,6 +304,7 @@ def study_deck(deck_id):
         "dashboard/decks/_study.html",
         deck=deck.to_json,
         study_session=study_session,
+        study_plan=study_plan,
         first_card=first_card,
     )
 

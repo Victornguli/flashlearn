@@ -20,11 +20,74 @@ $(document).ready(function () {
     // Toggle modal manually: When edit button also suports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {
+        $("#editDeckFormSubmit").on("click", function () {
+            var deck_id = $("#editDeckForm #deck_id").val();
+            editItem(
+                new SubmitEvent($("#editDeckForm")),
+                $("#editDeckForm")[0],
+                "Deck",
+                "POST",
+                `/deck/${deck_id}/edit`,
+                `/deck/${deck_id}`
+            );
+        });
         $("#editDeckModal").modal("show");
     });
 
     $("#configure-studyplan-toggle").click(() => {
-        $("#configureStudyPlan").modal("show");
+        $.ajax({
+            type: "GET",
+            url: $("#configure-studyplan-toggle").attr("data-url"),
+            success: function (res) {
+                $("#configureStudyPlan .render").html(res["markup"]);
+                $("#configureStudyPlan").modal("show");
+
+                $("#edit_study_plan").submit((e) => {
+                    e.preventDefault();
+                    console.log("Submitted");
+                    $.ajax({
+                        type: "POST",
+                        url: $("#configure-studyplan-toggle").attr("data-url"),
+                        data: $("#edit_study_plan").serialize(),
+                        success: function (res) {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Success: Study plan has been updated.",
+                                timerProgressBar: false,
+                            });
+                            $("#configureStudyPlan").modal("hide");
+                        },
+                        error: function (err) {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Error: Could not update study plan.",
+                                timerProgressBar: false,
+                            });
+                        },
+                    });
+                });
+            },
+            error: function (err) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Oops: Something went wrong.",
+                    timerProgressBar: false,
+                });
+            },
+        });
+    });
+
+    $("#edit_study_plan").submit((e) => {
+        e.preventDefault();
+        console.log("Submitted");
+        $.ajax({
+            type: "POST",
+            url: $("#configure-studyplan-toggle").attr("data-url"),
+            success: function (res) {
+                $("#configureStudyPlan .modal-body").html(res["markup"]);
+                $("#configureStudyPlan").modal("show");
+            },
+        });
     });
 
     // Current card face; tracks the face to be synchronize flipping front and back faces

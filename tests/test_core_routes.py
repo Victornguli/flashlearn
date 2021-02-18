@@ -154,20 +154,18 @@ class TestRoutes:
         )
         assert 200 == res.status_code
 
-    # def test_edit_study_plan(self, login, client, plan):
-    #     login()
-    #     create_page_res = client.get("/plan")
-    #     assert 200 == create_page_res.status_code, "Should retrieve create plan page"
-    #     res = client.post(
-    #         f"/plan/{plan.id}/edit",
-    #         data={
-    #             "name": "New Study Plan",
-    #             "description": "Random Study Plan",
-    #             "order": "random",
-    #         },
-    #     )
-    #     assert 200 == res.status_code
-    #     assert StudyPlan.query.get(plan.id).name == "New Study Plan"
+    def test_edit_study_plan(self, login, client, plan):
+        login()
+        get_edit_plan = client.get(f"/plan/{plan.id}/edit")
+        assert get_edit_plan.status_code == 200, "Should retrieve edit plan template"
+        edit_plan = client.post(f"/plan/{plan.id}/edit", data={"order": "random"})
+        assert 200 == edit_plan.status_code, "Edit study plan should return 200 code"
+        assert (
+            edit_plan.get_json()["status"] == 1
+        ), "Should successfully update study plan"
+        assert (
+            StudyPlan.query.get(plan.id).order.value == "random"
+        ), "Should update plan order to random"
 
     def test_get_study_plan(self, plan, login, client):
         login()
