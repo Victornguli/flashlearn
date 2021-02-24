@@ -67,9 +67,7 @@ class TestModels:
         study_session = StudySession(deck_id=decks[0].id, user_id=user.id)
         study_session.save()
         assert study_session.state == "Active", "Should create an Active Study Session"
-        assert (
-            study_session.unknown == 0
-        ), "Should create a new Study Session"
+        assert study_session.unknown == 0, "Should create a new Study Session"
         StudySession.query.filter_by(id=study_session.id).delete()
         assert (
             StudySession.query.filter_by(id=study_session.id).first() is None

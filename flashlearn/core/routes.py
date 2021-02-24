@@ -252,11 +252,13 @@ def delete_plan(plan_id):
 def edit_plan(plan_id):
     plan = StudyPlan.query.get_or_404(plan_id)
     if request.method == "GET":
-        return jsonify({
+        return jsonify(
+            {
                 "markup": render_template(
                     "dashboard/plans/partials/edit_study_plan.html", study_plan=plan
                 )
-            })
+            }
+        )
     else:
         order = request.form.get("order", None)
         if order is None or not hasattr(OrderTypeEnum, order):

@@ -53,7 +53,8 @@ class TestAuth:
                 "username": "alice",
                 "email": "",
                 "password": "password",
-                "password_confirm": "password"},
+                "password_confirm": "password",
+            },
             follow_redirects=True,
         )
         assert res.status_code == 200
