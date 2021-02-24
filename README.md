@@ -1,5 +1,5 @@
 # Flashlearn
-[![Build Status](https://travis-ci.com/Victornguli/flashcards.svg?branch=master)](https://travis-ci.com/Victornguli/flashcards)
-[![Coverage Status](https://coveralls.io/repos/github/Victornguli/flashcards/badge.svg?branch=master)](https://coveralls.io/github/Victornguli/flashcards?branch=master)
+[![Tests](https://github.com/Victornguli/flashlearn/actions/workflows/test.yml/badge.svg)](https://github.com/Victornguli/flashlearn/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/Victornguli/flashlearn/badge.svg?branch=master)](https://coveralls.io/github/Victornguli/flashlearn?branch=master)
 
 Learn CS concepts using flashcards
