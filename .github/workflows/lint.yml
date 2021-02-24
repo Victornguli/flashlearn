@@ -25,6 +25,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # Enable linters
           black: true
-          black_args: "--exclude /migrations\/"
+          black_args: --exclude /migrations\/
           flake8: true
-          flake8_args: "--exclude=venv/,migrations/"
+          flake8_args: --exclude=venv/,migrations/
