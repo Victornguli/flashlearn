@@ -8,5 +8,3 @@ htmlcov
 *.sqlite3
 .vscode
 .pytest_cache
-.test_cache
-#.editorconfig
