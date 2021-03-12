@@ -180,8 +180,8 @@
     </div>
 
 
-    <!-- 
-        Edit deck modal start 
+    <!--
+        Edit deck modal start
         For some reason, when placed inside the datatable this modal will not toggle..
     -->
     <div class="modal fade" id="editDeckDtModal" data-keyboard="false" tabindex="-1"
@@ -204,6 +204,7 @@
                             <label for="description">Description</label>
                             <textarea id="description" name="description" class="form-control"></textarea>
                         </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     </form>
                 </div>
                 <div class="modal-footer">

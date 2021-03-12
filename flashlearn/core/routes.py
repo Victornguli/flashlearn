@@ -1,3 +1,5 @@
+import json
+
 from flask import request, jsonify, g, abort, render_template, session
 from sqlalchemy import or_
 from flashlearn.core import core
@@ -52,10 +54,10 @@ def create_card():
 @core.route("/card/bulk/add/<int:deck_id>", methods=("POST",))
 @login_required
 def bulk_add_cards(deck_id):
-    data = request.get_json().get("data", [])
-    cards = []
+    data = json.loads(request.form.get("data"))
+    insert_cards = []
     for card in data:
-        cards.append(
+        insert_cards.append(
             Card(
                 front=card["front"],
                 back=card["back"],
@@ -63,7 +65,7 @@ def bulk_add_cards(deck_id):
                 user_id=g.user.id,
             )
         )
-    db.session.bulk_save_objects(cards)
+    db.session.bulk_save_objects(insert_cards)
     db.session.commit()
     return jsonify({"status": 1, "message": "Cards added successfully"})
 
@@ -99,7 +101,7 @@ def delete_card(card_id):
 def bulk_delete_cards():
     """Bulk delete cards"""
     if request.method == "POST":
-        data = request.get_json().get("data", [])
+        data = json.loads(request.form.get("data", []))
         for card_id in data:
             card = Card.get_by_user_or_404(card_id, g.user.id)
             card.delete()
@@ -159,7 +161,7 @@ def delete_deck(deck_id):
     if request.method == "POST":
         deck = Deck.query.get_or_404(deck_id)
         deck.delete()
-        return jsonify({"status": 1, "message": "Deck deleted succesfully"})
+        return jsonify({"status": 1, "message": "Deck deleted successfully"})
 
 
 @core.route("/deck/bulk/delete", methods=("POST",))
@@ -167,7 +169,7 @@ def delete_deck(deck_id):
 def bulk_delete_decks():
     """Bulk delete decks"""
     if request.method == "POST":
-        data = request.get_json().get("data", [])
+        data = json.loads(request.form.get("data", []))
         for deck_id in data:
             deck = Deck.get_by_user_or_404(deck_id, g.user.id)
             deck.delete()

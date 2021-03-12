@@ -17,7 +17,18 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Toggle modal manually: When edit button also suports a tooltip
+    // Initialize AJAX with csrf_token
+    const csrf_token = "{{ csrf_token() }}";
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+
+    // Toggle modal manually: When edit button also supports a tooltip
     // it is not possible to add data-target as the modal anymore..
     $("#edit-deck-toggle").click(() => {
         $("#editDeckFormSubmit").on("click", function () {
@@ -138,7 +149,7 @@ $(document).ready(function () {
         $.ajax({
             method: "POST",
             url: `/deck/${active_deck}/study/${active_study_session}/next`,
-            data: { card_id: active_card, state: state },
+            data: { card_id: active_card, state: state, "csrf_token": $("#csrf_token").val() },
             beforeSend: () =>
                 $("#known-card, #unknown-card").prop("disabled", true),
         })
@@ -263,7 +274,7 @@ function toggleDeckDtModal(deck_id) {
 // Generic editItem wrapper method
 function editItem(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
-    formData = new FormData(form);
+    let formData = new FormData(form);
 
     $.ajax({
         type: method,
@@ -319,7 +330,7 @@ function dtInitWrapper(id, name) {
                             <label class="custom-control-label" for="dataCheck${
                                 meta.row
                             }"></label>
-                        </div> 
+                        </div>
                     `;
                 },
             },
@@ -420,7 +431,7 @@ function dtInitWrapper(id, name) {
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                 </svg>
                 Delete
-                </button>   
+                </button>
                 </a>
                 `
             );
@@ -525,6 +536,9 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
     if (target_url === null) {
         target_url = `/${entity.toLowerCase()}/${item_id}/delete`;
     }
+    let formData = new FormData();
+    formData.append("id", item_id);
+    formData.append("csrf_token", $(`#csrf_token`).val());
     // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
         title: `Confirm ${entity} deletion!`,
@@ -539,10 +553,10 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
             $.ajax({
                 type: "POST",
                 url: target_url,
-                data: { id: item_id },
                 contentType: false,
+                data: formData,
                 processData: false,
-
+                dataType: false,
                 success: (res) => {
                     if (res["status"]) {
                         Toast.fire({
@@ -552,9 +566,9 @@ function deleteItem(entity, item_id, target_url = null, success_url = null) {
                             } deleted successfully`,
                         }).then(() => {
                             if (success_url !== null) {
-                                location.replace(success_url);
+                                // location.replace(success_url);
                             }
-                            location.reload();
+                            // location.reload();
                         });
                     } else {
                         Toast.fire({
@@ -594,6 +608,10 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
     if (ids.length > 1) {
         pluralized = entity + "s";
     }
+    console.log(ids);
+    let formData = new FormData();
+    formData.append('csrf_token', $(`#csrf_token`).val());
+    formData.append('data', JSON.stringify(ids));
     // Fire a Sweet Alert modal to confirm entity deletion..
     Swal.fire({
         title: `Confirm ${entity} deletion!`,
@@ -608,9 +626,10 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
             $.ajax({
                 type: "POST",
                 url: target_url,
-                data: JSON.stringify({ data: ids }),
-                contentType: "application/json",
-                dataType: "json",
+                contentType: false,
+                data: formData,
+                processData: false,
+                dataType: false,
                 success: (res) => {
                     if (res["status"]) {
                         Toast.fire({
@@ -662,18 +681,18 @@ function bulkDelete(entity, target_url = null, success_url = null, ...ids) {
  */
 function handleAjax(e, form, item, method, target_url, success_url = null) {
     e.preventDefault();
-    var formData = new FormData(form);
-    is_json = false;
+    let formData = new FormData(form);
+    let is_json = false;
 
     // Loop through each textarea, and construct a card object with its front and back by simply checking which is first.
     // The front value will always be in an index divisible by 2, so the next textarea automatically is back
     // Then proceed to confirm if both back and front are set for the card then push it to cards end empty it
-    if ($(form).attr("id") == "add-deck-cards-form") {
-        var cards = [];
-        prevCard = {};
-        var cardFormSets = $(form).find("textarea");
-        for (var i = 0; i < cardFormSets.length; i++) {
-            if (i % 2 == 0) {
+    if ($(form).attr("id") === "add-deck-cards-form") {
+        let cards = [];
+        let prevCard = {};
+        let cardFormSets = $(form).find("textarea");
+        for (let i = 0; i < cardFormSets.length; i++) {
+            if (i % 2 === 0) {
                 prevCard["front"] = $(cardFormSets[i]).val();
             } else {
                 prevCard["back"] = $(cardFormSets[i]).val();
@@ -688,8 +707,9 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
             // console.log($(cardFormSets[i]).val());
         }
         // The current formData will be JSON serialized cards array..
-        formData = JSON.stringify({ data: cards });
-        is_json = true;
+        formData = new FormData();
+        formData.append("data", JSON.stringify(cards));
+        formData.append('csrf_token', $("#csrf_token").val());
     }
 
     // Override see_solved check-box to post boolean values
@@ -706,19 +726,19 @@ function handleAjax(e, form, item, method, target_url, success_url = null) {
         url: target_url,
         data: formData,
         contentType: is_json ? "application/json;charset=UTF-8" : false,
-        processData: is_json ? true : false,
+        processData: is_json,
         dataType: is_json ? "json" : false,
         success: (data) => {
-            if (data == "Success" || data["status"] === 1) {
+            if (data === "Success" || data["status"] === 1) {
                 Toast.fire({
                     icon: "success",
                     title: data["message"]
                         ? data["message"]
                         : `${item} created successfully`,
                 }).then(() => {
-                    if (success_url !== null) {
-                        location.replace(success_url);
-                    }
+                    // if (success_url !== null) {
+                    //     location.replace(success_url);
+                    // }
                 });
             } else {
                 Toast.fire({

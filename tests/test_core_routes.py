@@ -29,8 +29,8 @@ class TestRoutes:
         ]
         res = client.post(
             f"/card/bulk/add/{decks[0].id}",
-            data=json.dumps({"data": data}),
-            content_type="application/json",
+            data={"data": json.dumps(data)},
+            # content_type="application/json",
         )
         assert res.status_code == 200, "Should return 200 status code"
         deck = Deck.query.filter_by(id=decks[0].id).first()
@@ -68,8 +68,7 @@ class TestRoutes:
         card_2.save()
         res = client.post(
             "/card/bulk/delete",
-            data=json.dumps({"data": [card.id, card_2.id]}),
-            content_type="application/json",
+            data={"data": json.dumps([card.id, card_2.id])},
         )
         assert 200 == res.status_code, "Should return a 200 status code"
         assert Card.query.filter_by(id=card.id).first() is None
@@ -126,8 +125,7 @@ class TestRoutes:
         deck_2.save()
         res = client.post(
             "/deck/bulk/delete",
-            data=json.dumps({"data": [deck_1.id, deck_2.id]}),
-            content_type="application/json",
+            data={"data": json.dumps([deck_1.id, deck_2.id])},
         )
         assert 200 == res.status_code, "Should return 200 status code"
         assert Deck.query.filter_by(id=deck_1.id).first() is None

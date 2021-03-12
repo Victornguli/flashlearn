@@ -40,6 +40,7 @@ class TestingConfig(BaseConfig):
 
     DEBUG = True
     TESTING = True
+    WTF_CSRF_ENABLED = False
     # db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)),
     # 'tests/test_db.sqlite3')
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
