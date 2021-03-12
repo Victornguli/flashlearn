@@ -1,19 +1,17 @@
 var cardsModule = (function () {
     "use strict";
+    const csrf_token = "{{ csrf_token() }}";
 
     function bindEvents() {
         // Edit Card Form Handler
         $("#edit-card-form").submit(function (e) {
             e.preventDefault();
+            let formData = $(this).serialize();
             const cardId = $(this).find("#edit-card-id").val();
             $.ajax({
                 url: `/card/${cardId}/edit`,
                 method: "POST",
-                data: {
-                    front: $(this).find("#edit-card-front").val(),
-                    back: $(this).find("#edit-card-back").val(),
-                },
-                async: false,
+                data: {'csrf_token': $(`#csrf_token`).val(), formData},
                 success: function (res) {
                     Toast.fire({
                         icon: "success",
@@ -21,7 +19,7 @@ var cardsModule = (function () {
                     });
                     $("#edit-card-modal").modal("hide");
                     setTimeout(() => {
-                        window.location.reload();
+                        // window.location.reload();
                     }, 500);
                 },
                 error: function (err) {

@@ -39,6 +39,7 @@
                         <input class="form-control btn-primary" type="submit" value="Create account"
                             id="auth-submit-btn">
                     </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <hr class="mt-5 mb-2">
                     <div class="text-left">
                         Have an account? <a href="{{ url_for('user.login') }}">Login instead</a>

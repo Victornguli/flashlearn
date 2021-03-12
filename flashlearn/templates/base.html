@@ -30,6 +30,7 @@
     {% endblock %}
 
     <div id="main">
+        <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% block dashboard %}{% endblock %}
     </div>
 
