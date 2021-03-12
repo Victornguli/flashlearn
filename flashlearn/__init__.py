@@ -1,13 +1,14 @@
 import os
 import logging
+from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, url_for
 from logging.handlers import RotatingFileHandler
 from instance.config import app_config
 from flashlearn.decorators import login_required
 
-
 db = SQLAlchemy()
+csrf = CSRFProtect()
 
 
 def create_app(config=None):
@@ -63,7 +64,7 @@ def create_app(config=None):
 
     # Initialize db with app instance
     db.init_app(app)
-
+    csrf.init_app(app)
     # Commands and Blueprint registration needs to be after db init..
     register_blueprints_and_commands(app)
 

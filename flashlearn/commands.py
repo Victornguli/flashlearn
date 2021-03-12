@@ -8,7 +8,7 @@ from flashlearn import db
 @with_appcontext
 def init_db_command():
     """
-    Initialize a local database on devevelopment
+    Initialize a local database on development
     """
     confirm = click.prompt(
         "The database will be re-initialized." "\nReply with Y/N to confirm or cancel",
