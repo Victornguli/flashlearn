@@ -129,7 +129,7 @@
     </div>
 
     <div id="flashcards">
-        {% if session['active_card'] %}
+        {% if session['active_card'] is not none %}
         <div class="text-center" id="flashcard-progress">
             Studied
             <span id="study_session_studied">
@@ -179,7 +179,6 @@
             </button>
         </div>
         {% endif %}
-
     </div>
 </main>
 {% endblock %}

@@ -4,7 +4,6 @@ from flashlearn.models import Card, Deck, StudyPlan
 
 class TestRoutes:
     """Flashlearn routes test class"""
-
     def test_create_card(self, user, decks, login, client):
         login()
         create_card_page = client.get("/card")
@@ -33,8 +32,9 @@ class TestRoutes:
             # content_type="application/json",
         )
         assert res.status_code == 200, "Should return 200 status code"
-        deck = Deck.query.filter_by(id=decks[0].id).first()
-        assert deck.card_count == 2, "The deck should now have two cards"
+        # redis_cache.clear()
+        # assert redis_cache.get(f"deck_id:{decks[0].id}") == 2434, "Should not have anything in cache"
+        assert Card.query.filter_by(deck_id=decks[0].id).count() == 2, "The deck should now have two cards"
 
     def test_get_card(self, client, card, login):
         login()
@@ -162,7 +162,7 @@ class TestRoutes:
             edit_plan.get_json()["status"] == 1
         ), "Should successfully update study plan"
         assert (
-            StudyPlan.query.get(plan.id).order.value == "random"
+            StudyPlan.query.get(plan.id).order == "random"
         ), "Should update plan order to random"
 
     def test_get_study_plan(self, plan, login, client):

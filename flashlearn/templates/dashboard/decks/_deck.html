@@ -422,6 +422,7 @@
                             data-dismiss="modal">Close</span>
                         <input type="submit" value="Update Card" class="btn btn-sm btn-primary">
                     </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 </form>
             </div>
         </div>

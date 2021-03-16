@@ -151,6 +151,7 @@
                             <textarea id="edit-card-back" name="back" class="form-control" required></textarea>
                         </div>
                         <input type="text" id="edit-card-id" hidden>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     </div>
                     <div class="modal-footer">
                         <span class="text-secondary font-weight-bold mr-3" style="cursor: pointer;"
