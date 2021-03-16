@@ -24,7 +24,9 @@ def create_card():
         error = ""
         if all_decks is None:
             error += "You have not created any deck yet."
-        return render_template("dashboard/cards/_create.html", decks=all_decks, error=error)
+        return render_template(
+            "dashboard/cards/_create.html", decks=all_decks, error=error
+        )
     else:
         front = request.form.get("front")
         back = request.form.get("back")
@@ -352,13 +354,9 @@ def get_next_study_card(deck_id, study_session_id):
         )
         log.save()
         if card_state == "Known":
-            study_session.update(
-                known=StudySession.known + 1
-            )
+            study_session.update(known=StudySession.known + 1)
         else:
-            study_session.update(
-                unknown=StudySession.unknown + 1
-            )
+            study_session.update(unknown=StudySession.unknown + 1)
         session["active_deck"] = deck.to_json
         session["active_study_session"] = study_session.to_json
         next_card = Card.get_next_card(study_session_id, deck_id)

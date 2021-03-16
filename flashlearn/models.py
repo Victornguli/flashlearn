@@ -276,7 +276,7 @@ class Card(TimestampedModel):
             back=self.back,
             short_front=self.short_front,
             user_id=self.user_id,
-            deck_id=self.deck_id
+            deck_id=self.deck_id,
         )
 
     @classmethod

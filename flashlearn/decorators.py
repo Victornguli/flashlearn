@@ -4,9 +4,11 @@ from functools import wraps
 
 if BaseConfig.USE_REDIS_CACHE:
     from flask_caching.backends import RedisCache
-    redis_cache = RedisCache(port=6379, host='redis', default_timeout=300)
+
+    redis_cache = RedisCache(port=6379, host="redis", default_timeout=300)
 else:
     from flask_caching.backends import SimpleCache
+
     redis_cache = SimpleCache(default_timeout=300)
 
 
@@ -36,7 +38,7 @@ def super_user_required(view):
 def cache(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        cached_key = ''
+        cached_key = ""
         if args:
             cached_key = args[0]
         else:
@@ -50,4 +52,5 @@ def cache(view):
         _ = view(*args, **kwargs)
         redis_cache.set(str(cached_key), str(_))
         return _
+
     return wrapper

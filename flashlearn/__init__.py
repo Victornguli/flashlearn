@@ -7,9 +7,7 @@ from logging.handlers import RotatingFileHandler
 from instance.config import app_config
 from flashlearn.decorators import login_required, redis_cache
 
-session_options = {
-    'expire_on_commit': False
-}
+session_options = {"expire_on_commit": False}
 db = SQLAlchemy(session_options=session_options)
 csrf = CSRFProtect()
 redis_cache = redis_cache
