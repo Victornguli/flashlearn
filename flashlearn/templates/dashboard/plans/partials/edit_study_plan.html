@@ -9,6 +9,7 @@
             <option value="random" {% if study_plan.order.value == 'random' %}selected{% endif %}>Random</option>
         </select>
         <input type="text" class="d-none" hidden value="{{study_plan.id}}" name="study_plan_id" id="study_plan_id">
+        <input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <script>
             $(".order_select2").select2({
                 placeholder: "Select order",

@@ -5,10 +5,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, url_for
 from logging.handlers import RotatingFileHandler
 from instance.config import app_config
-from flashlearn.decorators import login_required
+from flashlearn.decorators import login_required, redis_cache
 
-db = SQLAlchemy()
+session_options = {"expire_on_commit": False}
+db = SQLAlchemy(session_options=session_options)
 csrf = CSRFProtect()
+redis_cache = redis_cache
 
 
 def create_app(config=None):
@@ -62,7 +64,6 @@ def create_app(config=None):
         # TODO: Add index code
         return redirect(url_for("core.decks"))
 
-    # Initialize db with app instance
     db.init_app(app)
     csrf.init_app(app)
     # Commands and Blueprint registration needs to be after db init..

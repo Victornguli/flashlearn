@@ -6,12 +6,16 @@ var cardsModule = (function () {
         // Edit Card Form Handler
         $("#edit-card-form").submit(function (e) {
             e.preventDefault();
-            let formData = $(this).serialize();
+            let formData = new FormData(this);
             const cardId = $(this).find("#edit-card-id").val();
+            // formData.append("csrf_token", cardId);
             $.ajax({
                 url: `/card/${cardId}/edit`,
                 method: "POST",
-                data: {'csrf_token': $(`#csrf_token`).val(), formData},
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: false,
                 success: function (res) {
                     Toast.fire({
                         icon: "success",

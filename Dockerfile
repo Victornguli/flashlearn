@@ -1,5 +1,5 @@
 FROM python:3.8-slim-buster
-
+ENV FLASK_RUN_HOST=0.0.0.0
 WORKDIR /flashlearn
 
 COPY requirements.txt requirements.txt

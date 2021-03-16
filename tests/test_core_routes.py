@@ -33,8 +33,9 @@ class TestRoutes:
             # content_type="application/json",
         )
         assert res.status_code == 200, "Should return 200 status code"
-        deck = Deck.query.filter_by(id=decks[0].id).first()
-        assert deck.card_count == 2, "The deck should now have two cards"
+        assert (
+            Card.query.filter_by(deck_id=decks[0].id).count() == 2
+        ), "The deck should now have two cards"
 
     def test_get_card(self, client, card, login):
         login()
@@ -162,7 +163,7 @@ class TestRoutes:
             edit_plan.get_json()["status"] == 1
         ), "Should successfully update study plan"
         assert (
-            StudyPlan.query.get(plan.id).order.value == "random"
+            StudyPlan.query.get(plan.id).order == "random"
         ), "Should update plan order to random"
 
     def test_get_study_plan(self, plan, login, client):

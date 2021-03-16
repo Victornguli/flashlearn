@@ -1,6 +1,6 @@
 import pytest
 from flashlearn.models import User, Card, Deck, StudyPlan, StudySession, StudySessionLog
-from flashlearn import create_app, db
+from flashlearn import create_app, db, redis_cache
 
 
 @pytest.fixture
@@ -14,6 +14,7 @@ def client(test_app):
     """Pytest Fixture that serves the test_client"""
     with test_app.app_context():
         db.create_all()
+        redis_cache.clear()
         yield test_app.test_client()
 
 

@@ -19,6 +19,7 @@ class BaseConfig:
         os.getenv("secret_key") or "j^lw01bnhbrl2(k+c626l^n^$hi!&+6xx(ns@m(q*5lj-!xj*9"
     )
     DEBUG = False
+    USE_REDIS_CACHE = False
     CSRF_ENABLED = True
     FLASK_APP = "flashlearn"
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
@@ -41,8 +42,6 @@ class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
     WTF_CSRF_ENABLED = False
-    # db_path = os.path.join(os.path.abspath(os.path.dirname(BASE_DIR)),
-    # 'tests/test_db.sqlite3')
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     # Fix to use in-memory db for tests.
     # Replace with above db path to save test data in-file.
