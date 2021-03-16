@@ -33,8 +33,6 @@ class TestRoutes:
             # content_type="application/json",
         )
         assert res.status_code == 200, "Should return 200 status code"
-        # redis_cache.clear()
-        # assert redis_cache.get(f"deck_id:{decks[0].id}") == 2434, "Should not have anything in cache"
         assert (
             Card.query.filter_by(deck_id=decks[0].id).count() == 2
         ), "The deck should now have two cards"
