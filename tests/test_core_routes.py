@@ -4,6 +4,7 @@ from flashlearn.models import Card, Deck, StudyPlan
 
 class TestRoutes:
     """Flashlearn routes test class"""
+
     def test_create_card(self, user, decks, login, client):
         login()
         create_card_page = client.get("/card")
@@ -34,7 +35,9 @@ class TestRoutes:
         assert res.status_code == 200, "Should return 200 status code"
         # redis_cache.clear()
         # assert redis_cache.get(f"deck_id:{decks[0].id}") == 2434, "Should not have anything in cache"
-        assert Card.query.filter_by(deck_id=decks[0].id).count() == 2, "The deck should now have two cards"
+        assert (
+            Card.query.filter_by(deck_id=decks[0].id).count() == 2
+        ), "The deck should now have two cards"
 
     def test_get_card(self, client, card, login):
         login()
