@@ -226,6 +226,9 @@ $(document).ready(function () {
     const decksDt = dtInitWrapper("#decksDt", "deck");
     const cardsDt = dtInitWrapper("#allCardsDt", "card");
     dtInitWrapper("#cardsDt", "card");
+    $(".dtTable").DataTable({
+        "aaSorting": []
+    });
     const plansDt = dtInitWrapper("#plansDt", "plan");
 });
 

@@ -4,12 +4,10 @@ from functools import wraps
 
 if BaseConfig.USE_REDIS_CACHE:
     from flask_caching.backends import RedisCache
-
     redis_cache = RedisCache(port=6379, host="redis", default_timeout=300)
 else:
     from flask_caching.backends import SimpleCache
-
-    redis_cache = SimpleCache(default_timeout=300)
+    redis_cache = SimpleCache(default_timeout=1)
 
 
 def login_required(view):

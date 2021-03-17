@@ -300,8 +300,18 @@
     </div> -->
     <!-- <h1 style="font-weight: 600;" class="pb-2 border-bottom">Cards in this deck</h1> -->
 
-    <!-- Filters for cards in the deck -->
-    <div id="cardsDt_filters_wrapper" class="d-flex justify-content-between align-items-center mb-2 ">
+    <ul class="nav nav-tabs mb-3" id="deckTabs" role="tablist">
+      <li class="nav-item mr-2" role="presentation">
+        <a class="nav-link active" id="cards-tab" data-toggle="tab" data-target="#deck-cards-tab" type="button" role="tab" aria-controls="deck cards" aria-selected="true">Deck Cards</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="history-tab" data-toggle="tab" data-target="#deck-history-tab" type="button" role="tab" aria-controls="study history" aria-selected="false">Study history</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="deckTabsContent">
+      <div class="tab-pane fade show active" id="deck-cards-tab" role="tabpanel" aria-labelledby="deck-cards-tab">
+            <!-- Filters for cards in the deck -->
+            <div id="cardsDt_filters_wrapper" class="d-flex justify-content-between align-items-center mb-2 ">
         <!-- Search filter -->
         <div id="cardsDt_filters_search" class="d-flex justify-content-start align-items-center">
             <div class="custom-control custom-checkbox mr-2 dtr-control">
@@ -339,60 +349,89 @@
             </select> -->
         </div>
     </div>
-
-    <table id="cardsDt" class="table-lg table-nowrap table-align-middle w-100">
-        <thead style="display: none;">
-            <tr>
-                <th>
-                </th>
-                <th></th>
-                <th></th>
-                <th class="d-none"></th>
-                <th class="d-none"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for card in deck.cards %}
-            <tr>
-                <td style="padding: 0.5rem 0;"></td>
-                <td style="white-space: normal; padding: 0.5rem 0;">
-                    <div class="card">
-                        <div class="card-body" style="padding: 1rem 1rem;">
-                            <div class="row">
-                                <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
-                                    style="border-right: 1px solid rgb(189, 189, 189);">
-                                    {{ card.front }}
-                                </div>
-                                <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
-                                    {{ card.back }}
+            <table id="cardsDt" class="table-lg table-nowrap table-align-middle w-100">
+                <thead style="display: none;">
+                    <tr>
+                        <th>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th class="d-none"></th>
+                        <th class="d-none"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in deck.cards %}
+                    <tr>
+                        <td style="padding: 0.5rem 0;"></td>
+                        <td style="white-space: normal; padding: 0.5rem 0;">
+                            <div class="card">
+                                <div class="card-body" style="padding: 1rem 1rem;">
+                                    <div class="row">
+                                        <div class="front col-sm-12 col-md-6 col-lg-4 my-auto border-right"
+                                            style="border-right: 1px solid rgb(189, 189, 189);">
+                                            {{ card.front }}
+                                        </div>
+                                        <div class="back col-sm-12 col-md-6 col-lg-8 my-auto">
+                                            {{ card.back }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-center" style="padding: 0;">
-                    <div class="dropdown custom-dropdown">
-                        <a data-toggle="dropdown"
-                            class="btn btn-sm mr-2 text-decoration-none text-secondary dropdown_hover">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </a>
-                        <div class=" dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" data-toggle="modal" href="#edit-card-modal" card-id="{{card.id}}">
-                                <i class="fa fa-edit mr-2"></i> Edit
-                            </a>
-                            <a class="dropdown-item text-danger delete-card" onclick="deleteItem('Card', {{card.id}})"
-                                card-id="{{card.id}}">
-                                <i class="fa fa-trash mr-2"></i> Delete
-                            </a>
-                        </div>
-                    </div>
-                </td>
-                <td class="d-none">{{ card.state }}</td>
-                <td class="d-none">{{ card.id }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        </td>
+                        <td class="text-center" style="padding: 0;">
+                            <div class="dropdown custom-dropdown">
+                                <a data-toggle="dropdown"
+                                    class="btn btn-sm mr-2 text-decoration-none text-secondary dropdown_hover">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </a>
+                                <div class=" dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" data-toggle="modal" href="#edit-card-modal" card-id="{{card.id}}">
+                                        <i class="fa fa-edit mr-2"></i> Edit
+                                    </a>
+                                    <a class="dropdown-item text-danger delete-card" onclick="deleteItem('Card', {{card.id}})"
+                                        card-id="{{card.id}}">
+                                        <i class="fa fa-trash mr-2"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="d-none">{{ card.state }}</td>
+                        <td class="d-none">{{ card.id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+      <div class="tab-pane fade" id="deck-history-tab" role="tabpanel" aria-labelledby="deck-history-tab">
+            <table id="deckHistoryDt" class="table-lg table-nowrap table-align-middle w-100 dtTable">
+                <thead>
+                    <tr>
+                        <th>Marked Known</th>
+                        <th>Marked Unknown</th>
+                        <th>Status</th>
+                        <th>Last Studied:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for study_session in deck.study_sessions|sort(attribute='date_updated', reverse=True) %}
+                    <tr>
+                        <td>{{ study_session.known }}</td>
+                        <td>{{ study_session.unknown }}</td>
+                        <td>{{ study_session.state }}</td>
+                        <td>
+                            <script>
+                                document.write(
+                                    moment.utc("{{ study_session.date_updated }}").local()
+                                    .fromNow())
+                            </script>
+                        </td>
+                    </tr>
+                    {%  endfor %}
+                </tbody>
+            </table>
+      </div>
+    </div>
 
     <!-- Edit card modal start -->
     <div class="modal fade" id="edit-card-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
