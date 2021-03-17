@@ -47,8 +47,8 @@ def create_card():
                 state="Active",
             )
             new_card.save()
-            redis_cache.delete("all_cards_dt")
-            redis_cache.delete(f"deck_id:{deck_id}")
+            redis_cache.delete(f"user:{g.user.id}all_cards_dt")
+            redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
             return jsonify("Success")
         return jsonify(error)
 
@@ -69,8 +69,8 @@ def bulk_add_cards(deck_id):
         )
     db.session.bulk_save_objects(insert_cards)
     db.session.commit()
-    redis_cache.delete("all_cards_dt")
-    redis_cache.delete(f"deck_id:{deck_id}")
+    redis_cache.delete(f"user:{g.user.id}all_cards_dt")
+    redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
     return jsonify({"status": 1, "message": "Cards added successfully"})
 
 
@@ -88,8 +88,8 @@ def edit_card(card_id):
             deck_id=request.form.get("deck_id", card.deck_id),
             state=state,
         )
-        redis_cache.delete("all_cards_dt")
-        redis_cache.delete(f"deck_id:{card.deck_id}")
+        redis_cache.delete(f"user:{g.user.id}all_cards_dt")
+        redis_cache.delete(f"user:{g.user.id}deck_id:{card.deck_id}")
         return jsonify("OK")
 
 
@@ -99,8 +99,8 @@ def delete_card(card_id):
     if request.method == "POST":
         card = Card.get_by_user_or_404(card_id, g.user.id)
         card.delete()
-        redis_cache.delete("all_cards_dt")
-        redis_cache.delete(f"deck_id:{card.deck_id}")
+        redis_cache.delete(f"user:{g.user.id}all_cards_dt")
+        redis_cache.delete(f"user:{g.user.id}deck_id:{card.deck_id}")
         return jsonify({"status": 1, "message": "Card deleted successfully"})
 
 
@@ -113,8 +113,8 @@ def bulk_delete_cards():
         for card_id in data:
             card = Card.get_by_user_or_404(card_id, g.user.id)
             card.delete()
-            redis_cache.delete("all_cards_dt")
-            redis_cache.delete(f"deck_id:{card.deck_id}")
+            redis_cache.delete(f"user:{g.user.id}all_cards_dt")
+            redis_cache.delete(f"user:{g.user.id}deck_id:{card.deck_id}")
         return jsonify({"status": 1, "message": "Cards deleted successfully"})
 
 
@@ -122,10 +122,10 @@ def bulk_delete_cards():
 @login_required
 def cards():
     if request.method == "GET":
-        all_cards = redis_cache.get("all_cards_dt")
+        all_cards = redis_cache.get(f"user:{g.user.id}all_cards_dt")
         if all_cards is None:
             all_cards = Card.query.filter_by(user_id=g.user.id)
-            redis_cache.set("all_cards_dt", all_cards.all())
+            redis_cache.set(f"user:{g.user.id}all_cards_dt", all_cards.all())
         return render_template("dashboard/cards/_cards.html", cards=all_cards)
 
 
@@ -143,7 +143,7 @@ def create_deck():
             state="New",
         )
         deck.save()
-        redis_cache.delete("all_decks_dt")
+        redis_cache.delete(f"user:{g.user.id}all_decks_dt")
         return jsonify("Success")
 
 
@@ -167,8 +167,8 @@ def edit_deck(deck_id):
         description=request.form.get("description", deck.description),
         parent_id=request.form.get("parent_id", deck.parent_id),
     )
-    redis_cache.delete("all_decks_dt")
-    redis_cache.delete(f"deck_id:{deck_id}")
+    redis_cache.delete(f"user:{g.user.id}all_decks_dt")
+    redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
     return jsonify("Success")
 
 
@@ -178,8 +178,8 @@ def delete_deck(deck_id):
     if request.method == "POST":
         deck = Deck.query.get_or_404(deck_id)
         deck.delete()
-        redis_cache.delete("all_decks_dt")
-        redis_cache.delete(f"deck_id:{deck_id}")
+        redis_cache.delete(f"user:{g.user.id}all_decks_dt")
+        redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
         return jsonify({"status": 1, "message": "Deck deleted successfully"})
 
 
@@ -192,8 +192,8 @@ def bulk_delete_decks():
         for deck_id in data:
             deck = Deck.get_by_user_or_404(deck_id, g.user.id)
             deck.delete()
-            redis_cache.delete("all_decks_dt")
-            redis_cache.delete(f"deck_id:{deck_id}")
+            redis_cache.delete(f"user:{g.user.id}all_decks_dt")
+            redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
         return jsonify({"status": 1, "message": "Decks deleted succesfully"})
 
 
@@ -220,8 +220,8 @@ def reset_deck(deck_id):
     deck_cards = Card.query.filter_by(deck_id=deck.id)
     for card in deck_cards:
         card.update(state=state)
-    redis_cache.delete("all_decks_dt")
-    redis_cache.delete(f"deck_id:{deck_id}")
+    redis_cache.delete(f"user:{g.user.id}all_decks_dt")
+    redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
     return jsonify("OK")
 
 
@@ -317,7 +317,7 @@ def study_deck(deck_id):
         study_session.save()
         deck.state = "Studying"
         deck.save()
-        redis_cache.delete(f"deck_id:{deck.id}")
+        redis_cache.delete(f"user:{g.user.id}deck_id:{deck.id}")
     study_plan = (
         StudyPlan.query.filter_by(user_id=g.user.id, state="Active")
         .order_by(StudyPlan.date_created.desc())
@@ -381,7 +381,7 @@ def get_next_study_card(deck_id, study_session_id):
                 "dashboard/decks/partials/session_stats.html",
                 previous_study_session=study_session,
             )
-        redis_cache.delete(f"deck_id:{deck_id}")
+        redis_cache.delete(f"user:{g.user.id}deck_id:{deck_id}")
         return jsonify(
             {"status": status, "message": message, "data": data, "markup": markup}
         )

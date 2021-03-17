@@ -40,12 +40,11 @@ def cache(view):
     def wrapper(*args, **kwargs):
         cached_key = ""
         if args:
-            cached_key = args[0]
+            cached_key = f"user:{g.user.id}{args[0]}"
         else:
             for k, v in kwargs.items():
-                cached_key = f"{k}:{v}"
+                cached_key = f"user:{g.user.id}{k}:{v}"
                 break
-        print(cached_key)
         cached_view = redis_cache.get(str(cached_key))
         if cached_view:
             return cached_view
