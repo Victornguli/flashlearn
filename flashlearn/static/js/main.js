@@ -226,6 +226,38 @@ $(document).ready(function () {
     const decksDt = dtInitWrapper("#decksDt", "deck");
     const cardsDt = dtInitWrapper("#allCardsDt", "card");
     dtInitWrapper("#cardsDt", "card");
+    $(".dtTable").DataTable({
+        dom:
+            '<"div custom-dt" rt> <"row" <"col-md-12 col-lg-6" i> <"col-md-12 col-lg-6" p>>',
+        order: [[0, "asc"]],
+        language: {
+            emptyTable: `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no study logs to show">
+                <p class="text-muted">No study logs to show</p>
+            </div>`,
+            zeroRecords: `<div class="text-center">
+                <img id="no-data-img" src="/static/img/assets/no-data.svg" style="width: 11rem" alt="no study logs to show">
+                <p class="text-muted">No study logs to show</p>
+            </div>`,
+            info: `Showing _END_ of _TOTAL_ study logs`,
+            infoEmpty: `Showing 0 of 0 study logs`,
+            infoFiltered: ``,
+            lengthMenu: `Show _MENU_ study logs`,
+            loadingRecords: "Loading...",
+            processing: "Processing...",
+            search: "Search:",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Prev",
+            },
+            aria: {
+                sortAscending: ": activate to sort column ascending",
+                sortDescending: ": activate to sort column descending",
+            },
+        },
+    });
     const plansDt = dtInitWrapper("#plansDt", "plan");
 });
 
