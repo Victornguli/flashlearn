@@ -12,6 +12,6 @@ then
 fi
 
 python -m flask db upgrade
-python -m flask run --host=0.0.0.0
+gunicorn --bind 0.0.0.0:5000 wsgi:app
 
 exec "$@"

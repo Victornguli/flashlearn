@@ -10,3 +10,4 @@ htmlcov
 .pytest_cache
 postgres-data
 .env.prod
+.env.prod.db
