@@ -4,7 +4,6 @@ import sys
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 ROOT_DIR = os.path.abspath(os.path.dirname(BASE_DIR))
 
-
 WIN = sys.platform.startswith("win")
 if WIN:
     prefix = "sqlite:///"
@@ -22,7 +21,10 @@ class BaseConfig:
     USE_REDIS_CACHE = False
     CSRF_ENABLED = True
     FLASK_APP = "flashlearn"
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    sqlite_db_path = os.path.join(BASE_DIR, "dev_db.sqlite3")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "SQLALCHEMY_DATABASE_URI", f"{prefix}{sqlite_db_path}"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     LOG_FILE = os.getenv("LOG_FILE") or os.path.join(ROOT_DIR, "flashlearn.log")
     LOG_LEVEL = 20
@@ -32,8 +34,6 @@ class DevelopmentConfig(BaseConfig):
     """Development config class"""
 
     DEBUG = True
-    db_path = os.path.join(BASE_DIR, "dev_db.sqlite3")
-    SQLALCHEMY_DATABASE_URI = f"{prefix}{db_path}"
 
 
 class TestingConfig(BaseConfig):
@@ -52,8 +52,6 @@ class ProductionConfig(BaseConfig):
 
     DEBUG = False
     TESTING = False
-    db_path = os.path.join(BASE_DIR, "dev_db.sqlite3")
-    SQLALCHEMY_DATABASE_URI = f"{prefix}{db_path}"  # Replace with production database..
 
 
 app_config = {

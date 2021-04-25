@@ -8,3 +8,5 @@ htmlcov
 *.sqlite3
 .vscode
 .pytest_cache
+postgres-data
+.env.prod
