@@ -28,12 +28,6 @@ services:
         - ./.env.prod
     volumes:
         - ./postgres-data:/var/lib/postgresql/data
-  nginx:
-    build: ./nginx
-    ports:
-        - 1337:80
-    depends_on:
-        - web
 
 volumes:
   postgres-data:
