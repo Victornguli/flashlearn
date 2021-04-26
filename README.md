@@ -13,6 +13,7 @@ To run a copy of this project locally you will require:
 + Docker(Optional)
 + Redis server(Optional)
 
+
 ### Installation
 
 You can run a local version of flashlearn by cloning this repo
@@ -26,6 +27,7 @@ and following these instructions
     source venv/bin/activate
     pip install -r requirements.txt
 
+If pip installation fails but you dont need postgresql database feel free to remove **psycopg2** from the list and try the installation again.
 The file .flaskenv is populated with default development configs that you
 can override to suit your needs.
 To run the server directly type
@@ -33,9 +35,9 @@ To run the server directly type
     flask run --host=0.0.0.0
 
 
+
 #### Setting up Postgresql
-First ensure the latest version of postgresql is installed, If pip installation
-fails but you dont need postgres feel free to remove **psycopg2** from the list and try the installation again.
+First ensure the latest version of postgresql is installed!
 To setup psql proceed as follows:
 
 + Create a new postgres user, set the user password and make sure that you can access psql shell
@@ -45,10 +47,13 @@ To setup psql proceed as follows:
 Ignore this step to use sqlite3
 
 
+
+
 #### Setting up Redis cache
 Ensure you have redis server installed in your system.
 Enable Redis cache from BaseConfig class file in /instance/config.py by
 changing the value of **USE_REDIS_CACHE** from False to True
+
 
 
 #### Running on Docker
@@ -56,7 +61,7 @@ First ensure docker and docker-compose are installed in your machine, then run:
 
   + Copy paste the contents of .env.dev into a new file named.env.prod
 
-  Run:
+  To run the app with all services defined in the docker-compose file run:
 
-        docker-compose up --build to deploy the app with docker-compose file
+        docker-compose up --build 
 
