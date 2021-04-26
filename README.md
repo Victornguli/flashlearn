@@ -4,8 +4,8 @@
 
 **Master difficult concepts via spaced repetition using flashcards**
 
-#Getting Started
-###Dependencies
+# Getting Started
+### Dependencies
 
 To run a copy of this project locally you will require:
 + Python 3.6+
@@ -13,7 +13,7 @@ To run a copy of this project locally you will require:
 + Docker(Optional)
 + Redis server(Optional)
 
-###Installation
+### Installation
 
 You can run a local version of flashlearn by cloning this repo
 and following these instructions
@@ -33,7 +33,7 @@ To run the server directly type
     flask run --host=0.0.0.0
 
 
-####Setting up Postgresql
+#### Setting up Postgresql
 First ensure the latest version of postgresql is installed, If pip installation
 fails but you dont need postgres feel free to remove **psycopg2** from the list and try the installation again.
 To setup psql proceed as follows:
@@ -45,13 +45,13 @@ To setup psql proceed as follows:
 Ignore this step to use sqlite3
 
 
-####Setting up Redis cache
+#### Setting up Redis cache
 Ensure you have redis server installed in your system.
 Enable Redis cache from BaseConfig class file in /instance/config.py by
 changing the value of **USE_REDIS_CACHE** from False to True
 
 
-####Running on Docker
+#### Running on Docker
 First ensure docker and docker-compose are installed in your machine, then run:
 
   + Copy paste the contents of .env.dev into a new file named.env.prod
